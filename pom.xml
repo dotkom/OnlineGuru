@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>no.ntnu.online.onlineguru</groupId>
     <artifactId>onlineguruSystem</artifactId>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
     <version>1.2-SNAPSHOT</version>
     <name>OnlineGuru</name>
     <url>http://maven.apache.org</url>

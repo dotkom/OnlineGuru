@@ -42,15 +42,15 @@ public class TwitterPlugin implements Plugin {
 
     public TwitterPlugin() {
         initiate();
-        logger.info(token);
-        logger.info(secretToken);
-        AccessToken accessToken = new AccessToken(token, secretToken);
 
+        ConfigurationBuilder builder = new ConfigurationBuilder();
+        builder.setOAuthConsumerKey(consumerKey);
+        builder.setOAuthConsumerSecret(consumerSecret);
+        builder.setOAuthAccessToken(token);
+        builder.setOAuthAccessTokenSecret(secretToken);
 
-        twitter = new TwitterFactory().getInstance(accessToken);
-        twitter.setOAuthConsumer(consumerKey, consumerSecret);
-
-
+        TwitterFactory factory = new TwitterFactory(builder.build());
+        twitter = factory.getInstance();
     }
 
     private void initiate() {
@@ -103,21 +103,32 @@ public class TwitterPlugin implements Plugin {
         switch (e.getEventType()) {
             case PRIVMSG: {
                 PrivMsgEvent privMsgEvent = (PrivMsgEvent) e;
-                if (privMsgEvent.isChannelMessage() && privMsgEvent.getTarget().equalsIgnoreCase("#online.dotkom")) {
-                    String[] message = privMsgEvent.getMessage().split("\\s+");
-                    if (message.length > 1 && message[0].trim().equalsIgnoreCase(TRIGGER)) {
-                        if (tweet(privMsgEvent.getMessage().substring(TRIGGER.length()).trim())) {
-                            wand.sendMessageToTarget(e.getNetwork(), "#online.dotkom", "Twitteret: " + privMsgEvent.getMessage());
-                        } else {
-                            wand.sendMessageToTarget(e.getNetwork(), "#online.dotkom", "Feilet ved sendelse av kvitter på det store internett!");
+                if (privMsgEvent.isChannelMessage() && privMsgEvent.getTarget().trim().equalsIgnoreCase("#online.dotkom")) {
+                    if (messageContainsValidTwitterAndCorrectTwitterLength(privMsgEvent.getMessage())) {
+                        String[] message = privMsgEvent.getMessage().split("\\s+");
+                        if (message.length > 1 && message[0].trim().equalsIgnoreCase(TRIGGER)) {
+                            String messageToTweet = privMsgEvent.getMessage().substring(TRIGGER.length()).trim();
+                            if (tweet(messageToTweet)) {
+                                wand.sendMessageToTarget(e.getNetwork(), "#online.dotkom", "Twitteret: " + messageToTweet);
+                            } else {
+                                wand.sendMessageToTarget(e.getNetwork(), "#online.dotkom", "Feilet ved sendelse av kvitter på det store internett!");
+                            }
                         }
                     }
-
-
                 }
             }
         }
 
+    }
+
+    private boolean messageContainsValidTwitterAndCorrectTwitterLength(String message) {
+        if (
+                (message.length() > (TRIGGER.length() + 1)) &&
+                        ((message.length() - TRIGGER.length()) < 140)
+                ) {
+            return true;
+        }
+        return false;
     }
 
     private boolean tweet(String tweetMessage) {
