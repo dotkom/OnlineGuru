@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 HERE=`pwd`
 mvn clean install
 cd $HERE
