@@ -19,6 +19,8 @@ import twitter4j.internal.http.HttpRequest;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -30,7 +32,8 @@ import java.io.IOException;
 public class TwitterPlugin implements Plugin {
     static Logger logger = Logger.getLogger(TwitterPlugin.class);
     private final String DESCRIPTION = "Twitter plugin";
-    private final String TRIGGER = "!tweet";
+    private final String TWEETTRIGGER = "!tweet";
+    private final String TWITTERTRIGGER = "!twitter";
     private final String settings_folder = "settings/";
     private final String settings_file = settings_folder + "twitter.conf";
     private WandRepository wand;
@@ -39,6 +42,7 @@ public class TwitterPlugin implements Plugin {
     private String secretToken;
     private String consumerKey;
     private String consumerSecret;
+    private boolean credentialsOK = false;
 
     public TwitterPlugin() {
         initiate();
@@ -87,6 +91,8 @@ public class TwitterPlugin implements Plugin {
             } else if (consumerSecret.isEmpty()) {
                 logger.error("Twitter secretToken key is empty");
             }
+            
+            credentialsOK = token != null && secretToken != null && consumerKey != null && consumerSecret != null;
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -102,33 +108,54 @@ public class TwitterPlugin implements Plugin {
     public void incomingEvent(Event e) {
         switch (e.getEventType()) {
             case PRIVMSG: {
+            	
                 PrivMsgEvent privMsgEvent = (PrivMsgEvent) e;
-                if (privMsgEvent.isChannelMessage() && privMsgEvent.getTarget().trim().equalsIgnoreCase("#online.dotkom")) {
-                    if (messageContainsValidTwitterAndCorrectTwitterLength(privMsgEvent.getMessage())) {
-                        String[] message = privMsgEvent.getMessage().split("\\s+");
-                        if (message.length > 1 && message[0].trim().equalsIgnoreCase(TRIGGER)) {
-                            String messageToTweet = privMsgEvent.getMessage().substring(TRIGGER.length()).trim();
-                            if (tweet(messageToTweet)) {
-                                wand.sendMessageToTarget(e.getNetwork(), "#online.dotkom", "Twitteret: " + messageToTweet);
+                String[] data = privMsgEvent.getMessage().split("\\s+");
+                
+                if(data.length < 2) return;
+                String trigger = data[0];
+                String message = privMsgEvent.getMessage().substring(trigger.length()).trim();
+                
+                if(trigger.equalsIgnoreCase(TWEETTRIGGER)) {
+                	if(privMsgEvent.getTarget().equalsIgnoreCase("#online.dotkom")) {
+                		if(!credentialsOK) {
+                			wand.sendMessageToTarget(e.getNetwork(), "#online.dotkom", "Credentials are incomplete. Did not even try to tweet.");
+                		}
+                		if(messageHasCorrectTwitterLength(message)) {
+                			if(tweet(message)) {
+                				wand.sendMessageToTarget(e.getNetwork(), "#online.dotkom", "Twitteret: " + message);
                             } else {
                                 wand.sendMessageToTarget(e.getNetwork(), "#online.dotkom", "Feilet ved sendelse av kvitter på det store internett!");
                             }
-                        }
-                    }
+                		}
+                	}
+                }
+                else if(trigger.equalsIgnoreCase(TWITTERTRIGGER)) {
+                	if(data.length == 2) {
+                		String screenName = data[1];
+                		List<Status> statuses = getStatuses(screenName);
+                		
+                		if(statuses.size() > 0) {
+                			Status latestStatus = statuses.get(0);
+                			wand.sendMessageToTarget(e.getNetwork(), privMsgEvent.getTarget(), "Tweeted by " + 
+                																				latestStatus.getUser().getScreenName() + ", " +
+                																				latestStatus.getCreatedAt().toGMTString() +
+                																				": " + latestStatus.getText());
+                		}
+                		else {
+                			wand.sendMessageToTarget(e.getNetwork(), privMsgEvent.getTarget(), "Screen name not found, or user has not tweeted anything.");
+                		}
+                		
+                	}
                 }
             }
         }
-
     }
-
-    private boolean messageContainsValidTwitterAndCorrectTwitterLength(String message) {
-        if (
-                (message.length() > (TRIGGER.length() + 1)) &&
-                        ((message.length() - TRIGGER.length()) < 140)
-                ) {
-            return true;
-        }
-        return false;
+    
+    private boolean messageHasCorrectTwitterLength(String message) {
+    	if(message.length() <= 140)
+    		return true;
+    	return false;
     }
 
     private boolean tweet(String tweetMessage) {
@@ -140,6 +167,15 @@ public class TwitterPlugin implements Plugin {
         }
         return false;
     }
+    
+    private List<Status> getStatuses(String screenName) {
+    	try {
+			return twitter.getUserTimeline(screenName);
+		} catch (TwitterException e1) {
+			e1.printStackTrace();
+		}
+    	return Collections.emptyList();
+    }
 
     public void addEventDistributor(EventDistributor eventDistributor) {
         eventDistributor.addListener(this, EventType.PRIVMSG);
@@ -148,5 +184,4 @@ public class TwitterPlugin implements Plugin {
     public void addWand(WandRepository wandRepository) {
         this.wand = wandRepository;
     }
-
 }
