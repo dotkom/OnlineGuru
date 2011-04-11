@@ -11,7 +11,6 @@ public class OnlineGuruDependencyModule extends AbstractModule implements Module
 
     @Override
     protected void configure() {
-        bind(XmlRpcServer.class).to(StatefulXmlRpcServer.class);
         try {
             bind(XmlRpcServer.class).toInstance(new StatefulXmlRpcServer());
         } catch (Exception e) {
