@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -87,7 +88,7 @@ public class GitAnnounceImpl implements GitAnnounce {
         String key = announce.getRepository();
         if (announceHashMap.containsKey(key)) {
             IRCAnnounce settingsSaved = announceHashMap.get(key);
-            settingsSaved.getAnnounceToChannels().putAll(announce.getAnnounceToChannels());
+            settingsSaved.setAnnounceToChannels(merge(settingsSaved.getAnnounceToChannels(), announce.getAnnounceToChannels()));
             announcementRepository.save(announceHashMap);
             return Boolean.TRUE;
         } else {
@@ -95,6 +96,32 @@ public class GitAnnounceImpl implements GitAnnounce {
             announcementRepository.save(announceHashMap);
             return Boolean.TRUE;
         }
+    }
+
+    private ConcurrentHashMap<String, List<String>> merge(ConcurrentHashMap<String, List<String>>... lists) {
+        ConcurrentHashMap<String, List<String>> result = new ConcurrentHashMap<String, List<String>>();
+        if (lists != null && lists.length > 0) {
+            for (ConcurrentHashMap<String, List<String>> item : lists) {
+                Iterator<Map.Entry<String, List<String>>> data = item.entrySet().iterator();
+                while (data.hasNext()) {
+                    Map.Entry<String, List<String>> entry = data.next();
+                    if (result.containsKey(entry.getKey())) {
+                        // merge the list's
+                        List<String> mergeList = result.get(entry.getKey());
+                        for (String entryValue : entry.getValue()) {
+                            // add entry value to already existing list if it doesn't contain entryValue
+                            if (!mergeList.contains(entryValue)) {
+                                mergeList.add(entryValue);
+                            }
+                        }
+                    } else {
+                        // no such key, just put the whole list then..
+                        result.put(entry.getKey(), entry.getValue());
+                    }
+                }
+            }
+        }
+        return result;
     }
 
 

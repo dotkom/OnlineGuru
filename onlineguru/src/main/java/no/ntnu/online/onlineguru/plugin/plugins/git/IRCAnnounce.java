@@ -47,6 +47,10 @@ public class IRCAnnounce implements Serializable {
         return announceToChannels;
     }
 
+    public void setAnnounceToChannels(ConcurrentHashMap<String, List<String>> announceToChannels) {
+        this.announceToChannels = announceToChannels;
+    }
+
     @Override
     public String toString() {
         return "IRCAnnounce{" +
