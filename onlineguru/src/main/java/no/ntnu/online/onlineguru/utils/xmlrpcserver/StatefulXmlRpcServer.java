@@ -44,6 +44,11 @@ public class StatefulXmlRpcServer implements XmlRpcServer {
 
     private void restartServer() throws IOException {
         webServer.shutdown();
+        try {
+            Thread.sleep(10000L); // gives the server some time to kill it self..
+        } catch (InterruptedException e) {
+            // ignore
+        }
         webServer.start();
     }
 }
