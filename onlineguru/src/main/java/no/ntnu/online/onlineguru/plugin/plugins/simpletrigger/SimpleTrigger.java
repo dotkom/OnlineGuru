@@ -8,13 +8,13 @@ import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
 import no.ntnu.online.onlineguru.plugin.plugins.chanserv.control.ChanServ;
-import no.ntnu.online.onlineguru.utils.WandRepository;
+import no.ntnu.online.onlineguru.utils.Wand;
 
 public class SimpleTrigger implements Plugin, PluginWithDependencies {
 	
 	private Hashtable<String, String> triggers = new Hashtable<String, String>();
 	private SimpleTriggerSettings simpleTriggerSettings;
-	private WandRepository wandRepository;
+	private Wand wand;
 	private String[] dependencies = new String[] { "ChanServ" };
 	private ChanServ chanserv;
 	
@@ -83,13 +83,13 @@ public class SimpleTrigger implements Plugin, PluginWithDependencies {
 				if(triggerSplit.length >= 2) {
 					String trigger = triggerSplit[0];
 					String value = triggerLine.substring(trigger.length()).trim();
-					wandRepository.sendMessageToTarget(e.getNetwork(), sender, addNewTrigger(trigger, value));
+					wand.sendMessageToTarget(e.getNetwork(), sender, addNewTrigger(trigger, value));
 				}
 				else {
-					wandRepository.sendMessageToTarget(e.getNetwork(), sender, "Incorrect syntax. Correct syntax: add trigger <trigger> <value>");
+					wand.sendMessageToTarget(e.getNetwork(), sender, "Incorrect syntax. Correct syntax: add trigger <trigger> <value>");
 				}
 			} else {
-				wandRepository.sendMessageToTarget(e.getNetwork(), sender, "You do not have permission to do that.");
+				wand.sendMessageToTarget(e.getNetwork(), sender, "You do not have permission to do that.");
 			}
 		}
 		else if(message.startsWith(DELETE_KEYWORD) && message.length() > DELETE_KEYWORD.length() + 1) {
@@ -99,21 +99,21 @@ public class SimpleTrigger implements Plugin, PluginWithDependencies {
 				
 				if(triggerSplit.length == 1) {
 					String trigger = triggerSplit[0];
-					wandRepository.sendMessageToTarget(e.getNetwork(), sender, deleteTrigger(trigger));
+					wand.sendMessageToTarget(e.getNetwork(), sender, deleteTrigger(trigger));
 				}
 				else {
-					wandRepository.sendMessageToTarget(e.getNetwork(), sender, "Incorrect syntax. Correct syntax: delete trigger <trigger>");
+					wand.sendMessageToTarget(e.getNetwork(), sender, "Incorrect syntax. Correct syntax: delete trigger <trigger>");
 				}
 			}
 			else {
-				wandRepository.sendMessageToTarget(e.getNetwork(), sender, "You do not have permissions to do that.");
+				wand.sendMessageToTarget(e.getNetwork(), sender, "You do not have permissions to do that.");
 			}
 		}
 		else {
 			String[] messageSplit = message.split("\\s+");
 			if(messageSplit.length == 1) {
 				if(triggers.containsKey(messageSplit[0])) {
-					wandRepository.sendMessageToTarget(e.getNetwork(), target, triggers.get(messageSplit[0]));
+					wand.sendMessageToTarget(e.getNetwork(), target, triggers.get(messageSplit[0]));
 				}
 			}
 		}
@@ -123,8 +123,8 @@ public class SimpleTrigger implements Plugin, PluginWithDependencies {
 		eventDistributor.addListener(this, EventType.PRIVMSG);
 	}
 
-	public void addWand(WandRepository wandRepository) {
-		this.wandRepository = wandRepository;
+	public void addWand(Wand wand) {
+		this.wand = wand;
 		
 	}
 

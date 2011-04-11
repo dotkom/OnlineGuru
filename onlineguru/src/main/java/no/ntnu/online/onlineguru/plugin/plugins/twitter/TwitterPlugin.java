@@ -7,15 +7,9 @@ import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.utils.SimpleIO;
 import no.ntnu.online.onlineguru.utils.Wand;
-import no.ntnu.online.onlineguru.utils.WandRepository;
 import org.apache.log4j.Logger;
-import sun.java2d.pipe.SpanShapeRenderer;
 import twitter4j.*;
-import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
-import twitter4j.http.AccessToken;
-import twitter4j.http.Authorization;
-import twitter4j.internal.http.HttpRequest;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -36,7 +30,7 @@ public class TwitterPlugin implements Plugin {
     private final String TWITTERTRIGGER = "!twitter";
     private final String settings_folder = "settings/";
     private final String settings_file = settings_folder + "twitter.conf";
-    private WandRepository wand;
+    private Wand wand;
     private Twitter twitter;
     private String token;
     private String secretToken;
@@ -181,7 +175,7 @@ public class TwitterPlugin implements Plugin {
         eventDistributor.addListener(this, EventType.PRIVMSG);
     }
 
-    public void addWand(WandRepository wandRepository) {
-        this.wand = wandRepository;
+    public void addWand(Wand wand) {
+        this.wand = wand;
     }
 }

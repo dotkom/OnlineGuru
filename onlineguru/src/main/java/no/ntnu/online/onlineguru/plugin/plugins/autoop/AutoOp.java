@@ -16,7 +16,7 @@ import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
 import no.ntnu.online.onlineguru.plugin.plugins.chanserv.control.ChanServ;
 import no.ntnu.online.onlineguru.utils.SimpleIO;
-import no.ntnu.online.onlineguru.utils.WandRepository;
+import no.ntnu.online.onlineguru.utils.Wand;
 
 /**
  *
@@ -28,7 +28,7 @@ public class AutoOp implements Plugin, PluginWithDependencies {
     private final String DB_FILE = DB_FOLDER + "autoop.db";
     private final String DESCRIPTION_STRING = "Auto op people on channels";
     private final String TRIGGER = "!autoop";
-    private WandRepository wandRepository = null;
+    private Wand wand = null;
     private ChanServ chanServ = null;
     private final String[] dependencies = new String[]{"ChanServ"};
     // Channel { Nick : ident@hostname }
@@ -68,8 +68,8 @@ public class AutoOp implements Plugin, PluginWithDependencies {
         eventDistributor.addListener(this, EventType.PRIVMSG);
     }
 
-    public void addWand(WandRepository wandRepository) {
-        this.wandRepository = wandRepository;
+    public void addWand(Wand wand) {
+        this.wand = wand;
     }
 
     public String[] getDependencies() {
@@ -89,14 +89,14 @@ public class AutoOp implements Plugin, PluginWithDependencies {
 	            if (message.length > 2) {
 	                if ("add".equalsIgnoreCase(message[1]) && message.length == 6) {
 	                    addToAutoOpList(message[2], message[3], message[4], message[5]);
-	                    wandRepository.sendMessageToTarget(pme.getNetwork(), pme.getSender(), String.format("Added autoop on %s for: %s!%s@%s", message[2], message[3], message[4], message[5]));
+	                    wand.sendMessageToTarget(pme.getNetwork(), pme.getSender(), String.format("Added autoop on %s for: %s!%s@%s", message[2], message[3], message[4], message[5]));
 	                } else if ("del".equalsIgnoreCase(message[1]) && message.length == 4) {
 	                    removeFromAutoOpList(message[2], message[3]);
-	                    wandRepository.sendMessageToTarget(pme.getNetwork(), pme.getSender(), String.format("Removed %s autoop from %s", message[3], message[2]));
+	                    wand.sendMessageToTarget(pme.getNetwork(), pme.getSender(), String.format("Removed %s autoop from %s", message[3], message[2]));
 	                } else if ("list".equalsIgnoreCase(message[1]) && message.length == 3) {
 	                    List<String> list = listAutoOpList(message[2]);
 	                    for (String user : list) {
-	                        wandRepository.sendMessageToTarget(pme.getNetwork(), pme.getSender(), user);
+	                        wand.sendMessageToTarget(pme.getNetwork(), pme.getSender(), user);
 	                    }
 	                }
 	            }
@@ -144,13 +144,13 @@ public class AutoOp implements Plugin, PluginWithDependencies {
 
     private void handleJoin(JoinEvent je) {
         if (autoOpList.containsKey(je.getChannel())) {
-            if (wandRepository.amIOp(je.getNetwork(), je.getChannel())) {
+            if (wand.amIOp(je.getNetwork(), je.getChannel())) {
                 HashMap<String, String> verifyNick = autoOpList.get(je.getChannel());
                 if (verifyNick.containsKey(je.getNick().toLowerCase())) {
                     String[] identHostname = verifyNick.get(je.getNick().toLowerCase()).split("@");
                     Arrays.toString(identHostname);
                     if (identHostname[0].equalsIgnoreCase(je.getIdent()) && identHostname[1].equalsIgnoreCase(je.getHostname())) {
-                        wandRepository.op(je.getNetwork(), je.getNick(), je.getChannel());
+                        wand.op(je.getNetwork(), je.getNick(), je.getChannel());
                     }
                 }
             }

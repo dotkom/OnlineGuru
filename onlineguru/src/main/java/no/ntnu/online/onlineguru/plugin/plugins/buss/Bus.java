@@ -7,7 +7,7 @@ import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
 import no.ntnu.online.onlineguru.plugin.plugins.help.Help;
-import no.ntnu.online.onlineguru.utils.WandRepository;
+import no.ntnu.online.onlineguru.utils.Wand;
 
 /**
  * User: Dag Olav Prestegarden <dagolav@prestegarden.com>
@@ -18,7 +18,7 @@ public class Bus implements PluginWithDependencies {
     private static final String DESCRIPTION_STRING = "Returns buss results from ATB's Bus Oracle service. Usage: !buss <question>";
     private static final String PLUGIN_KEYWORD = "!buss";
 
-    private WandRepository wandRepository;
+    private Wand wand;
     private Help help;
     private BusAsker busAsker;
 
@@ -53,7 +53,7 @@ public class Bus implements PluginWithDependencies {
     private void handleMessage(Event e, String target, String message) {
         if (message.startsWith(PLUGIN_KEYWORD) && messageContainsQuestion(message)) {
             message = message.substring(PLUGIN_KEYWORD.length() + 1);
-            wandRepository.sendMessageToTarget(e.getNetwork(), target, busAsker.ask(message));
+            wand.sendMessageToTarget(e.getNetwork(), target, busAsker.ask(message));
         }
     }
 
@@ -65,8 +65,8 @@ public class Bus implements PluginWithDependencies {
         eventDistributor.addListener(this, EventType.PRIVMSG);
     }
 
-    public void addWand(WandRepository wandRepository) {
-        this.wandRepository = wandRepository;
+    public void addWand(Wand wand) {
+        this.wand = wand;
     }
 
     public String[] getDependencies() {

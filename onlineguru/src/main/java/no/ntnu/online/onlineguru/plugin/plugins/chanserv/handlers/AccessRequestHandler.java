@@ -9,16 +9,16 @@ import no.ntnu.online.onlineguru.plugin.plugins.chanserv.model.AuthorizedUser;
 import no.ntnu.online.onlineguru.plugin.plugins.chanserv.statics.ErrorMessages;
 import no.ntnu.online.onlineguru.plugin.plugins.chanserv.statics.SuccessMessages;
 import no.ntnu.online.onlineguru.plugin.plugins.chanserv.util.ChanServUtil;
-import no.ntnu.online.onlineguru.utils.WandRepository;
+import no.ntnu.online.onlineguru.utils.Wand;
 
 public class AccessRequestHandler {
 
-	private WandRepository wandRepository;
+	private Wand wand;
 	private ChanServUtil util;
 	private ChanServDB db;
 	
-	public AccessRequestHandler(WandRepository wandRepository, ChanServUtil util, ChanServDB db) {
-		this.wandRepository = wandRepository;
+	public AccessRequestHandler(Wand wand, ChanServUtil util, ChanServDB db) {
+		this.wand = wand;
 		this.util = util;
 		this.db = db;
 	}
@@ -171,7 +171,7 @@ public class AccessRequestHandler {
 	
 	private void handleAccessList(PrivMsgEvent pme) {
 		for(String[] user : db.getUserList()) {
-			wandRepository.sendMessageToTarget(pme.getNetwork(), pme.getSender(), user[0] + " - Superuser: " + user[1]);
+			wand.sendMessageToTarget(pme.getNetwork(), pme.getSender(), user[0] + " - Superuser: " + user[1]);
 		}
 	}
 	
@@ -217,14 +217,14 @@ public class AccessRequestHandler {
 		ArrayList<String[]> accessList = db.getAccessList(channel);
 		
 		if(accessList.size() == 0) {
-			wandRepository.sendMessageToTarget(network, sender, "No authorized users for that channel");
+			wand.sendMessageToTarget(network, sender, "No authorized users for that channel");
 			return;
 		}
 		
 		for(String[] array : accessList) {
 			String username = array[0];
 			String flags = array[1];
-			wandRepository.sendMessageToTarget(network, sender, username + ": " + flags);
+			wand.sendMessageToTarget(network, sender, username + ": " + flags);
 		}
 	}
 	

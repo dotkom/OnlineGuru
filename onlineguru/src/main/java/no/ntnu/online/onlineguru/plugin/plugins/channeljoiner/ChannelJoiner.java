@@ -7,12 +7,12 @@ import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
 import no.ntnu.online.onlineguru.plugin.plugins.chanserv.control.ChanServ;
-import no.ntnu.online.onlineguru.utils.WandRepository;
+import no.ntnu.online.onlineguru.utils.Wand;
 
 public class ChannelJoiner implements Plugin, PluginWithDependencies{
 
 	private EventDistributor eventDistributor;
-	private WandRepository wandRepository;
+	private Wand wand;
 	private ChanServ chanServ;
 	private String[] dependencies = new String[] { "ChanServ" };
 	
@@ -30,17 +30,17 @@ public class ChannelJoiner implements Plugin, PluginWithDependencies{
 				if(parts.length == 2 && parts[0].equalsIgnoreCase("join")) {
 					if(this.chanServ.isNickLoggedIn(privmsg.getSender())) {
 						String channel = parts[1];
-						wandRepository.join(e.getNetwork(), channel);
+						wand.join(e.getNetwork(), channel);
 					} else {
-						wandRepository.sendMessageToTarget(e.getNetwork(), privmsg.getSender(), "You are not logged in.");
+						wand.sendMessageToTarget(e.getNetwork(), privmsg.getSender(), "You are not logged in.");
 					}
 				}
 				if(parts.length == 2 && parts[0].equalsIgnoreCase("part")) {
 					if(this.chanServ.isNickLoggedIn(privmsg.getSender())) {
 						String channel = parts[1];
-						wandRepository.part(e.getNetwork(), channel);
+						wand.part(e.getNetwork(), channel);
 					} else {
-						wandRepository.sendMessageToTarget(e.getNetwork(), privmsg.getSender(), "You are not logged in.");
+						wand.sendMessageToTarget(e.getNetwork(), privmsg.getSender(), "You are not logged in.");
 					}
 				}
 			}
@@ -53,8 +53,8 @@ public class ChannelJoiner implements Plugin, PluginWithDependencies{
 		this.eventDistributor.addListener(this, EventType.NUMERIC);
 	}
 
-	public void addWand(WandRepository wandRepository) {
-		this.wandRepository = wandRepository;
+	public void addWand(Wand wand) {
+		this.wand = wand;
 	}
 	
 	public String[] getDependencies() {

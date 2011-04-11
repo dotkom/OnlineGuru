@@ -7,11 +7,11 @@ import no.fictive.irclib.event.container.command.PrivMsgEvent;
 import no.fictive.irclib.event.model.EventType;
 import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
-import no.ntnu.online.onlineguru.utils.WandRepository;
+import no.ntnu.online.onlineguru.utils.Wand;
 
 public class URLHandler implements Plugin {
 	
-	private WandRepository wandRepository;
+	private Wand wand;
 	
 	public URLHandler() {
 		
@@ -21,8 +21,8 @@ public class URLHandler implements Plugin {
 		eventDistributor.addListener(this, EventType.PRIVMSG);
 	}
 
-	public void addWand(WandRepository wandRepository) {
-		this.wandRepository = wandRepository;
+	public void addWand(Wand wand) {
+		this.wand = wand;
 	}
 
 	public String[] getDependencies() {
@@ -51,7 +51,7 @@ public class URLHandler implements Plugin {
 					if(message.startsWith("http://open.spotify.com/")) {
 						return;
 					}
-					new Entry(wandRepository, cme.getNetwork(), message, channel);
+					new Entry(wand, cme.getNetwork(), message, channel);
 				}
 			}
 		}

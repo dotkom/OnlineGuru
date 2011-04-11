@@ -8,12 +8,12 @@
 //import no.fictive.irclib.event.model.EventType;
 //import no.ntnu.online.onlineguru.Settings;
 //import no.ntnu.online.onlineguru.plugin.model.Plugin;
-//import no.ntnu.online.onlineguru.utils.Wand;
+//import no.ntnu.online.onlineguru.utils.IrcWand;
 //
 //public class MrStrict implements Plugin {
 //	
 //	private EventListener eventListener;
-//	private Wand wand;
+//	private IrcWand wand;
 //	private Userlist userlist;
 //	private ConcurrentHashMap<String, Channel> channels;
 //	
@@ -138,7 +138,7 @@
 //		eventListener.addListener(this, EventType.PRIVATE_MESSAGE);
 //	}
 //
-//	public void addWand(Wand wand) {
+//	public void addWand(IrcWand wand) {
 //		this.wand = wand;
 //	}
 //	

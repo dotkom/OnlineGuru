@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import no.ntnu.online.onlineguru.utils.WandRepository;
+import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
 
 import no.fictive.irclib.event.container.Event;
@@ -26,7 +26,7 @@ import no.ntnu.online.onlineguru.utils.settingsreader.SettingsReader;
 
 public class NickServ implements Plugin {
 	
-	private WandRepository wandRepository;
+	private Wand wand;
 	static Logger logger = Logger.getLogger(NickServ.class);
 	
 	private final String settings_folder = "settings/";
@@ -91,8 +91,8 @@ public class NickServ implements Plugin {
 		if (e instanceof ConnectEvent) {
 			NickServEntry nse = networks.get(e.getNetwork().getServerAlias());
 			if (nse != null) {
-				if (nse.getUsername().equals(wandRepository.getMyNick(e.getNetwork()))) {
-					wandRepository.sendMessageToTarget(e.getNetwork(), "NickServ", "identify "+nse.getPassword());
+				if (nse.getUsername().equals(wand.getMyNick(e.getNetwork()))) {
+					wand.sendMessageToTarget(e.getNetwork(), "NickServ", "identify "+nse.getPassword());
 				}
 			}
 		}
@@ -102,8 +102,8 @@ public class NickServ implements Plugin {
 		eventDistributor.addListener(this, EventType.CONNECT);
 	}
 
-	public void addWand(WandRepository wandRepository) {
-		this.wandRepository = wandRepository;
+	public void addWand(Wand wand) {
+		this.wand = wand;
 	}
 	
 }

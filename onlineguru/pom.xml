@@ -160,6 +160,12 @@
             <version>2.1.12-SNAPSHOT</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.google.code.guice</groupId>
+            <artifactId>guice</artifactId>
+            <version>1.0</version>
+        </dependency>
+
 
     </dependencies>
     <repositories>

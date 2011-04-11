@@ -2,16 +2,10 @@ package no.ntnu.online.onlineguru.plugin.plugins.rssannounce;
 
 import no.fictive.irclib.event.container.Event;
 import no.fictive.irclib.event.container.command.PrivMsgEvent;
-import no.fictive.irclib.event.model.EventType;
 import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
-import no.ntnu.online.onlineguru.plugin.plugins.chanserv.control.ChanServ;
-import no.ntnu.online.onlineguru.plugin.plugins.mailannouncer.EmailImpl;
-import no.ntnu.online.onlineguru.utils.WandRepository;
+import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
-import org.apache.xmlrpc.webserver.WebServer;
-
-import java.util.List;
 
 /**
  * Roy Sindre Norangshol
@@ -29,7 +23,7 @@ public class RssPlugin implements Plugin {
     protected static final String DB_FOLDER = "database/";
     private RssChecker rssChecker;
 
-    private WandRepository wandRepository;
+    private Wand wand;
 
     public String getDescription() {
         return DESCRIPTION;
@@ -56,9 +50,9 @@ public class RssPlugin implements Plugin {
         //eventDistributor.addListener(this, EventType.PRIVMSG);
     }
 
-    public void addWand(WandRepository wandRepository) {
-        this.wandRepository = wandRepository;
-        rssChecker = new RssChecker(wandRepository);
+    public void addWand(Wand wand) {
+        this.wand = wand;
+        rssChecker = new RssChecker(wand);
     }
 
 

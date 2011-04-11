@@ -5,13 +5,13 @@ import no.fictive.irclib.event.container.command.PrivMsgEvent;
 import no.fictive.irclib.event.model.EventType;
 import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
-import no.ntnu.online.onlineguru.utils.WandRepository;
+import no.ntnu.online.onlineguru.utils.Wand;
 
 public class Dict implements Plugin {
 
     private static final String DESCRIPTION_STRING = "Returns dictionary lookup results from the Clue dictionary. Usage: !dict <word>, !dict <dict> <word>";
     private static final String PLUGIN_KEYWORD = "!dict";
-    private WandRepository wandRepository;
+    private Wand wand;
     private DictService service;
 
     public Dict() {
@@ -41,7 +41,7 @@ public class Dict implements Plugin {
 	                    }
 	
 	                    for (String msg : result.split("\n")) {
-	                        wandRepository.sendMessageToTarget(e.getNetwork(), pme.getTarget(), msg);
+	                        wand.sendMessageToTarget(e.getNetwork(), pme.getTarget(), msg);
 	                    }
 	                }
             	}
@@ -58,7 +58,7 @@ public class Dict implements Plugin {
         eventDistributor.addListener(this, EventType.PRIVMSG);
     }
 
-    public void addWand(WandRepository wandRepository) {
-        this.wandRepository = wandRepository;
+    public void addWand(Wand wand) {
+        this.wand = wand;
     }
 }

@@ -9,11 +9,11 @@ import no.fictive.irclib.event.model.EventType;
 import no.fictive.irclib.event.container.command.PrivMsgEvent;
 import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
-import no.ntnu.online.onlineguru.utils.WandRepository;
+import no.ntnu.online.onlineguru.utils.Wand;
 
 public class Spotify implements Plugin {
 	
-	private WandRepository wandRepository;
+	private Wand wand;
 	private Pattern linkPattern = Pattern.compile("((http:\\/\\/)?open.spotify.com/([^\\/]+)/([^\\s]+))|(spotify:(album|artist|track):[^\\s]+)");
 	private Matcher linkMatcher;
 	private Types linkCase;
@@ -40,7 +40,7 @@ public class Spotify implements Plugin {
 				}
 				
 				if (!spotifyURI.isEmpty()) {
-					new FetchURI("http://ws.spotify.com/lookup/1/?uri="+spotifyURI, wandRepository, pme.getNetwork(), pme.getTarget(), linkCase);
+					new FetchURI("http://ws.spotify.com/lookup/1/?uri="+spotifyURI, wand, pme.getNetwork(), pme.getTarget(), linkCase);
 				}
 			}
 		}
@@ -50,8 +50,8 @@ public class Spotify implements Plugin {
 		eventDistributor.addListener(this, EventType.PRIVMSG);	
 	}
 
-	public void addWand(WandRepository wandRepository) {
-		this.wandRepository = wandRepository;
+	public void addWand(Wand wand) {
+		this.wand = wand;
 	}
 			
 }

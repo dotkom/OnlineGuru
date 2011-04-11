@@ -10,10 +10,8 @@ import org.apache.xmlrpc.server.RequestProcessorFactoryFactory;
  *
  * @author Roy Sindre Norangshol <roy.sindre@norangshol.no>
  */
-public class EmailRequestProcessorFactoryFactory implements
-        RequestProcessorFactoryFactory {
-    private final RequestProcessorFactory factory =
-            new EmailRequestProcessorFactory();
+public class EmailRequestProcessorFactoryFactory implements RequestProcessorFactoryFactory {
+    private final RequestProcessorFactory factory = new EmailRequestProcessorFactory();
     private final Email email;
 
     public EmailRequestProcessorFactoryFactory(Email email) {

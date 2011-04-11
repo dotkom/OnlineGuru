@@ -1,19 +1,20 @@
 package no.ntnu.online.onlineguru;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import no.fictive.irclib.event.container.Event;
 import no.fictive.irclib.event.container.command.JoinEvent;
 import no.fictive.irclib.model.listener.IRCEventListener;
 import no.fictive.irclib.model.network.Network;
 import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.control.PluginManager;
+import no.ntnu.online.onlineguru.utils.OnlineGuruDependencyModule;
 import org.apache.log4j.Logger;
 
 
@@ -24,6 +25,7 @@ public class OnlineGuru implements IRCEventListener {
     //	private ConnectionManager connectionManager;
     private EventDistributor eventDistributor;
     private Thread thread = null;
+    public static Injector serviceLocator;
 
     public OnlineGuru() {
         final OnlineGuru me = this;
@@ -35,6 +37,8 @@ public class OnlineGuru implements IRCEventListener {
             // version 1.2.2 or older
             logger.warn("[Main thread] Could not add Shutdown hook");
         }
+
+        configureServiceLocator();
 
         thread = new Thread("OnlineGuru") {
             public void run() {
@@ -53,6 +57,10 @@ public class OnlineGuru implements IRCEventListener {
             }
         };
         thread.start();
+    }
+
+    private void configureServiceLocator() {
+        serviceLocator = Guice.createInjector(new OnlineGuruDependencyModule());
     }
 
     public void stopThread() {

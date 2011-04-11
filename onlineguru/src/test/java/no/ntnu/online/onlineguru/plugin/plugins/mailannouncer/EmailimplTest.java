@@ -2,7 +2,7 @@ package no.ntnu.online.onlineguru.plugin.plugins.mailannouncer;
 
 import no.fictive.irclib.model.channel.Channel;
 import no.fictive.irclib.model.network.Network;
-import no.ntnu.online.onlineguru.utils.WandRepository;
+import no.ntnu.online.onlineguru.utils.Wand;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -33,7 +33,7 @@ public class EmailimplTest {
         networks.put("freenode", network);
         channels.put("#lol", channel);
 
-        WandRepository fakeWand = new FakeWand(networks, channels);
+        Wand fakeWand = new FakeWand(networks, channels);
         testSubject = new EmailImpl(fakeWand, repo);
         // Some stupid test data stuff.... you can probably do this better than me :)
         ArrayList<String> channelstoSendTo = new ArrayList<String>();

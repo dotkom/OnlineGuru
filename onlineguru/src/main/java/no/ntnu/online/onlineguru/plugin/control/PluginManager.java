@@ -20,19 +20,19 @@ import no.ntnu.online.onlineguru.plugin.plugins.twitter.TwitterPlugin;
 import no.ntnu.online.onlineguru.plugin.plugins.urlhandler.URLHandler;
 import no.ntnu.online.onlineguru.plugin.plugins.version.Version;
 import no.ntnu.online.onlineguru.utils.Functions;
+import no.ntnu.online.onlineguru.utils.IrcWand;
 import no.ntnu.online.onlineguru.utils.Wand;
-import no.ntnu.online.onlineguru.utils.WandRepository;
 
 public class PluginManager {
 	
 	private HashMap<String, Plugin> loadedPlugins;
 	private EventDistributor eventDistributor;
-	private WandRepository wandRepository;
+	private Wand wand;
 	
 	public PluginManager(EventDistributor eventDistributor, OnlineGuru onlineguru) {
 		loadedPlugins = new HashMap<String, Plugin>();
 		this.eventDistributor = eventDistributor;
-		wandRepository = new Wand(onlineguru, this);
+		wand = new IrcWand(onlineguru, this);
 		loadPlugins();
 		loadDependencies();
 	}
@@ -57,7 +57,7 @@ public class PluginManager {
 	
 	private void initiatePlugin(Plugin plugin) {
 		plugin.addEventDistributor(eventDistributor);
-		plugin.addWand(wandRepository);
+		plugin.addWand(wand);
 		loadedPlugins.put(Functions.getClassName(plugin).toUpperCase(), plugin);
 	}
 

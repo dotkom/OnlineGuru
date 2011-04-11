@@ -7,16 +7,16 @@ import no.ntnu.online.onlineguru.plugin.plugins.chanserv.model.AuthorizedUser;
 import no.ntnu.online.onlineguru.plugin.plugins.chanserv.statics.ErrorMessages;
 import no.ntnu.online.onlineguru.plugin.plugins.chanserv.statics.SuccessMessages;
 import no.ntnu.online.onlineguru.plugin.plugins.chanserv.util.ChanServUtil;
-import no.ntnu.online.onlineguru.utils.WandRepository;
+import no.ntnu.online.onlineguru.utils.Wand;
 
 public class CommandHandler {
 
-	private WandRepository wandRepository;
+	private Wand wand;
 	private ChanServUtil util;
 	private ChanServDB db;
 	
-	public CommandHandler(WandRepository wandRepository, ChanServUtil util, ChanServDB db) {
-		this.wandRepository = wandRepository;
+	public CommandHandler(Wand wand, ChanServUtil util, ChanServDB db) {
+		this.wand = wand;
 		this.util = util;
 		this.db = db;
 	}
@@ -125,11 +125,11 @@ public class CommandHandler {
 			String password = parameters[2];
 			
 			if(db.login(username, password)) {
-				if(wandRepository.isUserVisible(network, sender)) {
+				if(wand.isUserVisible(network, sender)) {
 					if(!util.isLoggedInByBotUsername(username)) {
 						if(util.isLoggedInByIRCNickname(sender)) {
 							AuthorizedUser user = util.getAuthorizedUserByIRCNickname(sender);
-							wandRepository.sendMessageToTarget(network, sender, "You have been logged out of the user '" + user.getUsername() + "'.");
+							wand.sendMessageToTarget(network, sender, "You have been logged out of the user '" + user.getUsername() + "'.");
 							util.removeAuthorizedUserByIRCNickname(sender);
 						}
 						util.addAuthorizedUser(sender, username);
@@ -174,7 +174,7 @@ public class CommandHandler {
 			if(util.isLoggedInByIRCNickname(sender)) {
 				AuthorizedUser user = util.getAuthorizedUserByIRCNickname(sender);
 				if(util.requireConditions(true, true, 'O', channel, user, sender, network)) {
-					wandRepository.op(network, nickname, channel);
+					wand.op(network, nickname, channel);
 					util.sendSuccessMessage(network, sender, SuccessMessages.OP_SUCCESS);
 				}
 			}
@@ -195,8 +195,8 @@ public class CommandHandler {
 			if(util.isLoggedInByIRCNickname(sender)) {
 				AuthorizedUser user = util.getAuthorizedUserByIRCNickname(sender);
 				if(util.requireConditions(true, true, 'o', channel, user, sender, network)) {
-					if(!wandRepository.isMe(network, nickname)) {
-						wandRepository.deop(network, nickname, channel);
+					if(!wand.isMe(network, nickname)) {
+						wand.deop(network, nickname, channel);
 						util.sendSuccessMessage(network, sender, SuccessMessages.DEOP_SUCCESS);
 					}
 					else {
@@ -221,7 +221,7 @@ public class CommandHandler {
 			if(util.isLoggedInByIRCNickname(sender)) {
 				AuthorizedUser user = util.getAuthorizedUserByIRCNickname(sender);
 				if(util.requireConditions(true, true, 'V', channel, user, sender, network)) {
-					wandRepository.voice(network, nickname, channel);
+					wand.voice(network, nickname, channel);
 					util.sendSuccessMessage(network, sender, SuccessMessages.VOICE_SUCCESS);
 				}
 			}
@@ -242,7 +242,7 @@ public class CommandHandler {
 			if(util.isLoggedInByIRCNickname(sender)) {
 				AuthorizedUser user = util.getAuthorizedUserByIRCNickname(sender);
 				if(util.requireConditions(true, true, 'v', channel, user, sender, network)) {
-					wandRepository.devoice(network, nickname, channel);
+					wand.devoice(network, nickname, channel);
 					util.sendSuccessMessage(network, sender, SuccessMessages.DEVOICE_SUCCESS);
 				}
 			}
@@ -267,12 +267,12 @@ public class CommandHandler {
 			if(util.isLoggedInByIRCNickname(sender)) {
 				AuthorizedUser user = util.getAuthorizedUserByIRCNickname(sender);
 				if(util.requireConditions(true, true, 'K', channel, user, sender, network)) {
-					if(!wandRepository.isMe(network, nickname)) {
+					if(!wand.isMe(network, nickname)) {
 						if(reason.isEmpty()) {
-							wandRepository.kick(network, nickname, channel);
+							wand.kick(network, nickname, channel);
 						}
 						else {
-							wandRepository.kick(network, nickname, channel, reason);
+							wand.kick(network, nickname, channel, reason);
 						}
 						util.sendSuccessMessage(network, sender, SuccessMessages.KICK_SUCCESS);
 					}
@@ -299,8 +299,8 @@ public class CommandHandler {
 			if(util.isLoggedInByIRCNickname(sender)) {
 				AuthorizedUser user = util.getAuthorizedUserByIRCNickname(sender);
 				if(util.requireConditions(true, true, 'B', channel, user, sender, network)) {
-					if(wandRepository.isMe(network, mask)) {
-						wandRepository.ban(network, mask, channel);
+					if(wand.isMe(network, mask)) {
+						wand.ban(network, mask, channel);
 						util.sendSuccessMessage(network, sender, SuccessMessages.BAN_SUCCESS);
 					}
 					else {
@@ -326,7 +326,7 @@ public class CommandHandler {
 			if(util.isLoggedInByIRCNickname(sender)) {
 				AuthorizedUser user = util.getAuthorizedUserByIRCNickname(sender);
 				if(util.requireConditions(true, true, 'b', channel, user, sender, network)) {
-					wandRepository.unban(network, mask, channel);
+					wand.unban(network, mask, channel);
 					util.sendSuccessMessage(network, sender, SuccessMessages.UNBAN_SUCCESS);
 				}
 			}
@@ -353,12 +353,12 @@ public class CommandHandler {
 				if(util.requireConditions(true, true, 'K', channel, user, sender, network)
 						&& util.requireConditions(true, true, 'B', channel, user, sender, network)) {
 					
-					if(!wandRepository.isMe(network, nickname)) {
+					if(!wand.isMe(network, nickname)) {
 						if(reason.isEmpty()) {
-							wandRepository.kickban(network, nickname, channel);
+							wand.kickban(network, nickname, channel);
 						}
 						else {
-							wandRepository.kickban(network, nickname, channel, reason);
+							wand.kickban(network, nickname, channel, reason);
 						}
 						util.sendSuccessMessage(network, sender, SuccessMessages.KICKBAN_SUCCESS);
 					}
@@ -387,7 +387,7 @@ public class CommandHandler {
 			if(util.isLoggedInByIRCNickname(sender)) {
 				AuthorizedUser user = util.getAuthorizedUserByIRCNickname(sender);
 				if(util.requireConditions(true, true, 'T', channel, user, sender, network)) {
-					wandRepository.setTopic(network, channel, topic);
+					wand.setTopic(network, channel, topic);
 					util.sendSuccessMessage(network, sender, SuccessMessages.TOPIC_SUCCESS);
 				}
 			}
@@ -408,7 +408,7 @@ public class CommandHandler {
 			if(util.isLoggedInByIRCNickname(sender)) {
 				AuthorizedUser user = util.getAuthorizedUserByIRCNickname(sender);
 				if(util.requireConditions(true, true, 'm', channel, user, sender, network)) {
-					wandRepository.mute(network, channel);
+					wand.mute(network, channel);
 					util.sendSuccessMessage(network, sender, SuccessMessages.MUTE_SUCCESS);
 				}
 			}
@@ -429,7 +429,7 @@ public class CommandHandler {
 			if(util.isLoggedInByIRCNickname(sender)) {
 				AuthorizedUser user = util.getAuthorizedUserByIRCNickname(sender);
 				if(util.requireConditions(true, true, 'm', channel, user, sender, network)) {
-					wandRepository.unmute(network, channel);
+					wand.unmute(network, channel);
 					util.sendSuccessMessage(network, sender, SuccessMessages.UNMUTE_SUCCESS);
 				}
 			}
