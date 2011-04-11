@@ -55,4 +55,21 @@ public class IRCAnnounce implements Serializable {
                 ", repository='" + repository + '\'' +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        IRCAnnounce that = (IRCAnnounce) o;
+
+        if (!repository.equals(that.repository)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return repository.hashCode();
+    }
 }

@@ -86,8 +86,10 @@ public class GitAnnounceImpl implements GitAnnounce {
     public Boolean addAnnounce(IRCAnnounce announce) {
         String key = announce.getRepository();
         if (announceHashMap.containsKey(key)) {
-            logger.debug("Entry already exists, skipping");
-            return Boolean.FALSE;
+            IRCAnnounce settingsSaved = announceHashMap.get(key);
+            settingsSaved.getAnnounceToChannels().putAll(announce.getAnnounceToChannels());
+            announcementRepository.save(announceHashMap);
+            return Boolean.TRUE;
         } else {
             announceHashMap.put(key, announce);
             announcementRepository.save(announceHashMap);
