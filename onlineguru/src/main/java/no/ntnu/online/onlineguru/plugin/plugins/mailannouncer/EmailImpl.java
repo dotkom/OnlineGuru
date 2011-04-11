@@ -59,7 +59,7 @@ public class EmailImpl implements Email {
 
             // Since we fetch the announce object that is stored in our data storage, we do not have fromEmail, subject.
             toAnnounce.setFromEmail(fromEmail); // not stored when saving settings..
-            toAnnounce.setSubject(subject); // not stored when saving settings..
+            toAnnounce.setSubject(subject.trim()); // not stored when saving settings..
             return announceToIRC(toAnnounce);
         } else {
             EmailImpl.logger.warn("Unknown announce, skipping this email");
