@@ -48,7 +48,6 @@ public class EmailImpl implements Email {
      */
     public Boolean announceEmail(String toEmail, String fromEmail, String subject, String listId) {
         logger.debug(String.format("Received email to %s, from %s with subject %s on listId: %s", toEmail, fromEmail, subject, listId));
-        logger.debug(announceHashMap.size());
         if (announceHashMap.containsKey(getLookup(toEmail, listId))) {
             // Looked up Announce from either toEmail or by listId  (see LookupAnnounce to see #getLookup(toEmail, listId)
             Announce announce = announceHashMap.get(getLookup(toEmail, listId));
@@ -60,6 +59,8 @@ public class EmailImpl implements Email {
             // Since we fetch the announce object that is stored in our data storage, we do not have fromEmail, subject.
             toAnnounce.setFromEmail(fromEmail); // not stored when saving settings..
             toAnnounce.setSubject(subject.trim()); // not stored when saving settings..
+            logger.debug(toAnnounce);
+            logger.debug(String.format("->%s<-", subject));
             return announceToIRC(toAnnounce);
         } else {
             EmailImpl.logger.warn("Unknown announce, skipping this email");
