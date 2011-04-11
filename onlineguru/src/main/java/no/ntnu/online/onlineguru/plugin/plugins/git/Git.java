@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * @todo fixme refactor this shitty plugin
+ *
  * @author Roy Sindre Norangshol <roy.sindre at norangshol dot no>
  *         Date: 11.04.11
  *         Time: 16:39

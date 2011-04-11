@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * MailAnnouncer is a {@link no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies} in {@link no.ntnu.online.onlineguru.OnlineGuru}
+ * @todo fixme refactor this shitty plugin
  *
  * @author Roy Sindre Norangshol <roy.sindre@norangshol.no>
  */
