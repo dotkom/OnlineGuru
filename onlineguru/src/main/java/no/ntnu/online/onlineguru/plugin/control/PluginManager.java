@@ -9,6 +9,7 @@ import no.ntnu.online.onlineguru.plugin.plugins.buss.Bus;
 import no.ntnu.online.onlineguru.plugin.plugins.channeljoiner.ChannelJoiner;
 import no.ntnu.online.onlineguru.plugin.plugins.chanserv.control.ChanServ;
 import no.ntnu.online.onlineguru.plugin.plugins.die.Die;
+import no.ntnu.online.onlineguru.plugin.plugins.git.Git;
 import no.ntnu.online.onlineguru.plugin.plugins.help.Help;
 import no.ntnu.online.onlineguru.plugin.plugins.lastfm.LastFM;
 import no.ntnu.online.onlineguru.plugin.plugins.mailannouncer.MailAnnouncer;
@@ -53,6 +54,7 @@ public class PluginManager {
         initiatePlugin(new Version());
         initiatePlugin(new MailAnnouncer());
         initiatePlugin(new TwitterPlugin());
+        initiatePlugin(new Git());
 	}
 	
 	private void initiatePlugin(Plugin plugin) {
