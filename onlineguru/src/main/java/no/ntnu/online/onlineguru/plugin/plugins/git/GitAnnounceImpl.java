@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 
-
 /**
  * @author Roy Sindre Norangshol <roy.sindre at norangshol dot no>
  *         Date: 11.04.11
@@ -23,6 +22,8 @@ public class GitAnnounceImpl implements GitAnnounce {
     private HashMap<String, IRCAnnounce> announceHashMap;
     private GitAnnouncementRepository announcementRepository;
     private Wand wand;
+    //https://trac.online.ntnu.no/projects/onlineguru/repository/revisions/3ee0eea72999dc408a274c2b940e170a04efc806
+    private final String announceFormat = "[scm] %s https://trac.online.ntnu.no/projects/%s/repository/revisions/%s";
 
     public GitAnnounceImpl(Wand wand) {
         announcementRepository = new SqliteGitAnnouncementPersister(DEFAULT_DB_FILE_ANNOUNCES);
@@ -52,7 +53,7 @@ public class GitAnnounceImpl implements GitAnnounce {
     protected Boolean announceToIRC(IRCAnnounce ircAnnounce) {
         if (wand != null) {
             if (ircAnnounce != null) {
-                String announceText = String.format("[scm-%s] %s", ircAnnounce.getRepository(), ircAnnounce.getRef());
+                String announceText = String.format(announceFormat, ircAnnounce.getRepository(), ircAnnounce.getRepository(), ircAnnounce.getRef());
 
                 Iterator iterator = ircAnnounce.getAnnounceToChannels().entrySet().iterator();
                 while (iterator.hasNext()) {
