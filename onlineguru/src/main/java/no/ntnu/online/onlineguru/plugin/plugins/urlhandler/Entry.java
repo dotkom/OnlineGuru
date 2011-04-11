@@ -5,7 +5,7 @@ import java.net.URISyntaxException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import no.ntnu.online.onlineguru.utils.WandRepository;
+import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
 
 import no.fictive.irclib.model.network.Network;
@@ -17,7 +17,7 @@ public class Entry implements URLReaderUser {
 
 	static Logger logger = Logger.getLogger(Entry.class);
 	
-	private WandRepository wandRepository;
+	private Wand wand;
 	private Network network;
 	private String target;
 	
@@ -34,8 +34,8 @@ public class Entry implements URLReaderUser {
 	private boolean fetchedTinyURLSource = false;
 	private boolean isShortAlready = false;
 	
-	public Entry(WandRepository wandRepository, Network network, String url, String target) {
-		this.wandRepository = wandRepository;
+	public Entry(Wand wand, Network network, String url, String target) {
+		this.wand = wand;
 		this.network = network;
 		this.target = target;
 		
@@ -98,7 +98,7 @@ public class Entry implements URLReaderUser {
 		}
 		
 		if(!returnString.isEmpty()) {
-			wandRepository.sendMessageToTarget(network, target, returnString);
+			wand.sendMessageToTarget(network, target, returnString);
 		}
 	}
 	

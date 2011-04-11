@@ -5,24 +5,24 @@ import no.fictive.irclib.model.network.Network;
 import no.ntnu.online.onlineguru.plugin.plugins.chanserv.control.ChanServDB;
 import no.ntnu.online.onlineguru.plugin.plugins.chanserv.statics.ErrorMessages;
 import no.ntnu.online.onlineguru.plugin.plugins.chanserv.util.ChanServUtil;
-import no.ntnu.online.onlineguru.utils.WandRepository;
+import no.ntnu.online.onlineguru.utils.Wand;
 
 public class RequestHandler {
 
-	private WandRepository wandRepository;
+	private Wand wand;
 	private AuthorizedUserHandler userhandler;
 	private AccessRequestHandler accessRequestHandler;
 	private CommandHandler commandHandler;
 	private ChanServDB db;
 	
-	public RequestHandler(WandRepository wandRepository, AuthorizedUserHandler authorizedUserHandler, ChanServDB chanServDB) {
-		this.wandRepository = wandRepository;
+	public RequestHandler(Wand wand, AuthorizedUserHandler authorizedUserHandler, ChanServDB chanServDB) {
+		this.wand = wand;
 		db = chanServDB;
 		
 		userhandler = authorizedUserHandler;
-		ChanServUtil util = new ChanServUtil(wandRepository, userhandler);
-		accessRequestHandler = new AccessRequestHandler(wandRepository, util, db);
-		commandHandler = new CommandHandler(wandRepository, util, db);
+		ChanServUtil util = new ChanServUtil(wand, userhandler);
+		accessRequestHandler = new AccessRequestHandler(wand, util, db);
+		commandHandler = new CommandHandler(wand, util, db);
 	}
 	
 	public void handleRequest(PrivMsgEvent pme) {
@@ -47,11 +47,11 @@ public class RequestHandler {
 	}
 	
 	protected void sendErrorMessage(Network network, String nickname, String message) {
-		wandRepository.sendMessageToTarget(network, nickname, message);
+		wand.sendMessageToTarget(network, nickname, message);
 	}
 	
 	protected void sendSuccessMessage(Network network, String nickname, String message) {
-		wandRepository.sendMessageToTarget(network, nickname, message);
+		wand.sendMessageToTarget(network, nickname, message);
 	}
 	
 	protected boolean isLoggedIn(String nickname) {

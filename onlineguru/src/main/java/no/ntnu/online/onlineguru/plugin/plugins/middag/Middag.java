@@ -3,7 +3,7 @@ package no.ntnu.online.onlineguru.plugin.plugins.middag;
 import java.util.HashMap;
 import java.util.regex.*;
 
-import no.ntnu.online.onlineguru.utils.WandRepository;
+import no.ntnu.online.onlineguru.utils.Wand;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -23,7 +23,7 @@ import no.ntnu.online.onlineguru.plugin.plugins.help.Help;
 
 public class Middag implements PluginWithDependencies {
 	 
-	private WandRepository wandRepository;
+	private Wand wand;
 	private Help help;
 
 	private DateTimeFormatter day = DateTimeFormat.forPattern("e");
@@ -89,8 +89,8 @@ public class Middag implements PluginWithDependencies {
 		eventDistributor.addListener(this, EventType.PRIVMSG);
 	}
 
-	public void addWand(WandRepository wandRepository) {
-		this.wandRepository = wandRepository;
+	public void addWand(Wand wand) {
+		this.wand = wand;
 	}
 
 	public String[] getDependencies() {
@@ -126,8 +126,8 @@ public class Middag implements PluginWithDependencies {
 	    	Year y = years.get(year);
 			if (y != null) {
 				if (y.hasWeek(week)) {
-					wandRepository.sendMessageToTarget(pme.getNetwork(), pme.getTarget(), "Hangaren: "+y.getMenu(week, day, "HANGAREN"));
-					wandRepository.sendMessageToTarget(pme.getNetwork(), pme.getTarget(), "Realfag: "+y.getMenu(week, day, "REALFAG"));
+					wand.sendMessageToTarget(pme.getNetwork(), pme.getTarget(), "Hangaren: "+y.getMenu(week, day, "HANGAREN"));
+					wand.sendMessageToTarget(pme.getNetwork(), pme.getTarget(), "Realfag: "+y.getMenu(week, day, "REALFAG"));
 				}
 				else {
 					updateMenu(year, week, day, pme);

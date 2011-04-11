@@ -1,7 +1,7 @@
 package no.ntnu.online.onlineguru.plugin.plugins.rssannounce;
 
 import no.ntnu.online.onlineguru.utils.SimpleIO;
-import no.ntnu.online.onlineguru.utils.WandRepository;
+import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.abdera.Abdera;
 import org.apache.abdera.model.Document;
 import org.apache.abdera.model.Entry;
@@ -29,7 +29,7 @@ public class RssChecker implements Runnable {
     private Abdera abdera;
     private final String urlToPull = "http://wiki.java.no/createrssfeed.action?types=blogpost&sort=modified&showContent=true&showDiff=true&spaces=javabin&labelString=tirsdagsm%f8te&rssType=atom&maxResults=10&timeSpan=5&publicFeed=true&title=Tirsdagsm%f8te";
     private Parser parser;
-    private WandRepository wand;
+    private Wand wand;
     private int refreshEveryMinute = 15;
     private final String DB = RssPlugin.DB_FOLDER + "lastupdated.db";
 
@@ -53,7 +53,7 @@ public class RssChecker implements Runnable {
         thread.start();
     }
 
-    public RssChecker(WandRepository wand) {
+    public RssChecker(Wand wand) {
         try {
             String configLastUpdated = SimpleIO.readFileAsString(DB);
             if (configLastUpdated != null && !configLastUpdated.equalsIgnoreCase("")) {

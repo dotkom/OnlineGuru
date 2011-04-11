@@ -4,13 +4,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import no.fictive.irclib.model.network.Network;
-import no.ntnu.online.onlineguru.utils.WandRepository;
+import no.ntnu.online.onlineguru.utils.Wand;
 import no.ntnu.online.onlineguru.utils.urlreader.URLReader;
 import no.ntnu.online.onlineguru.utils.urlreader.URLReaderUser;
 
 public class FetchURI implements URLReaderUser {
 
-	private WandRepository wandRepository;
+	private Wand wand;
 	private Network network;
 	private String target;
 	private Types linkCase;
@@ -23,8 +23,8 @@ public class FetchURI implements URLReaderUser {
 			"(<track[^>]+>[^<]+<name>([^>]+)</name>)" 
 	);
 	
-	public FetchURI(String url, WandRepository wandRepository, Network network, String target, Types linkCase) {
-		this.wandRepository = wandRepository;
+	public FetchURI(String url, Wand wand, Network network, String target, Types linkCase) {
+		this.wand = wand;
 		this.network = network;
 		this.target = target;
 		this.linkCase = linkCase;
@@ -69,15 +69,15 @@ public class FetchURI implements URLReaderUser {
 	}
 	
 	private void showAlbumInfo(String album, String artist) {
-		wandRepository.sendMessageToTarget(network, target, "[spotify] Album: "+album+" - by "+artist);
+		wand.sendMessageToTarget(network, target, "[spotify] Album: "+album+" - by "+artist);
 	}
 	
 	private void showArtistInfo(String artist) {
-		wandRepository.sendMessageToTarget(network, target, "[spotify] Artist: "+artist);
+		wand.sendMessageToTarget(network, target, "[spotify] Artist: "+artist);
 	}
 
 	private void showTrackInfo(String track, String artist, String album) {
-		wandRepository.sendMessageToTarget(network, target, "[spotify] "+artist+" - "+track+" - Album: "+album);
+		wand.sendMessageToTarget(network, target, "[spotify] "+artist+" - "+track+" - Album: "+album);
 	}
 
 	public void urlReaderCallback(URLReader urlReader,

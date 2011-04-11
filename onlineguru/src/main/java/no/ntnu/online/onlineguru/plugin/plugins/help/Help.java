@@ -9,7 +9,7 @@ import no.fictive.irclib.event.model.EventType;
 import no.fictive.irclib.model.network.Network;
 import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
-import no.ntnu.online.onlineguru.utils.WandRepository;
+import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
 
 /**
@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 public class Help implements Plugin {
     static Logger logger = Logger.getLogger(Help.class);
 	
-	private WandRepository wandRepository;
+	private Wand wand;
 	private ArrayList<String> triggers = new ArrayList<String>(); 
 	private HashMap<String, String> publicHelp = new HashMap<String, String>();
 
@@ -38,8 +38,8 @@ public class Help implements Plugin {
 		eventDistributor.addListener(this, EventType.PRIVMSG);
 	}
 
-	public void addWand(WandRepository wandRepository) {
-		this.wandRepository = wandRepository;
+	public void addWand(Wand wand) {
+		this.wand = wand;
 	}
 	
 	private void handleMessage(Event e) {
@@ -55,7 +55,7 @@ public class Help implements Plugin {
 			// If there is no argument other than the help trigger, display all the basic triggers.
 			if (helptrigger.isEmpty()) {
 				
-				wandRepository.sendNoticeToTarget(network, sender, "Here is a list of available triggers, use !help <trigger> for more info;");
+				wand.sendNoticeToTarget(network, sender, "Here is a list of available triggers, use !help <trigger> for more info;");
 
 				String output = "";
 								
@@ -64,24 +64,24 @@ public class Help implements Plugin {
 					if (output.length() > 100) {
 						output = output.trim();
 						output = output.replaceAll("\\s+", ", ");
-						wandRepository.sendNoticeToTarget(network, sender, output);
+						wand.sendNoticeToTarget(network, sender, output);
 						output = "";
 					}
 				}
 				if (!output.isEmpty()) {
 					output = output.trim();
 					output = output.replaceAll("\\s+", ", ");
-					wandRepository.sendNoticeToTarget(network, sender, output);;
+					wand.sendNoticeToTarget(network, sender, output);;
 				}
 			}
 			// Otherwise, display help text for the supplied trigger
 			else {
 				// Find the help item
 				if (publicHelp.containsKey(helptrigger)) {
-					wandRepository.sendNoticeToTarget(network, sender, publicHelp.get(helptrigger));
+					wand.sendNoticeToTarget(network, sender, publicHelp.get(helptrigger));
 				}
 				else {
-					wandRepository.sendNoticeToTarget(network, sender, "No help item for '" + helptrigger + "'");
+					wand.sendNoticeToTarget(network, sender, "No help item for '" + helptrigger + "'");
 				}
 				
 				// Send message to server

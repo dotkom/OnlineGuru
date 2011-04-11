@@ -5,11 +5,11 @@ import no.fictive.irclib.event.container.command.CTCPEvent;
 import no.fictive.irclib.event.model.EventType;
 import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
-import no.ntnu.online.onlineguru.utils.WandRepository;
+import no.ntnu.online.onlineguru.utils.Wand;
 
 public class Version implements Plugin {
 	
-	private WandRepository wandRepository;
+	private Wand wand;
 
 	public String getDescription() {
 		return "This plugin answers to the CTCP VERSION call";
@@ -19,7 +19,7 @@ public class Version implements Plugin {
 		if (e.getEventType() == EventType.CTCP) {
 			CTCPEvent ev = (CTCPEvent)e;
 			if (ev.getMessage().equals("VERSION")) {
-				wandRepository.sendNoticeToTarget(ev.getNetwork(), ev.getSender(), "OnlineGuru built on Java IRClib by dotkom of Online, student association for Informatics at NTNU, Norway");
+				wand.sendNoticeToTarget(ev.getNetwork(), ev.getSender(), "OnlineGuru built on Java IRClib by dotkom of Online, student association for Informatics at NTNU, Norway");
 			}
 		}
 	}
@@ -28,8 +28,8 @@ public class Version implements Plugin {
 		eventDistributor.addListener(this, EventType.CTCP);		
 	}
 
-	public void addWand(WandRepository wandRepository) {
-		this.wandRepository = wandRepository;
+	public void addWand(Wand wand) {
+		this.wand = wand;
 	}
 	
 }

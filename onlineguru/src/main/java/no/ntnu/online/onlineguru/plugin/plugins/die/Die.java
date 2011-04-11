@@ -7,14 +7,14 @@ import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
 import no.ntnu.online.onlineguru.plugin.plugins.chanserv.control.ChanServ;
-import no.ntnu.online.onlineguru.utils.WandRepository;
+import no.ntnu.online.onlineguru.utils.Wand;
 
 
 public class Die implements Plugin, PluginWithDependencies {
 
 	private ChanServ chanserv;
 	private String[] dependencies = new String[] { "ChanServ" };
-	private WandRepository wandRepository;
+	private Wand wand;
 	
 	public String getDescription() {
 		return "Dies.";
@@ -27,9 +27,9 @@ public class Die implements Plugin, PluginWithDependencies {
 				if(pme.isPrivateMessage()) {
 					if(pme.getMessage().equalsIgnoreCase("die")) {
 						if(chanserv.isNickLoggedIn(pme.getSender())) {
-							wandRepository.quit(pme.getNetwork());
+							wand.quit(pme.getNetwork());
 						} else {
-							wandRepository.sendMessageToTarget(pme.getNetwork(), pme.getSender(), "You are not logged in.");
+							wand.sendMessageToTarget(pme.getNetwork(), pme.getSender(), "You are not logged in.");
 						}
 					} 
 				}
@@ -41,8 +41,8 @@ public class Die implements Plugin, PluginWithDependencies {
 		eventDistributor.addListener(this, EventType.PRIVMSG);
 	}
 
-	public void addWand(WandRepository wandRepository) {
-		this.wandRepository = wandRepository;
+	public void addWand(Wand wand) {
+		this.wand = wand;
 	}
 
 	public String[] getDependencies() {

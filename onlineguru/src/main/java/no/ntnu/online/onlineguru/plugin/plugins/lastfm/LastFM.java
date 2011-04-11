@@ -19,7 +19,7 @@ import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
 import no.ntnu.online.onlineguru.plugin.plugins.help.Help;
 import no.ntnu.online.onlineguru.utils.SimpleIO;
-import no.ntnu.online.onlineguru.utils.WandRepository;
+import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
 
 
@@ -33,7 +33,7 @@ public class LastFM implements PluginWithDependencies {
 	private final String database_file = database_folder + "lastfm.db";
 	
 	private Hashtable<String, String> usernameMapping = new Hashtable<String, String>();
-	private WandRepository wandRepository;
+	private Wand wand;
 	private Help help;
 	
 	public LastFM() {
@@ -107,7 +107,7 @@ public class LastFM implements PluginWithDependencies {
 					album = " - Album: " + album;
 				}
 				
-				wandRepository.sendMessageToTarget(network, target, artist + " - " + song  + album + lastPlayedWhen);
+				wand.sendMessageToTarget(network, target, artist + " - " + song  + album + lastPlayedWhen);
 				//We only want the last song
 				break;
 			}
@@ -125,10 +125,10 @@ public class LastFM implements PluginWithDependencies {
 			usernameMapping.put(sender, parameters[2]);
 			try {
 				SimpleIO.saveConfig(database_file, usernameMapping);
-				wandRepository.sendMessageToTarget(e.getNetwork(), sender, "Your nickname was registered successfully.");
+				wand.sendMessageToTarget(e.getNetwork(), sender, "Your nickname was registered successfully.");
 			} catch (IOException e1) {
 				e1.printStackTrace();
-				wandRepository.sendMessageToTarget(e.getNetwork(), sender, "Something went wrong with registering your !np nick");
+				wand.sendMessageToTarget(e.getNetwork(), sender, "Something went wrong with registering your !np nick");
 			}
 		}
 	}
@@ -145,14 +145,14 @@ public class LastFM implements PluginWithDependencies {
 				usernameMapping.remove(sender);
 				try {
 					SimpleIO.saveConfig(database_file, usernameMapping);
-					wandRepository.sendMessageToTarget(e.getNetwork(), sender, "Your nickname has been removed.");
+					wand.sendMessageToTarget(e.getNetwork(), sender, "Your nickname has been removed.");
 				} catch (IOException e1) {
 					e1.printStackTrace();
-					wandRepository.sendMessageToTarget(e.getNetwork(), sender, "Something went wrong with unregistering your !np nick");
+					wand.sendMessageToTarget(e.getNetwork(), sender, "Something went wrong with unregistering your !np nick");
 				}
 			}
 			else {
-				wandRepository.sendMessageToTarget(e.getNetwork(), sender, "You have not yet registered your nickname with !np");
+				wand.sendMessageToTarget(e.getNetwork(), sender, "You have not yet registered your nickname with !np");
 			}
 		}
 	}
@@ -162,8 +162,8 @@ public class LastFM implements PluginWithDependencies {
 		
 	}
 	
-	public void addWand(WandRepository wandRepository) {
-		this.wandRepository = wandRepository;
+	public void addWand(Wand wand) {
+		this.wand = wand;
 	}
 	
 	public String getDescription() {

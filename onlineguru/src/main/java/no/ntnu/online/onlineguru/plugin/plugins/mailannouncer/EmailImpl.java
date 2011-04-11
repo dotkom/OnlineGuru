@@ -1,7 +1,7 @@
 package no.ntnu.online.onlineguru.plugin.plugins.mailannouncer;
 
 import no.fictive.irclib.model.network.Network;
-import no.ntnu.online.onlineguru.utils.WandRepository;
+import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -21,18 +21,18 @@ public class EmailImpl implements Email {
     private final String DEFAULT_DB_FILE_ANNOUNCES = MailAnnouncer.DB_FOLDER + "mailannouncer-announces.db";
     private HashMap<String, Announce> announceHashMap;
     private AnnouncementRepository announcementRepository;
-    private WandRepository wandRepository;
+    private Wand wand;
 
-    public EmailImpl(WandRepository wandRepository) {
+    public EmailImpl(Wand wand) {
         announcementRepository = new SqliteAnnouncementPersister(DEFAULT_DB_FILE_ANNOUNCES);
         announceHashMap = announcementRepository.load();
-        this.wandRepository = wandRepository;
+        this.wand = wand;
     }
 
-    public EmailImpl(WandRepository wandRepository, AnnouncementRepository announcementRepository) {
+    public EmailImpl(Wand wand, AnnouncementRepository announcementRepository) {
         this.announcementRepository = announcementRepository;
         this.announceHashMap = announcementRepository.load();
-        this.wandRepository = wandRepository;
+        this.wand = wand;
     }
 
 
@@ -48,9 +48,11 @@ public class EmailImpl implements Email {
      */
     public Boolean announceEmail(String toEmail, String fromEmail, String subject, String listId) {
         logger.debug(String.format("Received email to %s, from %s with subject %s on listId: %s", toEmail, fromEmail, subject, listId));
+        logger.debug(announceHashMap.size());
         if (announceHashMap.containsKey(getLookup(toEmail, listId))) {
             // Looked up Announce from either toEmail or by listId  (see LookupAnnounce to see #getLookup(toEmail, listId)
             Announce announce = announceHashMap.get(getLookup(toEmail, listId));
+
 
             // Clone the object, as we don't want to modify the orginal one in the announceHashMap
             Announce toAnnounce = new Announce(announce.getAnnounceTag(), announce.getToEmail(), announce.getToEmail(), announce.getAnnounceToChannels(), announce.getListId());
@@ -76,19 +78,19 @@ public class EmailImpl implements Email {
     }
 
     protected Boolean announceToIRC(Announce announce) {
-        if (wandRepository != null) {
+        if (wand != null) {
             if (announce != null) {
                 String announceText = String.format("[Mail-%s] %s - %s", (announce.getAnnounceTag() != null ? announce.getAnnounceTag() : ""), announce.getFromEmail(), announce.getSubject());
                 Iterator iterator = announce.getAnnounceToChannels().entrySet().iterator();
                 while (iterator.hasNext()) {
                     Map.Entry<String, List<String>> entry = (Map.Entry<String, List<String>>) iterator.next();
 
-                    Network currentNetwork = wandRepository.getNetworkByAlias(entry.getKey());
+                    Network currentNetwork = wand.getNetworkByAlias(entry.getKey());
 
-                    if (currentNetwork != null && (wandRepository.getNetworkByAlias(currentNetwork.getServerAlias()) != null ? true : false)) {
+                    if (currentNetwork != null && (wand.getNetworkByAlias(currentNetwork.getServerAlias()) != null ? true : false)) {
                         for (String announceToThisChannel : entry.getValue()) {
-                            if (wandRepository.amIOnChannel(currentNetwork, announceToThisChannel)) {
-                                wandRepository.sendMessageToTarget(currentNetwork, announceToThisChannel, announceText);
+                            if (wand.amIOnChannel(currentNetwork, announceToThisChannel)) {
+                                wand.sendMessageToTarget(currentNetwork, announceToThisChannel, announceText);
                                 logger.debug(String.format("Sending to network %s , channel: %s  with text: %s", currentNetwork.getServerAlias(), announceToThisChannel, announceText));
                             }
                         }
@@ -101,7 +103,7 @@ public class EmailImpl implements Email {
             }
 
         } else {
-            logger.error("Wand is null :-(");
+            logger.error("IrcWand is null :-(");
         }
         return Boolean.FALSE;
     }

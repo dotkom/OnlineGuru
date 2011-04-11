@@ -11,7 +11,7 @@ import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.plugin.plugins.chanserv.handlers.AuthorizedUserHandler;
 import no.ntnu.online.onlineguru.plugin.plugins.chanserv.handlers.RequestHandler;
-import no.ntnu.online.onlineguru.utils.WandRepository;
+import no.ntnu.online.onlineguru.utils.Wand;
 
 public class ChanServ implements Plugin {
 	
@@ -32,8 +32,8 @@ public class ChanServ implements Plugin {
 		eventDistributor.addListener(this, EventType.NICK);
 	}
 
-	public void addWand(WandRepository wandRepository) {
-		requestHandler = new RequestHandler(wandRepository, userHandler, db);
+	public void addWand(Wand wand) {
+		requestHandler = new RequestHandler(wand, userHandler, db);
 	}
 
 	public String getDescription() {

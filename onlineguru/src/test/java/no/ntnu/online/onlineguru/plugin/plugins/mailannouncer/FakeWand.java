@@ -4,12 +4,9 @@ import no.fictive.irclib.model.channel.Channel;
 import no.fictive.irclib.model.network.Network;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.utils.Wand;
-import no.ntnu.online.onlineguru.utils.WandRepository;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -17,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author Roy Sindre Norangshol <roy.sindre@norangshol.no>
  */
-public class FakeWand implements WandRepository {
+public class FakeWand implements Wand {
     private ConcurrentHashMap<String, Network> networks = new ConcurrentHashMap<String, Network>();
     private ConcurrentHashMap<String, Channel> channels = new ConcurrentHashMap<String, Channel>();
 
