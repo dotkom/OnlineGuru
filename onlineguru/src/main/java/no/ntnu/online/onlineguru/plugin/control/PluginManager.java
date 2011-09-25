@@ -6,6 +6,7 @@ import no.ntnu.online.onlineguru.OnlineGuru;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.plugin.plugins.autoop.AutoOp;
 import no.ntnu.online.onlineguru.plugin.plugins.buss.Bus;
+import no.ntnu.online.onlineguru.plugin.plugins.calendar.CalendarPlugin;
 import no.ntnu.online.onlineguru.plugin.plugins.channeljoiner.ChannelJoiner;
 import no.ntnu.online.onlineguru.plugin.plugins.chanserv.control.ChanServ;
 import no.ntnu.online.onlineguru.plugin.plugins.die.Die;
@@ -55,6 +56,7 @@ public class PluginManager {
         initiatePlugin(new MailAnnouncer());
         initiatePlugin(new TwitterPlugin());
         initiatePlugin(new Git());
+        initiatePlugin(new CalendarPlugin());
 	}
 	
 	private void initiatePlugin(Plugin plugin) {
