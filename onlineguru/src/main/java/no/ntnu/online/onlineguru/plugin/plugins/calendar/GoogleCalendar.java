@@ -61,12 +61,12 @@ public class GoogleCalendar {
         new GoogleCalendar();
     }
 
-    public List<Event> getEvent(Event.Type eventType) {
+    public List<Event> getEvent(Event.Type eventType) throws GoogleException {
         DateTime today = new DateTime();
         return getEvent(eventType, today.withTime(0, 0, 0, 0), today.withTime(23, 59, 59, 0));
     }
 
-    public List<Event> getEvent(Event.Type eventType, DateTime fromDate, DateTime toDate) {
+    public List<Event> getEvent(Event.Type eventType, DateTime fromDate, DateTime toDate) throws GoogleException {
         HttpResponse httpResponse = null;
         List<Event> events = new ArrayList<Event>();
 
@@ -79,6 +79,10 @@ public class GoogleCalendar {
             httpResponse = httpGet(new URI(String.format(availableCalendars.get(eventType), fromDate.toString("yyyy-MM-dd'T'HH:mm:ss"), toDate.toString("yyyy-MM-dd'T'HH:mm:ss"))), null);
 
             Calendar data = gson.fromJson(readString(httpResponse.getEntity().getContent()), Calendar.class);
+
+            if (data.error != null) {
+                throw new GoogleException(data.error.toString());
+            }
 
             if (data.data.items != null) {
                 for (Item event : data.data.items) {

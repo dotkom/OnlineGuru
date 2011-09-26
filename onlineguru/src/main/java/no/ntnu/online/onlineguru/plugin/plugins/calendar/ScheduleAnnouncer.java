@@ -15,6 +15,7 @@ import java.util.*;
  * @author Roy Sindre Norangshol
  */
 public class ScheduleAnnouncer {
+    public static final int MAX_EVENT_LOAD_TRIES = 5;
     Timer timer;
     private GoogleCalendar calendar;
     private Map<Event.Type, List<Event>> eventsMap;
@@ -23,7 +24,9 @@ public class ScheduleAnnouncer {
     private DateTime currentDay;
     private Wand wand;
 
+
     static Logger logger = Logger.getLogger(ScheduleAnnouncer.class);
+    private static final long LOAD_SLEEP = 5000;
 
     public ScheduleAnnouncer(GoogleCalendar calendar) {
         init(calendar);
@@ -87,17 +90,55 @@ public class ScheduleAnnouncer {
 
     private void loadEvents() {
         logger.info(" loading calendar events");
-        DateTime today = new DateTime();
+
         //today = today.withDate(2011, 9, 28);
 
         // ime(int hourOfDay, int minuteOfHour, int secondOfMinute, int millisOfSecond)
-        eventsMap.put(Event.Type.KONTORVAKT,
-                calendar.getEvent(Event.Type.KONTORVAKT, today.withTime(0, 0, 0, 0), today.withTime(23, 59, 59, 0))
-        );
-        eventsMap.put(Event.Type.ONLINECALENDAR,
-                calendar.getEvent(Event.Type.ONLINECALENDAR, today.withTime(0, 0, 0, 0), today.withTime(23, 59, 59, 0))
-        );
 
+        Thread loadEventsThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                eventsMap.put(Event.Type.KONTORVAKT,
+                        fetchCalendar(Event.Type.KONTORVAKT, (eventsMap.containsKey(Event.Type.KONTORVAKT) ? eventsMap.get(Event.Type.KONTORVAKT) : new ArrayList<Event>()))
+                );
+
+                eventsMap.put(Event.Type.ONLINECALENDAR,
+                        fetchCalendar(Event.Type.ONLINECALENDAR, (eventsMap.containsKey(Event.Type.ONLINECALENDAR) ? eventsMap.get(Event.Type.ONLINECALENDAR) : new ArrayList<Event>()))
+                );
+
+            }
+        });
+        loadEventsThread.run();
+
+    }
+
+    private List<Event> fetchCalendar(Event.Type eventType, List<Event> orignalFallbackEvents) {
+        final DateTime today = new DateTime();
+
+        int eventsFailLoadingCounter = 0;
+
+        while (eventsFailLoadingCounter < MAX_EVENT_LOAD_TRIES) {
+            try {
+                List<Event> events = calendar.getEvent(eventType, today.withTime(0, 0, 0, 0), today.withTime(23, 59, 59, 0));
+                sleepAWhile();
+                return events;
+            } catch (GoogleException e) {
+                logger.warn(e);
+                eventsFailLoadingCounter++;
+                sleepAWhile();
+            }
+        }
+        sendMessageToOnline(String.format("[google internal error] Vi klarte ikke å lese kalenderen til %s - google gir oss server internal error :-(", eventType.toString()));
+
+        return orignalFallbackEvents;
+    }
+
+    private void sleepAWhile() {
+        try {
+            Thread.sleep(LOAD_SLEEP);
+        } catch (InterruptedException e) {
+            logger.warn(e);
+        }
     }
 
     private void startPreschedulerForHourlyScheduler() {
@@ -120,7 +161,7 @@ public class ScheduleAnnouncer {
                 doHourlyAnnounces();
 
             }
-        }, 0, 3600 * 1000); // repeat every hour
+        }, 0, (60 * 60) * 1000); // repeat every hour
 
     }
 
@@ -220,7 +261,7 @@ public class ScheduleAnnouncer {
 
     private boolean isGoodmorningTime() {
         DateTime now = new DateTime();
-        return now.getHourOfDay() == 10;
+        return now.getHourOfDay() == 8;
     }
 
     private boolean isItFriday() {
@@ -229,7 +270,6 @@ public class ScheduleAnnouncer {
     }
 
     private void sendMessageToOnline(String message) {
-
         logger.debug(message);
         if (wand.amIOnChannel(wand.getNetworkByAlias("freenode"), "#online"))
             wand.sendMessageToTarget(wand.getNetworkByAlias("freenode"), "#online", message);

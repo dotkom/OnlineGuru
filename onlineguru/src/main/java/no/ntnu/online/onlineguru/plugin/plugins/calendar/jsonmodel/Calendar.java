@@ -8,12 +8,14 @@ package no.ntnu.online.onlineguru.plugin.plugins.calendar.jsonmodel;
 public class Calendar {
     public String apiVersion;
     public Data data;
+    public Error error;
 
     @Override
     public String toString() {
         return "Calendar{" +
                 "apiVersion='" + apiVersion + '\'' +
                 ", data=" + data +
+                ", error=" + error +
                 '}';
     }
 }
