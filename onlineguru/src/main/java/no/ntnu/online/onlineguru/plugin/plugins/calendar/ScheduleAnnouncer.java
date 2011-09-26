@@ -1,8 +1,6 @@
 package no.ntnu.online.onlineguru.plugin.plugins.calendar;
 
 
-import no.fictive.irclib.event.model.EventType;
-import no.fictive.irclib.model.network.Network;
 import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
@@ -11,7 +9,6 @@ import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -42,44 +39,54 @@ public class ScheduleAnnouncer {
         this.calendar = calendar;
         this.eventsMap = new HashMap<Event.Type, List<Event>>();
         this.currentDay = new DateTime();
-        timer = new Timer();
+        timer = new Timer(true);
 
 
         loadEvents();
 
-        if (isGoodmorningTime() && !hasAnnouncedGoodMorning) {
+        try {
+            logger.info("init calendar plugin, sleeping for 30 seconds..");
+            Thread.sleep(30000L);
+            logger.info("calendar init sleep done...");
+            if (isGoodmorningTime() && !hasAnnouncedGoodMorning) {
 
-            if (isItFriday())
-                sendMessageToOnline("Godmorgen #Online ! Endelig er det fredag!");
-            else
-                sendMessageToOnline("Godmorgen #Online !");
+                if (isItFriday())
+                    sendMessageToOnline("Godmorgen #Online ! Endelig er det fredag!");
+                else
+                    sendMessageToOnline("Godmorgen #Online !");
 
-            List<String> kontorvakter = getEventTitles(Event.Type.KONTORVAKT);
-            if (kontorvakter.size() > 0)
-                sendMessageToOnline(String.format("I dag får vi besøk av %s kontorvakter %s",
-                        eventsMap.get(Event.Type.KONTORVAKT).size(),
-                        Arrays.toString(kontorvakter.toArray())
-                ));
-            else
-                sendMessageToOnline("I dag vil du ikke finne noen kontorvakter på kontoret.. kanskje fordi det er helg?");
+                List<String> kontorvakter = getEventTitles(Event.Type.KONTORVAKT);
+                if (kontorvakter.size() > 0)
+                    sendMessageToOnline(String.format("I dag får vi besøk av %s kontorvakter %s",
+                            eventsMap.get(Event.Type.KONTORVAKT).size(),
+                            Arrays.toString(kontorvakter.toArray())
+                    ));
+                else
+                    sendMessageToOnline("I dag vil du ikke finne noen kontorvakter på kontoret.. kanskje fordi det er helg?");
 
-            List<String> onlineEvents = getEventTitles(Event.Type.ONLINECALENDAR);
-            if (onlineEvents.size() > 0)
-                sendMessageToOnline(String.format("%s aktivitet(er) skjer i dag %s",
-                        eventsMap.get(Event.Type.ONLINECALENDAR).size(),
-                        Arrays.toString(onlineEvents.toArray())));
-            else
-                sendMessageToOnline("Ingen offisielle aktiviteter i dag..");
+                List<String> onlineEvents = getEventTitles(Event.Type.ONLINECALENDAR);
+                if (onlineEvents.size() > 0)
+                    sendMessageToOnline(String.format("%s aktivitet(er) skjer i dag %s",
+                            eventsMap.get(Event.Type.ONLINECALENDAR).size(),
+                            Arrays.toString(onlineEvents.toArray())));
+                else
+                    sendMessageToOnline("Ingen offisielle aktiviteter i dag..");
 
-            hasAnnouncedGoodMorning = true;
+                hasAnnouncedGoodMorning = true;
+            }
+
+            //doHourlyAnnounces();
+            startPreschedulerForHourlyScheduler();
+        } catch (InterruptedException e) {
+            logger.warn(e);
         }
 
-        //doHourlyAnnounces();
-        startPreschedulerForHourlyScheduler();
+
     }
 
 
     private void loadEvents() {
+        logger.info(" loading calendar events");
         DateTime today = new DateTime();
         //today = today.withDate(2011, 9, 28);
 
@@ -94,9 +101,11 @@ public class ScheduleAnnouncer {
     }
 
     private void startPreschedulerForHourlyScheduler() {
+        logger.info("calendar: loading prescheduler");
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
+                logger.info("calendar: preschedular launching scheduler!");
                 startHourlyScheduler();
             }
         }, getSecondsLeftForNewHour() * 1000);
@@ -106,7 +115,7 @@ public class ScheduleAnnouncer {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                logger.warn(" running hourly cronjob from calendar plugin");
+                logger.info(" running hourly cronjob from calendar plugin");
                 checkForNewDay();
                 doHourlyAnnounces();
 
@@ -116,6 +125,7 @@ public class ScheduleAnnouncer {
     }
 
     private void doHourlyAnnounces() {
+        loadEvents();
         DateTime now = new DateTime();
         //now = now.withDate(2011, 9, 28);
         //now = now.withTime(9, 0, 0, 0);
@@ -210,7 +220,7 @@ public class ScheduleAnnouncer {
 
     private boolean isGoodmorningTime() {
         DateTime now = new DateTime();
-        return now.getHourOfDay() == 18;
+        return now.getHourOfDay() == 10;
     }
 
     private boolean isItFriday() {
