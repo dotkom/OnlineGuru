@@ -256,7 +256,7 @@ public class ScheduleAnnouncer {
 
     private int getSecondsLeftForNewHour() {
         DateTime now = new DateTime();
-        return 60-now.getMinuteOfHour();
+        return (60 - now.getMinuteOfHour()) * 60;
     }
 
     private boolean isGoodmorningTime() {
