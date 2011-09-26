@@ -175,40 +175,36 @@ public class ScheduleAnnouncer {
         List<Event> kontorVakter = eventsMap.get(Event.Type.KONTORVAKT);
         for (Event kontorVakt : kontorVakter) {
             Duration durationOnTimestamps;
-            if (now.isBefore(kontorVakt.getStartDate()))
+            if (now.isBefore(kontorVakt.getStartDate())) {
                 durationOnTimestamps = new Duration(now, kontorVakt.getStartDate());
-            else
-                durationOnTimestamps = new Duration(kontorVakt.getStartDate(), now);
 
 
-            if (durationOnTimestamps.isShorterThan(Duration.standardHours(1))) {
-                sendMessageToOnline(String.format("[Kontorvakt] %s skal nå være kontorvakt!", kontorVakt.getTitle()));
+                if (durationOnTimestamps.isShorterThan(Duration.standardHours(1))) {
+                    sendMessageToOnline(String.format("[Kontorvakt] %s skal nå være kontorvakt!", kontorVakt.getTitle()));
+                }
+
+                if ((durationOnTimestamps.isEqual(Duration.standardHours(1)) || durationOnTimestamps.isLongerThan(Duration.standardHours(1))) && durationOnTimestamps.isShorterThan(Duration.standardHours(2))) {
+                    sendMessageToOnline(String.format("[Kontorvakt ETA] %stil %s har kontorvakt!", getPeriodInStringFormat(durationOnTimestamps.toPeriod()), kontorVakt.getTitle()));
+                }
             }
-
-            if ((durationOnTimestamps.isEqual(Duration.standardHours(1)) || durationOnTimestamps.isLongerThan(Duration.standardHours(1))) && durationOnTimestamps.isShorterThan(Duration.standardHours(2))) {
-                sendMessageToOnline(String.format("[Kontorvakt ETA] %stil %s har kontorvakt!", getPeriodInStringFormat(durationOnTimestamps.toPeriod()), kontorVakt.getTitle()));
-            }
-
         }
 
         // Denne er ikke helt riktig, men riktig nok for klokketimer for no :p
         List<Event> onlineEvents = eventsMap.get(Event.Type.ONLINECALENDAR);
         for (Event onlineEvent : onlineEvents) {
             Duration durationOnTimestamps;
-            if (now.isBefore(onlineEvent.getStartDate()))
+            if (now.isBefore(onlineEvent.getStartDate())) {
                 durationOnTimestamps = new Duration(now, onlineEvent.getStartDate());
-            else
-                durationOnTimestamps = new Duration(onlineEvent.getStartDate(), now);
 
 
-            if (durationOnTimestamps.isShorterThan(Duration.standardHours(1))) {
-                sendMessageToOnline(String.format("[Event start] %s", onlineEvent.getTitle()));
+                if (durationOnTimestamps.isShorterThan(Duration.standardHours(1))) {
+                    sendMessageToOnline(String.format("[Event start] %s", onlineEvent.getTitle()));
+                }
+
+                if ((durationOnTimestamps.isEqual(Duration.standardHours(1)) || durationOnTimestamps.isLongerThan(Duration.standardHours(1))) && durationOnTimestamps.isShorterThan(Duration.standardHours(4))) {
+                    sendMessageToOnline(String.format("[Event ETA] %stil %s starter!", getPeriodInStringFormat(durationOnTimestamps.toPeriod()), onlineEvent.getTitle()));
+                }
             }
-
-            if ((durationOnTimestamps.isEqual(Duration.standardHours(1)) || durationOnTimestamps.isLongerThan(Duration.standardHours(1))) && durationOnTimestamps.isShorterThan(Duration.standardHours(4))) {
-                sendMessageToOnline(String.format("[Event ETA] %stil %s starter!", getPeriodInStringFormat(durationOnTimestamps.toPeriod()), onlineEvent.getTitle()));
-            }
-
         }
     }
 
