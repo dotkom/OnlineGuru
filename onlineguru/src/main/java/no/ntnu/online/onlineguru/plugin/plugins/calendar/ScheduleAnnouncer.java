@@ -148,6 +148,8 @@ public class ScheduleAnnouncer {
             public void run() {
                 logger.info("calendar: preschedular launching scheduler!");
                 startHourlyScheduler();
+                checkForNewDay();
+                doHourlyAnnounces();
             }
         }, getSecondsLeftForNewHour() * 1000);
     }
