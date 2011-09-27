@@ -15,7 +15,10 @@ import java.util.*;
  * @author Roy Sindre Norangshol
  */
 public class ScheduleAnnouncer {
-    public static final int MAX_EVENT_LOAD_TRIES = 5;
+    public static final String OFFICEHOUR_NOW = "[Kontorvakt] %s skal nå være kontorvakt!";
+    public static final String OFFICEHOUR_ETA = "[Kontorvakt ETA] %stil %s har kontorvakt!";
+    public static final String EVENT_NOW = "[Event start] %s";
+    public static final String EVENT_ETA = "[Event ETA] %stil %s starter!";
     Timer timer;
     private GoogleCalendar calendar;
     private Map<Event.Type, List<Event>> eventsMap;
@@ -26,7 +29,6 @@ public class ScheduleAnnouncer {
 
 
     static Logger logger = Logger.getLogger(ScheduleAnnouncer.class);
-    private static final long LOAD_SLEEP = 5000;
 
     public ScheduleAnnouncer(GoogleCalendar calendar) {
         init(calendar);
@@ -47,44 +49,53 @@ public class ScheduleAnnouncer {
 
         loadEvents();
 
+
         try {
-            logger.info("init calendar plugin, sleeping for 30 seconds..");
-            Thread.sleep(30000L);
-            logger.info("calendar init sleep done...");
+
+
             if (isGoodmorningTime() && !hasAnnouncedGoodMorning) {
-
-                if (isItFriday())
-                    sendMessageToOnline("Godmorgen #Online ! Endelig er det fredag!");
-                else
-                    sendMessageToOnline("Godmorgen #Online !");
-
-                List<String> kontorvakter = getEventTitles(Event.Type.KONTORVAKT);
-                if (kontorvakter.size() > 0)
-                    sendMessageToOnline(String.format("I dag får vi besøk av %s kontorvakter %s",
-                            eventsMap.get(Event.Type.KONTORVAKT).size(),
-                            Arrays.toString(kontorvakter.toArray())
-                    ));
-                else
-                    sendMessageToOnline("I dag vil du ikke finne noen kontorvakter på kontoret.. kanskje fordi det er helg?");
-
-                List<String> onlineEvents = getEventTitles(Event.Type.ONLINECALENDAR);
-                if (onlineEvents.size() > 0)
-                    sendMessageToOnline(String.format("%s aktivitet(er) skjer i dag %s",
-                            eventsMap.get(Event.Type.ONLINECALENDAR).size(),
-                            Arrays.toString(onlineEvents.toArray())));
-                else
-                    sendMessageToOnline("Ingen offisielle aktiviteter i dag..");
-
-                hasAnnouncedGoodMorning = true;
+                // sleep since it may take some time before onlineguru actaully gets his ass online
+                // but chances is low that the bot starts at 08:XX tho, but you never know!
+                Thread.sleep(30000L);
+                getGoodmorningAnnounces();
             }
 
-            //doHourlyAnnounces();
+            //getHourlyAnnounces();
             startPreschedulerForHourlyScheduler();
         } catch (InterruptedException e) {
             logger.warn(e);
         }
 
 
+    }
+
+    private List<String> getGoodmorningAnnounces() {
+        List<String> messages = new ArrayList<String>();
+        if (isItFriday())
+            messages.add("Godmorgen #Online ! Endelig er det fredag!");
+        else
+            messages.add("Godmorgen #Online !");
+
+        List<String> kontorvakter = getEventTitles(Event.Type.KONTORVAKT);
+        if (kontorvakter.size() > 0)
+            messages.add(String.format("I dag får vi besøk av %s kontorvakter %s",
+                    eventsMap.get(Event.Type.KONTORVAKT).size(),
+                    Arrays.toString(kontorvakter.toArray())
+            ));
+        else
+            messages.add("I dag vil du ikke finne noen kontorvakter på kontoret.. kanskje fordi det er helg?");
+
+        List<String> onlineEvents = getEventTitles(Event.Type.ONLINECALENDAR);
+        if (onlineEvents.size() > 0)
+            messages.add(String.format("%s aktivitet(er) skjer i dag %s",
+                    eventsMap.get(Event.Type.ONLINECALENDAR).size(),
+                    Arrays.toString(onlineEvents.toArray())));
+        else
+            messages.add("Ingen offisielle aktiviteter i dag..");
+
+        hasAnnouncedGoodMorning = true;
+
+        return messages;
     }
 
 
@@ -99,46 +110,17 @@ public class ScheduleAnnouncer {
             @Override
             public void run() {
                 eventsMap.put(Event.Type.KONTORVAKT,
-                        fetchCalendar(Event.Type.KONTORVAKT, (eventsMap.containsKey(Event.Type.KONTORVAKT) ? eventsMap.get(Event.Type.KONTORVAKT) : new ArrayList<Event>()))
+                        calendar.fetchCalendar(Event.Type.KONTORVAKT, (eventsMap.containsKey(Event.Type.KONTORVAKT) ? eventsMap.get(Event.Type.KONTORVAKT) : new ArrayList<Event>()))
                 );
 
                 eventsMap.put(Event.Type.ONLINECALENDAR,
-                        fetchCalendar(Event.Type.ONLINECALENDAR, (eventsMap.containsKey(Event.Type.ONLINECALENDAR) ? eventsMap.get(Event.Type.ONLINECALENDAR) : new ArrayList<Event>()))
+                        calendar.fetchCalendar(Event.Type.ONLINECALENDAR, (eventsMap.containsKey(Event.Type.ONLINECALENDAR) ? eventsMap.get(Event.Type.ONLINECALENDAR) : new ArrayList<Event>()))
                 );
 
             }
         });
         loadEventsThread.run();
 
-    }
-
-    private List<Event> fetchCalendar(Event.Type eventType, List<Event> orignalFallbackEvents) {
-        final DateTime today = new DateTime();
-
-        int eventsFailLoadingCounter = 0;
-
-        while (eventsFailLoadingCounter < MAX_EVENT_LOAD_TRIES) {
-            try {
-                List<Event> events = calendar.getEvent(eventType, today.withTime(0, 0, 0, 0), today.withTime(23, 59, 59, 0));
-                sleepAWhile();
-                return events;
-            } catch (GoogleException e) {
-                logger.warn(e);
-                eventsFailLoadingCounter++;
-                sleepAWhile();
-            }
-        }
-        sendMessageToOnline(String.format("[google internal error] Vi klarte ikke å lese kalenderen til %s - google gir oss server internal error :-(", eventType.toString()));
-
-        return orignalFallbackEvents;
-    }
-
-    private void sleepAWhile() {
-        try {
-            Thread.sleep(LOAD_SLEEP);
-        } catch (InterruptedException e) {
-            logger.warn(e);
-        }
     }
 
     private void startPreschedulerForHourlyScheduler() {
@@ -149,7 +131,7 @@ public class ScheduleAnnouncer {
                 logger.info("calendar: preschedular launching scheduler!");
                 startHourlyScheduler();
                 checkForNewDay();
-                doHourlyAnnounces();
+                sendMessageToOnline(getHourlyAnnounces());
             }
         }, getSecondsLeftForNewHour() * 1000);
     }
@@ -160,33 +142,42 @@ public class ScheduleAnnouncer {
             public void run() {
                 logger.info(" running hourly cronjob from calendar plugin");
                 checkForNewDay();
-                doHourlyAnnounces();
+                sendMessageToOnline(getHourlyAnnounces());
 
             }
         }, 0, (60 * 60) * 1000); // repeat every hour
 
     }
 
-    private void doHourlyAnnounces() {
-        loadEvents();
+    public List<String> getHourlyAnnounces() {
         DateTime now = new DateTime();
         //now = now.withDate(2011, 9, 28);
         //now = now.withTime(9, 0, 0, 0);
-        now = now.withTime(now.getHourOfDay(), 0, 0, 0); // removes minutes,seconds
+        return getHourlyAnnounces(now.withTime(now.getHourOfDay(), 0, 0, 0)); // removes minutes,seconds
+    }
+
+    public List<String> getHourlyAnnounces(DateTime now) {
+        List<String> announces = new ArrayList<String>();
+
+        loadEvents();
+
+        if (isGoodmorningTime() && !hasAnnouncedGoodMorning) {
+            announces = getGoodmorningAnnounces();
+        }
+
 
         List<Event> kontorVakter = eventsMap.get(Event.Type.KONTORVAKT);
         for (Event kontorVakt : kontorVakter) {
             Duration durationOnTimestamps;
-            if (now.isBefore(kontorVakt.getStartDate())) {
+            if (now.isBefore(kontorVakt.getStartDate()) || kontorVakt.getStartDate().isEqual(now)) {
                 durationOnTimestamps = new Duration(now, kontorVakt.getStartDate());
 
-
                 if (durationOnTimestamps.isShorterThan(Duration.standardHours(1))) {
-                    sendMessageToOnline(String.format("[Kontorvakt] %s skal nå være kontorvakt!", kontorVakt.getTitle()));
+                    announces.add(String.format(OFFICEHOUR_NOW, kontorVakt.getTitle()));
                 }
 
                 if ((durationOnTimestamps.isEqual(Duration.standardHours(1)) || durationOnTimestamps.isLongerThan(Duration.standardHours(1))) && durationOnTimestamps.isShorterThan(Duration.standardHours(2))) {
-                    sendMessageToOnline(String.format("[Kontorvakt ETA] %stil %s har kontorvakt!", getPeriodInStringFormat(durationOnTimestamps.toPeriod()), kontorVakt.getTitle()));
+                    announces.add(String.format(OFFICEHOUR_ETA, getPeriodInStringFormat(durationOnTimestamps.toPeriod()), kontorVakt.getTitle()));
                 }
             }
         }
@@ -195,22 +186,23 @@ public class ScheduleAnnouncer {
         List<Event> onlineEvents = eventsMap.get(Event.Type.ONLINECALENDAR);
         for (Event onlineEvent : onlineEvents) {
             Duration durationOnTimestamps;
-            if (now.isBefore(onlineEvent.getStartDate())) {
+            if (now.isBefore(onlineEvent.getStartDate()) || onlineEvent.getStartDate().isEqual(now)) {
                 durationOnTimestamps = new Duration(now, onlineEvent.getStartDate());
 
 
                 if (durationOnTimestamps.isShorterThan(Duration.standardHours(1))) {
-                    sendMessageToOnline(String.format("[Event start] %s", onlineEvent.getTitle()));
+                    announces.add(String.format(EVENT_NOW, onlineEvent.getTitle()));
                 }
 
                 if ((durationOnTimestamps.isEqual(Duration.standardHours(1)) || durationOnTimestamps.isLongerThan(Duration.standardHours(1))) && durationOnTimestamps.isShorterThan(Duration.standardHours(4))) {
-                    sendMessageToOnline(String.format("[Event ETA] %stil %s starter!", getPeriodInStringFormat(durationOnTimestamps.toPeriod()), onlineEvent.getTitle()));
+                    announces.add(String.format(EVENT_ETA, getPeriodInStringFormat(durationOnTimestamps.toPeriod()), onlineEvent.getTitle()));
                 }
             }
         }
+        return announces;
     }
 
-    private String getPeriodInStringFormat(Period period) {
+    public String getPeriodInStringFormat(Period period) {
         String appendSuffixFormat = " %s ";
 
 
@@ -265,6 +257,11 @@ public class ScheduleAnnouncer {
     private boolean isItFriday() {
         DateTime now = new DateTime();
         return now.dayOfWeek().get() == 5;
+    }
+
+    private void sendMessageToOnline(List<String> messages) {
+        for (String message : messages)
+            sendMessageToOnline(message);
     }
 
     private void sendMessageToOnline(String message) {

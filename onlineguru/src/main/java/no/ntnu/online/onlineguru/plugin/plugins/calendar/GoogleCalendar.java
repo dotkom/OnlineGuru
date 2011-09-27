@@ -4,8 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import no.ntnu.online.onlineguru.plugin.plugins.calendar.jsonmodel.Calendar;
 import no.ntnu.online.onlineguru.plugin.plugins.calendar.jsonmodel.Item;
-import org.apache.abdera.Abdera;
-import org.apache.abdera.parser.Parser;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -34,6 +32,8 @@ public class GoogleCalendar {
 
 
     static Logger logger = Logger.getLogger(GoogleCalendar.class);
+    public static final int MAX_EVENT_LOAD_TRIES = 5;
+    private static final long LOAD_SLEEP = 5000;
     private Gson gson;
 
     public GoogleCalendar() {
@@ -158,5 +158,34 @@ public class GoogleCalendar {
 
 
         return stringBuilder.toString();
+    }
+
+    List<Event> fetchCalendar(Event.Type eventType, List<Event> orignalFallbackEvents) {
+        final DateTime today = new DateTime();
+
+        int eventsFailLoadingCounter = 0;
+
+        while (eventsFailLoadingCounter < MAX_EVENT_LOAD_TRIES) {
+            try {
+                List<Event> events = getEvent(eventType, today.withTime(0, 0, 0, 0), today.withTime(23, 59, 59, 0));
+                sleepAWhile();
+                return events;
+            } catch (GoogleException e) {
+                logger.warn(e);
+                eventsFailLoadingCounter++;
+                sleepAWhile();
+            }
+        }
+        //scheduleAnnouncer.sendMessageToOnline(String.format("[google internal error] Vi klarte ikke å lese kalenderen til %s - google gir oss server internal error :-(", eventType.toString()));
+
+        return orignalFallbackEvents;
+    }
+
+    private void sleepAWhile() {
+        try {
+            Thread.sleep(LOAD_SLEEP);
+        } catch (InterruptedException e) {
+            logger.warn(e);
+        }
     }
 }
