@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 
  * @author Espen Jacobsson
- * Handles all nicks known to a {@link Network}
+ * Handles all nicks known to a {@link no.fictive.irclib.model.network.Network}
  */
 public class NickHandler {
 	
@@ -64,4 +64,5 @@ public class NickHandler {
 	public ConcurrentHashMap<String, Nick> getNicks() {
 		return users;
 	}
+
 }
