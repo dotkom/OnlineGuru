@@ -17,6 +17,7 @@ import no.ntnu.online.onlineguru.plugin.plugins.mailannouncer.MailAnnouncer;
 import no.ntnu.online.onlineguru.plugin.plugins.middag.Middag;
 import no.ntnu.online.onlineguru.plugin.plugins.auth.Auth;
 import no.ntnu.online.onlineguru.plugin.plugins.nickserv.NickServ;
+import no.ntnu.online.onlineguru.plugin.plugins.peak.Peak;
 import no.ntnu.online.onlineguru.plugin.plugins.simpletrigger.SimpleTrigger;
 import no.ntnu.online.onlineguru.plugin.plugins.spotify.Spotify;
 import no.ntnu.online.onlineguru.plugin.plugins.twitter.TwitterPlugin;
@@ -51,6 +52,7 @@ public class PluginManager {
         initiatePlugin(new LastFM());
         initiatePlugin(new Middag());
         initiatePlugin(new NickServ());
+        initiatePlugin(new Peak());
         initiatePlugin(new SimpleTrigger());
         initiatePlugin(new Spotify());
         initiatePlugin(new TwitterPlugin());
