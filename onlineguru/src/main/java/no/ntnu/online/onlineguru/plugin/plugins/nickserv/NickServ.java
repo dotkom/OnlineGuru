@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Keeps track of authentication usernames for nicks on Networks that the bot attends.
+ *
  * @author Håvard Slettvold
  */
 public class NickServ implements Plugin {
