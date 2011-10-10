@@ -108,6 +108,9 @@ public class Connection implements Runnable {
             } catch (IOException e) {
                 logger.error("Connection broken.");
                 close();
+            } catch (NullPointerException e) {
+                logger.error("Pipe empty.");
+                close();
             }
         }
         close();
