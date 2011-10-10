@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.regex.*;
 
 import no.ntnu.online.onlineguru.utils.Wand;
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -34,15 +35,10 @@ public class Middag implements PluginWithDependencies {
 	private int currentWeek = Integer.parseInt(week.print(new DateTime()));
 	private int currentYear = Integer.parseInt(year.print(new DateTime()));
 	private HashMap<Integer, Year> years = new HashMap<Integer, Year>();
+
+    static Logger logger = Logger.getLogger(Middag.class);
 	
-	Pattern pagePattern = Pattern.compile(
-			"class=\"ukedag\">([^<>]+)<" +									// finn dag (group 1)
-		    "|" +															// eller	
-			"\"menycelle\">([^<>]*).*?\"priscelle\">([^<>]*).*?" + 			// finn Menyen (group 2-3)
-	        "|" +															// eller
-	        "(Beklager, ingen meny er laget for uke (\\d{1,2}), (\\d{4}))"	// erroren (group 4-6)
-	);
-	Pattern triggerPattern = Pattern.compile("^!middag(?: (\\w+)(?: (\\d{1,2})(?: (\\d{4}))?)?)?$");
+    	Pattern triggerPattern = Pattern.compile("^!middag(?: (\\w+)(?: (\\d{1,2})(?: (\\d{4}))?)?)?$");
  
     public Middag() {
     	updateMenu(currentYear, currentWeek);
@@ -118,10 +114,6 @@ public class Middag implements PluginWithDependencies {
 	    	
 	    	int week = getWeek();
 	    	int year = getYear();
-	    	
-	    	// Trengs for senere støtte om frem/tilbake i tid, trenger bare flere menyer for å teste.
-//	    	int week = triggerMatcher.group(2) == null ? currentWeek : Integer.parseInt(triggerMatcher.group(2));
-//	    	int year = triggerMatcher.group(3) == null ? currentYear : Integer.parseInt(triggerMatcher.group(3));
 	    	
 	    	Year y = years.get(year);
 			if (y != null) {

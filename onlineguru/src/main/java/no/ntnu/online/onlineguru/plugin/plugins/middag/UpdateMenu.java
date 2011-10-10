@@ -10,6 +10,7 @@ import no.ntnu.online.onlineguru.utils.urlreader.URLReaderUser;
 import org.apache.log4j.Logger;
 
 public class UpdateMenu implements URLReaderUser {
+
     static Logger logger = Logger.getLogger(UpdateMenu.class);
 	private Middag middag;
 	private int week = 0;
@@ -47,10 +48,10 @@ public class UpdateMenu implements URLReaderUser {
 
         boolean found = false;	
 		while (pageMatcher.find()) {
-//        	for (int i = 1; i <= pageMatcher.groupCount(); i++) {
-//        		System.out.print(i+" \""+pageMatcher.group(i)+"\" ");
-//        	}
-//        	System.out.print("\n");
+        	//for (int i = 1; i <= pageMatcher.groupCount(); i++) {
+        	//	System.out.print(i+" \""+pageMatcher.group(i)+"\" ");
+        	//}
+        	//System.out.print("\n");
         	if (pageMatcher.group(1) != null) {
         		if (day.isEmpty()) {
         			//System.out.println("(Middag) Day was null, setting it for the first time.");
