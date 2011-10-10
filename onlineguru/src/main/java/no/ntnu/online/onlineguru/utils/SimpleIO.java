@@ -12,7 +12,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.Object;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -124,9 +125,9 @@ public class SimpleIO {
         return list;
     }
 
-    public static Hashtable<String, String> loadConfig(String filename) throws FileNotFoundException, IOException {
+    public static Map<String, String> loadConfig(String filename) throws FileNotFoundException, IOException {
         ArrayList<String> file = readFileAsList(filename);
-        Hashtable<String, String> mappings = new Hashtable<String, String>();
+        Map<String, String> mappings = new HashMap<String, String>();
 
         for (String line : file) {
             if (line.contains("=")) {
@@ -140,7 +141,7 @@ public class SimpleIO {
         return mappings;
     }
 
-    public static void saveConfig(String filename, Hashtable<String, String> config) throws IOException {
+    public static void saveConfig(String filename, Map<String, String> config) throws IOException {
         File file = new File(filename);
         file.delete();
         file.createNewFile();

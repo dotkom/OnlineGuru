@@ -2,7 +2,7 @@ package no.ntnu.online.onlineguru.plugin.plugins.simpletrigger;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Hashtable;
+import java.util.Map;
 
 import no.ntnu.online.onlineguru.utils.SimpleIO;
 import org.apache.log4j.Logger;
@@ -31,7 +31,7 @@ public class SimpleTriggerSettings {
 		return false;
 	}
 
-	protected void saveConfig(Hashtable<String, String> config) {
+	protected void saveConfig(Map<String, String> config) {
 		try {
 			SimpleIO.saveConfig(SETTINGS_FILE, config);
 		} catch (IOException e) {

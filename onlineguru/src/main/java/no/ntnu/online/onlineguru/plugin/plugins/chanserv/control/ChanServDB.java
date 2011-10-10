@@ -8,7 +8,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 import no.ntnu.online.onlineguru.utils.SimpleIO;
 import org.apache.log4j.Logger;
@@ -158,8 +159,8 @@ public class ChanServDB {
 		return success;
 	}
 	
-	public Hashtable<String, String> getFlags(String username) {
-		Hashtable<String, String> flags = new Hashtable<String, String>();
+	public HashMap<String, String> getFlags(String username) {
+		HashMap<String, String> flags = new HashMap<String, String>();
 		
 		if(userExists(username)) {
 			try {
@@ -426,7 +427,7 @@ public class ChanServDB {
 			SimpleIO.createFolder(chanserv_settings_folder);
 			SimpleIO.createFile(chanserv_settings_file);
 			
-			Hashtable<String, String> settings = SimpleIO.loadConfig(chanserv_settings_file);
+			Map<String, String> settings = SimpleIO.loadConfig(chanserv_settings_file);
 			adminUsername = settings.get("admin_username");
 			adminPassword = settings.get("admin_password");
 			

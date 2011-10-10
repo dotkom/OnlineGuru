@@ -1,8 +1,6 @@
 package no.ntnu.online.onlineguru.plugin.plugins.lastfm;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.Hashtable;
+import java.util.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -32,7 +30,7 @@ public class LastFM implements PluginWithDependencies {
 	private final String database_folder = "database/";
 	private final String database_file = database_folder + "lastfm.db";
 	
-	private Hashtable<String, String> usernameMapping = new Hashtable<String, String>();
+	private Map<String, String> usernameMapping = new HashMap<String, String>();
 	private Wand wand;
 	private Help help;
 	

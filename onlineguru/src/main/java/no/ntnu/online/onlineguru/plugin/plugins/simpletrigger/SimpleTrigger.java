@@ -1,6 +1,8 @@
 package no.ntnu.online.onlineguru.plugin.plugins.simpletrigger;
 
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
+
 import no.fictive.irclib.event.container.Event;
 import no.fictive.irclib.event.container.command.PrivMsgEvent;
 import no.fictive.irclib.event.model.EventType;
@@ -12,7 +14,7 @@ import no.ntnu.online.onlineguru.utils.Wand;
 
 public class SimpleTrigger implements Plugin, PluginWithDependencies {
 	
-	private Hashtable<String, String> triggers = new Hashtable<String, String>();
+	private Map<String, String> triggers = new HashMap<String, String>();
 	private SimpleTriggerSettings simpleTriggerSettings;
 	private Wand wand;
 	private String[] dependencies = new String[] { "ChanServ" };
@@ -26,7 +28,7 @@ public class SimpleTrigger implements Plugin, PluginWithDependencies {
 		simpleTriggerSettings.initiate();
 	}
 	
-	protected void setTriggers(Hashtable<String, String> triggers) {
+	protected void setTriggers(Map<String, String> triggers) {
 		this.triggers = triggers;
 	}
 	
@@ -38,7 +40,7 @@ public class SimpleTrigger implements Plugin, PluginWithDependencies {
 		return triggers.get(trigger);
 	}
 	
-	public Hashtable<String, String> getTriggers() {
+	public Map<String, String> getTriggers() {
 		return triggers;
 	}
 
