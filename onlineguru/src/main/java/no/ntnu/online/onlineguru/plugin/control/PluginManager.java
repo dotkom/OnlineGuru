@@ -15,6 +15,7 @@ import no.ntnu.online.onlineguru.plugin.plugins.help.Help;
 import no.ntnu.online.onlineguru.plugin.plugins.lastfm.LastFM;
 import no.ntnu.online.onlineguru.plugin.plugins.mailannouncer.MailAnnouncer;
 import no.ntnu.online.onlineguru.plugin.plugins.middag.Middag;
+import no.ntnu.online.onlineguru.plugin.plugins.auth.Auth;
 import no.ntnu.online.onlineguru.plugin.plugins.nickserv.NickServ;
 import no.ntnu.online.onlineguru.plugin.plugins.simpletrigger.SimpleTrigger;
 import no.ntnu.online.onlineguru.plugin.plugins.spotify.Spotify;
@@ -40,6 +41,7 @@ public class PluginManager {
 	}
 	
 	private void loadPlugins() {
+        initiatePlugin(new Auth());
         initiatePlugin(new AutoOp());
         initiatePlugin(new Bus());
 		initiatePlugin(new ChanServ());
@@ -51,12 +53,14 @@ public class PluginManager {
         initiatePlugin(new NickServ());
         initiatePlugin(new SimpleTrigger());
         initiatePlugin(new Spotify());
+        initiatePlugin(new TwitterPlugin());
         initiatePlugin(new URLHandler());
         initiatePlugin(new Version());
-        initiatePlugin(new MailAnnouncer());
-        initiatePlugin(new TwitterPlugin());
-        initiatePlugin(new Git());
+
+        // These take a long time to load, before they are threaded, they need to be last on the list.
         initiatePlugin(new CalendarPlugin());
+        initiatePlugin(new Git());
+        initiatePlugin(new MailAnnouncer());
 	}
 	
 	private void initiatePlugin(Plugin plugin) {
