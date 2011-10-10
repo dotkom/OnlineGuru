@@ -1,14 +1,14 @@
 package no.ntnu.online.onlineguru.plugin.plugins.chanserv.model;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Iterator;
 
 
 public class AuthorizedUser {
 	
 	private String username;
 	private boolean superuser = false;
-	Hashtable<String, Flags> flags = new Hashtable<String, Flags>();
+	HashMap<String, Flags> flags = new HashMap<String, Flags>();
 	
 	public AuthorizedUser(String username) {
 		this.username = username;
@@ -39,12 +39,12 @@ public class AuthorizedUser {
 		return null;
 	}
 	
-	public void updateFlags(Hashtable<String, String> flags) {
+	public void updateFlags(HashMap<String, String> flags) {
 		
-		Enumeration<String> en = flags.keys();
+		Iterator<String> en = flags.keySet().iterator();
 		
-		while(en.hasMoreElements()) {
-			String channel = en.nextElement();
+		while(en.hasNext()) {
+			String channel = en.next();
 			String strFlags = flags.get(channel);
 			updateFlags(channel, strFlags);
 		}
