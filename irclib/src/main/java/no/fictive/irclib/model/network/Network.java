@@ -3,6 +3,8 @@ package no.fictive.irclib.model.network;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -296,4 +298,16 @@ public class Network {
 	public NickHandler getNickHandler() {
 		return nickHandler;
 	}
+
+    public Set<Channel> commonChannels(String nick) {
+        Set<Channel> comchans = new HashSet<Channel>();
+
+        for (Channel c : channels.values()) {
+            if (c.isOnChannel(nick)) {
+                comchans.add(c);
+            }
+        }
+
+        return comchans;
+    }
 }
