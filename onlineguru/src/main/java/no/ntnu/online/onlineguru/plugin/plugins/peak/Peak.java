@@ -52,6 +52,12 @@ public class Peak implements PluginWithDependencies {
         verifyMapIntegrity(peaks);
     }
 
+    /**
+     * This method verifies that the database loaded fills the requirement
+     * Map<String, Integer>.
+     *
+     * @param peaks Map to be checked
+     */
     private void verifyMapIntegrity(Map<String, String> peaks) {
         for (String key : peaks.keySet()) {
             try {
@@ -84,24 +90,30 @@ public class Peak implements PluginWithDependencies {
     }
 
     public void incomingEvent(Event e) {
-        switch (e.getEventType()) {
-            case JOIN:
-                handleJoinEvent((JoinEvent)e);
-                break;
-            case NUMERIC:
-                handleNumericEvent((NumericEvent)e);
-                break;
-			case PRIVMSG:
-				handlePrivMsgEvent((PrivMsgEvent)e);
-				break;
-		}
+        if (enabled) {
+            switch (e.getEventType()) {
+                case JOIN:
+                    handleJoinEvent((JoinEvent)e);
+                    break;
+                case NUMERIC:
+                    handleNumericEvent((NumericEvent)e);
+                    break;
+                case PRIVMSG:
+                    handlePrivMsgEvent((PrivMsgEvent)e);
+                    break;
+            }
+        }
     }
 
+    /**
+     * Checks if the channel already has a count, and adds it if it doesn't.
+     *
+     * @param e {@link JoinEvent} to be investigated.
+     */
     private void handleJoinEvent(JoinEvent e) {
         String count = peaks.get(e.getChannel());
         if (count == null) {
             peaks.put(e.getChannel(),""+0);
-            System.out.println("Added "+e.getChannel());
         }
     }
 
@@ -142,6 +154,10 @@ public class Peak implements PluginWithDependencies {
                 else if (message.length == 2) {
                     if (message[1].startsWith("#")) {
                         count = peaks.get(message[1]);
+                    }
+                    if (message[1].equals("enable")) {
+                        enabled = true;
+                        verifyMapIntegrity(peaks);
                     }
                 }
 
