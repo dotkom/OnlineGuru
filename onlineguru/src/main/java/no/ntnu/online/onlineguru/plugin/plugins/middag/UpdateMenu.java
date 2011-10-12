@@ -8,6 +8,7 @@ import no.ntnu.online.onlineguru.utils.urlreader.URLReader;
 import no.ntnu.online.onlineguru.utils.urlreader.URLReaderUser;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 
 public class UpdateMenu implements URLReaderUser {
 
@@ -48,17 +49,22 @@ public class UpdateMenu implements URLReaderUser {
 
         boolean found = false;	
 		while (pageMatcher.find()) {
-        	//for (int i = 1; i <= pageMatcher.groupCount(); i++) {
-        	//	System.out.print(i+" \""+pageMatcher.group(i)+"\" ");
-        	//}
-        	//System.out.print("\n");
+            /*
+            Enable to show group contents.
+
+            for (int i = 1; i <= pageMatcher.groupCount(); i++) {
+        		System.out.print(i+" \""+pageMatcher.group(i)+"\" ");
+        	}
+        	System.out.print("\n");
+
+        	*/
         	if (pageMatcher.group(1) != null) {
         		if (day.isEmpty()) {
-        			//System.out.println("(Middag) Day was null, setting it for the first time.");
+        			logger.debug("Day was null, setting it for the first time.");
         			day = pageMatcher.group(1); 
         		}
         		else {
-        			//System.out.println("(Middag) Day was already set, resetting it.");
+        			logger.debug("Day was already set, Adding day menu or resetting.");
         			if (dayMenu.equals("")) {
         				middag.setMenu(year, week, day, kantine, "Det er ikke satt noen meny for "+day.toLowerCase()+" i "+kantine.toLowerCase()+" i uke "+week+", "+year+".");
         			}
@@ -70,12 +76,12 @@ public class UpdateMenu implements URLReaderUser {
         		}
         	}
         	else if (pageMatcher.group(4) != null) {
-        		//System.out.println("(Middag) making entry for year '"+year+"' and week '"+week+"' for '"+kantine+"'");
+        		logger.debug("No menu set for week "+week+". Setting error weekmessage for '"+kantine+"'.");
         		middag.setWeekMenu(year, week, kantine,
         				"SiT har ikke laget noen meny for "+kantine.toLowerCase()+" i uke "+pageMatcher.group(5)+", "+pageMatcher.group(6)+".");
         	}
         	else {
-        		//System.out.println("(Middag) I haz a menu for day: "+day+"! ");
+        		logger.debug("Adding menu item for day: "+day+"! ");
         		
         		if (pageMatcher.group(2) != null) {
         			if (!dayMenu.equals("")) {
@@ -92,10 +98,10 @@ public class UpdateMenu implements URLReaderUser {
             found = true;
         }
 		if(!found){
-            logger.warn("No match found.");
+            logger.debug("No match found. "+week+"/"+year);
         }
 		else {
-        	// Sets the meny for friday, since it will not becaught in the while loop.
+        	// Sets the meny for friday, since it will not be caught in the while loop.
         	if (dayMenu.equals("")) {
 				middag.setMenu(year, week, day, kantine, "Det er ikke satt noen meny for "+day.toLowerCase()+" i "+kantine.toLowerCase()+" i uke "+week+", "+year+".");
     		}
@@ -113,7 +119,7 @@ public class UpdateMenu implements URLReaderUser {
 	public void urlReaderCallback(URLReader urlReader,
 			Object[] callbackParameters) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	

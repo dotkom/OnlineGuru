@@ -62,7 +62,7 @@ public class Middag implements PluginWithDependencies {
 	}
 	
 	public void setWeekMenu(int year, int week, String kantine, String menu) {
-		
+		getOrCreateYear(year).setWeekMenu(week, kantine, menu);
 	}
     
     /*
