@@ -130,8 +130,6 @@ public class OnlineGuru implements IRCEventListener {
     }
 
     private void handleConnect(Event event) {
-        logger.info("Connected");
-
         Network network = event.getNetwork();
         Vector<String> channels = channelsOnConnect.get(network);
         for (String channel : channels) {
