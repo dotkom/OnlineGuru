@@ -60,11 +60,12 @@ public class PluginManager {
         initiatePlugin(new Version());
 
         // These take a long time to load, before they are threaded, they need to be last on the list.
-        initiatePlugin(new CalendarPlugin());
+        // TODO Find out why this plugin gives error in prod, but not locally.
+        //initiatePlugin(new CalendarPlugin());
         initiatePlugin(new Git());
         initiatePlugin(new MailAnnouncer());
+
 	}
-	
 	private void initiatePlugin(Plugin plugin) {
 		plugin.addEventDistributor(eventDistributor);
 		plugin.addWand(wand);
