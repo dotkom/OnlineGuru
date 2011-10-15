@@ -175,6 +175,18 @@ public class GitAnnounceImpl implements GitAnnounce, WebserverCallback {
         return announceHashMap.values().iterator();
     }
 
+    public Boolean removeAnnounce(String repositoryIdentifier, String network, String channel) {
+        if (announceHashMap.containsKey(repositoryIdentifier)) {
+            ConcurrentHashMap<String, List<String>> announceNetworks = announceHashMap.get(repositoryIdentifier).getAnnounceToChannels();
+            if (announceNetworks.containsKey(network)) {
+                List<String> announceChannels = announceNetworks.get(network);
+                if (announceChannels.contains(channel)) {
+                    return announceChannels.remove(channel);
+                }
+            }
+        }
+        return Boolean.FALSE;
+    }
 
     public Boolean removeAnnounce(String announceLookup) {
         if (announceHashMap.containsKey(announceLookup)) {

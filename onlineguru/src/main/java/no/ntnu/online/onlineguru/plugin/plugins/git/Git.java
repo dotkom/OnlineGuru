@@ -93,12 +93,18 @@ public class Git implements PluginWithDependencies {
                     }
                 } else if (isListKeyword(message[1])) {
                     listAnnounces(privMsgEvent);
+                } else if (isDeleteByRecipient(message)) {
+                    deleteByRecipient(privMsgEvent, message);
                 }
 
             }
         }
 
 
+    }
+
+    private boolean isDeleteByRecipient(String[] message) {
+        return "del".equalsIgnoreCase(message[2]) && message.length == 6;
     }
 
     private boolean isListKeyword(String s) {
@@ -133,6 +139,16 @@ public class Git implements PluginWithDependencies {
         }
     }
 
+    private void deleteByRecipient(PrivMsgEvent privMsgEvent, String[] message) {
+        Boolean result;
+        result = delAnnounce(message[2], message[3], message[4], message[5]);
+        if (result) {
+            wand.sendMessageToTarget(privMsgEvent.getNetwork(), privMsgEvent.getSender(), String.format("Removed git %s announce for %s on network %s channel %s", message[2], message[3], message[4], message[5]));
+        } else {
+            wand.sendMessageToTarget(privMsgEvent.getNetwork(), privMsgEvent.getSender(), String.format("Failed to remove git %s announce for %s on network %s channel %s", message[2], message[3], message[4], message[5]));
+        }
+    }
+
     private Boolean addAnnounce(String repoType, String repository, String network, String channel) {
         ConcurrentHashMap<String, List<String>> channelsToAnnounce = new ConcurrentHashMap<String, List<String>>();
         ArrayList<String> channels = new ArrayList<String>();
@@ -147,6 +163,10 @@ public class Git implements PluginWithDependencies {
         }
 
         return gitAnnounce.addAnnounce(new IRCAnnounce(payload, channelsToAnnounce));
+    }
+
+    private Boolean delAnnounce(String repoType, String repositoryIdentifier, String network, String channel) {
+        return gitAnnounce.removeAnnounce(repositoryIdentifier, network, channel);
     }
 
 
