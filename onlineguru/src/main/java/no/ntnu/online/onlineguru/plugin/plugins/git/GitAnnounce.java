@@ -6,5 +6,5 @@ package no.ntnu.online.onlineguru.plugin.plugins.git;
  *         Time: 16:41
  */
 public interface GitAnnounce {
-    Boolean publishGitAnnounce(String repository, String changeset);
+    Boolean publishGitAnnounce(GitPayload payload);
 }

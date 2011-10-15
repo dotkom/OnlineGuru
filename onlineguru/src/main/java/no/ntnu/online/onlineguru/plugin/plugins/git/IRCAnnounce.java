@@ -10,37 +10,14 @@ import java.util.concurrent.ConcurrentHashMap;
  *         Time: 16:54
  */
 public class IRCAnnounce implements Serializable {
-    private String repository;
-    private String ref;
+
 
     private ConcurrentHashMap<String, List<String>> announceToChannels;
+    private GitPayload gitPayload;
 
-    public IRCAnnounce(String repository, String ref, ConcurrentHashMap<String, List<String>> announceToChannels) {
-        this.repository = repository;
-        this.ref = ref;
+    public IRCAnnounce(GitPayload gitPayload, ConcurrentHashMap<String, List<String>> announceToChannels) {
+        this.gitPayload = gitPayload;
         this.announceToChannels = announceToChannels;
-    }
-
-    public IRCAnnounce(String repository, ConcurrentHashMap<String, List<String>> announceToChannels) {
-        this.repository = repository;
-        this.announceToChannels = announceToChannels;
-    }
-
-
-    public String getRepository() {
-        return repository;
-    }
-
-    public void setRepository(String repository) {
-        this.repository = repository;
-    }
-
-    public String getRef() {
-        return ref;
-    }
-
-    public void setRef(String ref) {
-        this.ref = ref;
     }
 
     public ConcurrentHashMap<String, List<String>> getAnnounceToChannels() {
@@ -51,13 +28,12 @@ public class IRCAnnounce implements Serializable {
         this.announceToChannels = announceToChannels;
     }
 
-    @Override
-    public String toString() {
-        return "IRCAnnounce{" +
-                "announceToChannels=" + announceToChannels +
-                ", ref='" + ref + '\'' +
-                ", repository='" + repository + '\'' +
-                '}';
+    public GitPayload getGitPayload() {
+        return gitPayload;
+    }
+
+    public void setGitPayload(GitPayload gitPayload) {
+        this.gitPayload = gitPayload;
     }
 
     @Override
@@ -67,13 +43,21 @@ public class IRCAnnounce implements Serializable {
 
         IRCAnnounce that = (IRCAnnounce) o;
 
-        if (!repository.equals(that.repository)) return false;
+        if (!gitPayload.equals(that.getGitPayload())) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return repository.hashCode();
+        return gitPayload.getType().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "IRCAnnounce{" +
+                "announceToChannels=" + announceToChannels +
+                ", gitPayload=" + gitPayload +
+                '}';
     }
 }

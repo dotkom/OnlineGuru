@@ -8,11 +8,9 @@ import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
 import no.ntnu.online.onlineguru.plugin.plugins.chanserv.control.ChanServ;
-import no.ntnu.online.onlineguru.plugin.plugins.mailannouncer.Announce;
-import no.ntnu.online.onlineguru.plugin.plugins.mailannouncer.Email;
-import no.ntnu.online.onlineguru.plugin.plugins.mailannouncer.EmailImpl;
-import no.ntnu.online.onlineguru.plugin.plugins.mailannouncer.LookupAnnounce;
+import no.ntnu.online.onlineguru.plugin.plugins.git.github.jsonmodel.GitHubPayload;
 import no.ntnu.online.onlineguru.utils.Wand;
+import no.ntnu.online.onlineguru.utils.webserver.Webserver;
 import no.ntnu.online.onlineguru.utils.xmlrpcserver.XmlRpcServer;
 import org.apache.log4j.Logger;
 
@@ -22,11 +20,10 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * @todo fixme refactor this shitty plugin
- *
  * @author Roy Sindre Norangshol <roy.sindre at norangshol dot no>
  *         Date: 11.04.11
  *         Time: 16:39
+ * @todo fixme refactor this shitty plugin
  */
 public class Git implements PluginWithDependencies {
     static Logger logger = Logger.getLogger(Git.class);
@@ -75,7 +72,9 @@ public class Git implements PluginWithDependencies {
     private void registerWithXmlRpcServer() {
         gitAnnounce = new GitAnnounceImpl(wand);
         XmlRpcServer xmlRpcServer = OnlineGuru.serviceLocator.getInstance(XmlRpcServer.class);
+        Webserver webServer = OnlineGuru.serviceLocator.getInstance(Webserver.class);
         try {
+            webServer.registerWebserverCallback("/plugins/git", gitAnnounce);
             xmlRpcServer.addHandler(GitAnnounce.class.getName(), gitAnnounce);
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -107,7 +106,7 @@ public class Git implements PluginWithDependencies {
     }
 
     private boolean isAddByRecipientKeyword(String[] message) {
-        return "add".equalsIgnoreCase(message[1]) && message.length == 5;
+        return "add".equalsIgnoreCase(message[1]) && message.length == 6;
     }
 
     private void listAnnounces(PrivMsgEvent privMsgEvent) {
@@ -126,20 +125,28 @@ public class Git implements PluginWithDependencies {
 
     private void addAnnounceByRecipient(PrivMsgEvent privMsgEvent, String[] message) {
         Boolean result;
-        result = addAnnounce(message[2], message[3], message[4]);
+        result = addAnnounce(message[2], message[3], message[4], message[5]);
         if (result) {
-            wand.sendMessageToTarget(privMsgEvent.getNetwork(), privMsgEvent.getSender(), String.format("Added mail announce for email %s to network %s on channel %s", message[2], message[3], message[4]));
+            wand.sendMessageToTarget(privMsgEvent.getNetwork(), privMsgEvent.getSender(), String.format("Added git %s announce for %s to network %s on channel %s", message[2], message[3], message[4], message[5]));
         } else {
-            wand.sendMessageToTarget(privMsgEvent.getNetwork(), privMsgEvent.getSender(), String.format("Failed to add mail announce for email %s , does it already exist?", message[2]));
+            wand.sendMessageToTarget(privMsgEvent.getNetwork(), privMsgEvent.getSender(), String.format("Failed to add git %s announce for %s , does it already exist?", message[2], message[3]));
         }
     }
 
-    private Boolean addAnnounce(String repository, String network, String channel) {
+    private Boolean addAnnounce(String repoType, String repository, String network, String channel) {
         ConcurrentHashMap<String, List<String>> channelsToAnnounce = new ConcurrentHashMap<String, List<String>>();
         ArrayList<String> channels = new ArrayList<String>();
         channels.add(channel);
         channelsToAnnounce.put(network, channels);
-        return gitAnnounce.addAnnounce(new IRCAnnounce(repository, null, channelsToAnnounce));
+
+        GitPayload payload;
+        if (repoType.equalsIgnoreCase("github")) {
+            payload = new GitHubPayload(repository);
+        } else {
+            payload = new RedminePayload(repository);
+        }
+
+        return gitAnnounce.addAnnounce(new IRCAnnounce(payload, channelsToAnnounce));
     }
 
 
