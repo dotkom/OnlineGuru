@@ -56,7 +56,8 @@ public class GitAnnounceImpl implements GitAnnounce, WebserverCallback {
     }
 
 
-    public Boolean publishGitAnnounce(GitPayload payload) {
+    public Boolean publishGitAnnounce(String repository, String ref) {
+        RedminePayload payload = new RedminePayload(repository, ref);
 
         IRCAnnounce announce = announceHashMap.get(payload.getIdentifier());
 
@@ -66,7 +67,6 @@ public class GitAnnounceImpl implements GitAnnounce, WebserverCallback {
         return announceToIRC(toAnnounce);
 
     }
-
 
     protected Boolean announceToIRC(IRCAnnounce ircAnnounce) {
         if (wand != null) {
@@ -86,7 +86,7 @@ public class GitAnnounceImpl implements GitAnnounce, WebserverCallback {
                         messages.add(String.format(announceGitHubCommit,
                                 gitHubPayload.getRepository().getName(),
                                 activeBranch,
-                                commit.getMessage().replaceAll("\n",", "),
+                                commit.getMessage().replaceAll("\n", ", "),
                                 commit.getAuthor().getName(),
                                 commit.getAdded().size(),
                                 commit.getModified().size(),

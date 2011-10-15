@@ -15,6 +15,10 @@ public class RedminePayload extends GitPayload implements Serializable {
     public RedminePayload(String repository) {
         this.repository = repository;
     }
+    public RedminePayload(String repository, String ref) {
+        this.repository = repository;
+        this.ref = ref;
+    }
 
     public String getRepository() {
         return repository;
