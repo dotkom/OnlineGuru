@@ -31,7 +31,7 @@ public class GitAnnounceImpl implements GitAnnounce, WebserverCallback {
     private GitAnnouncementRepository announcementRepository;
     private Wand wand;
     //https://trac.online.ntnu.no/projects/onlineguru/repository/revisions/3ee0eea72999dc408a274c2b940e170a04efc806
-    private final String announceFormat = "[scm] %s https://trac.online.ntnu.no/projects/%s/repository/revisions/%s";
+    private final String announceFormat = "[scm] %s https://wiki.online.ntnu.no/projects/%s/repository/revisions/%s";
     private Gson gson;
 
 
