@@ -1,19 +1,34 @@
-package no.ntnu.online.onlineguru.plugin.plugins.github.jsonmodel;
+package no.ntnu.online.onlineguru.plugin.plugins.git.github.jsonmodel;
 
 
 import no.ntnu.online.onlineguru.plugin.plugins.git.GitPayload;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * @author Roy Sindre Norangshol
  */
-public class GitHubPayload implements GitPayload {
+public class GitHubPayload extends GitPayload implements Serializable{
     private String before;
     private Repository repository;
     private List<Commit> commits;
     private String after;
     private String ref;
+    private String compare;
+
+    public GitHubPayload() {}
+    public GitHubPayload(String repositoryUrlWhichIsIdentifier) {
+        setRepository(new Repository(repositoryUrlWhichIsIdentifier));
+    }
+
+    public String getCompare() {
+        return compare;
+    }
+
+    public void setCompare(String compare) {
+        this.compare = compare;
+    }
 
     public String getBefore() {
         return before;
@@ -63,10 +78,12 @@ public class GitHubPayload implements GitPayload {
                 ", commits=" + commits +
                 ", after='" + after + '\'' +
                 ", ref='" + ref + '\'' +
+                ", compare='" + compare + '\'' +
                 '}';
     }
 
-    public String getType() {
-        return GitHubPayload.class.getName();
+   @Override
+    public String getIdentifier() {
+        return repository.getUrl();
     }
 }

@@ -1,11 +1,12 @@
-package no.ntnu.online.onlineguru.plugin.plugins.github.jsonmodel;
+package no.ntnu.online.onlineguru.plugin.plugins.git.github.jsonmodel;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * @author Roy Sindre Norangshol
  */
-public class Commit {
+public class Commit implements Serializable {
     private String id;
     private String url;
     private User author;

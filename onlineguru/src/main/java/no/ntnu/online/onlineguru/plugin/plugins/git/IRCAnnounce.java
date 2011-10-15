@@ -52,4 +52,12 @@ public class IRCAnnounce implements Serializable {
     public int hashCode() {
         return gitPayload.getType().hashCode();
     }
+
+    @Override
+    public String toString() {
+        return "IRCAnnounce{" +
+                "announceToChannels=" + announceToChannels +
+                ", gitPayload=" + gitPayload +
+                '}';
+    }
 }

@@ -1,9 +1,11 @@
-package no.ntnu.online.onlineguru.plugin.plugins.github.jsonmodel;
+package no.ntnu.online.onlineguru.plugin.plugins.git.github.jsonmodel;
+
+import java.io.Serializable;
 
 /**
  * @author Roy Sindre Norangshol
  */
-public class User {
+public class User implements Serializable {
     private String email;
     private String name;
 

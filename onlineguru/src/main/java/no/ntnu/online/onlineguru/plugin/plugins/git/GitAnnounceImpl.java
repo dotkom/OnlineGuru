@@ -1,14 +1,20 @@
 package no.ntnu.online.onlineguru.plugin.plugins.git;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import no.fictive.irclib.model.network.Network;
+import no.ntnu.online.onlineguru.plugin.plugins.git.github.jsonmodel.Commit;
+import no.ntnu.online.onlineguru.plugin.plugins.git.github.jsonmodel.GitHubPayload;
 import no.ntnu.online.onlineguru.utils.Wand;
+import no.ntnu.online.onlineguru.utils.webserver.NanoHTTPD;
+import no.ntnu.online.onlineguru.utils.webserver.Response;
+import no.ntnu.online.onlineguru.utils.webserver.WebserverCallback;
 import org.apache.log4j.Logger;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static no.ntnu.online.onlineguru.utils.webserver.NanoHTTPD.MIME_PLAINTEXT;
 
 
 /**
@@ -16,36 +22,47 @@ import java.util.concurrent.ConcurrentHashMap;
  *         Date: 11.04.11
  *         Time: 16:42
  */
-public class GitAnnounceImpl implements GitAnnounce {
+public class GitAnnounceImpl implements GitAnnounce, WebserverCallback {
 
     static Logger logger = Logger.getLogger(GitAnnounceImpl.class);
+    public static final String announceGitHubCommit = "[scm][%s/%s] %s (%s) [%sA/%sM/%sD]";
     private final String DEFAULT_DB_FILE_ANNOUNCES = Git.DB_FOLDER + "git-announces.db";
     private HashMap<String, IRCAnnounce> announceHashMap;
     private GitAnnouncementRepository announcementRepository;
     private Wand wand;
     //https://trac.online.ntnu.no/projects/onlineguru/repository/revisions/3ee0eea72999dc408a274c2b940e170a04efc806
     private final String announceFormat = "[scm] %s https://trac.online.ntnu.no/projects/%s/repository/revisions/%s";
+    private Gson gson;
+
 
     public GitAnnounceImpl(Wand wand) {
         announcementRepository = new SqliteGitAnnouncementPersister(DEFAULT_DB_FILE_ANNOUNCES);
-        announceHashMap = announcementRepository.load();
-        this.wand = wand;
+        init(wand);
     }
 
     public GitAnnounceImpl(Wand wand, GitAnnouncementRepository announcementRepository) {
         this.announcementRepository = announcementRepository;
+        init(wand);
+    }
+
+    public void init(Wand wand) {
         this.announceHashMap = announcementRepository.load();
         this.wand = wand;
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gson = gsonBuilder
+                .serializeNulls()
+                .create();
+
     }
 
 
-    public Boolean publishGitAnnounce(String repository, String changeset) {
-        IRCAnnounce announce = announceHashMap.get(repository);
+    public Boolean publishGitAnnounce(GitPayload payload) {
 
-        // Clone the object, as we don't want to modify the orginal one in the announceHashMap
-        IRCAnnounce toAnnounce = new IRCAnnounce(announce.getRepository(), announce.getRef(), announce.getAnnounceToChannels());
+        IRCAnnounce announce = announceHashMap.get(payload.getIdentifier());
 
-        toAnnounce.setRef(changeset); // not saved in settings
+// Clone the object, as we don't want to modify the orginal one in the announceHashMap
+        IRCAnnounce toAnnounce = new IRCAnnounce(payload, announce.getAnnounceToChannels());
+
         return announceToIRC(toAnnounce);
 
     }
@@ -54,7 +71,34 @@ public class GitAnnounceImpl implements GitAnnounce {
     protected Boolean announceToIRC(IRCAnnounce ircAnnounce) {
         if (wand != null) {
             if (ircAnnounce != null) {
-                String announceText = String.format(announceFormat, ircAnnounce.getRepository(), ircAnnounce.getRepository(), ircAnnounce.getRef());
+                List<String> messages = new ArrayList<String>();
+
+                if (ircAnnounce.getGitPayload() instanceof GitHubPayload) {
+                    GitHubPayload gitHubPayload = (GitHubPayload) ircAnnounce.getGitPayload();
+                    String activeBranch = gitHubPayload.getRef().split("/")[2];
+                    messages.add(String.format("[scm][%s] %s new commits pushed to %s: %s",
+                            gitHubPayload.getRepository().getName(),
+                            gitHubPayload.getCommits().size(),
+                            activeBranch,
+                            gitHubPayload.getCompare()
+                    ));
+                    for (Commit commit : gitHubPayload.getCommits()) {
+                        messages.add(String.format(announceGitHubCommit,
+                                gitHubPayload.getRepository().getName(),
+                                activeBranch,
+                                commit.getMessage().replaceAll("\n",", "),
+                                commit.getAuthor().getName(),
+                                commit.getAdded().size(),
+                                commit.getModified().size(),
+                                commit.getRemoved().size()
+                        ));
+                    }
+
+                } else if (ircAnnounce.getGitPayload() instanceof RedminePayload) {
+                    RedminePayload redminePayload = (RedminePayload) ircAnnounce.getGitPayload();
+                    messages.add(String.format(announceFormat, redminePayload.getRepository(), redminePayload.getRepository(), redminePayload.getRef()));
+                }
+
 
                 Iterator iterator = ircAnnounce.getAnnounceToChannels().entrySet().iterator();
                 while (iterator.hasNext()) {
@@ -65,8 +109,10 @@ public class GitAnnounceImpl implements GitAnnounce {
                     if (currentNetwork != null && (wand.getNetworkByAlias(currentNetwork.getServerAlias()) != null ? true : false)) {
                         for (String announceToThisChannel : entry.getValue()) {
                             if (wand.amIOnChannel(currentNetwork, announceToThisChannel)) {
-                                wand.sendMessageToTarget(currentNetwork, announceToThisChannel, announceText);
-                                logger.debug(String.format("Sending to network %s , channel: %s  with text: %s", currentNetwork.getServerAlias(), announceToThisChannel, announceText));
+                                for (String announceText : messages) {
+                                    wand.sendMessageToTarget(currentNetwork, announceToThisChannel, announceText);
+                                    logger.debug(String.format("Sending to network %s , channel: %s  with text: %s", currentNetwork.getServerAlias(), announceToThisChannel, announceText));
+                                }
                             }
                         }
                     }
@@ -85,7 +131,7 @@ public class GitAnnounceImpl implements GitAnnounce {
 
 
     public Boolean addAnnounce(IRCAnnounce announce) {
-        String key = announce.getRepository();
+        String key = announce.getGitPayload().getIdentifier();
         if (announceHashMap.containsKey(key)) {
             IRCAnnounce settingsSaved = announceHashMap.get(key);
             settingsSaved.setAnnounceToChannels(merge(settingsSaved.getAnnounceToChannels(), announce.getAnnounceToChannels()));
@@ -140,4 +186,33 @@ public class GitAnnounceImpl implements GitAnnounce {
     }
 
 
+    public Response serve(String uri, String method, Properties header, Properties parms, Properties files) {
+        // make payload to get IRCAnnounce
+        logger.info(String.format("uri: %s, method: %s, header: %s, parms: %s, files: %s", uri, method, header, parms, files));
+
+        GitHubPayload payload = null;
+        if (method.equalsIgnoreCase("POST") && parms.containsKey("payload")) {
+            payload = gson.fromJson(parms.getProperty("payload"), GitHubPayload.class);
+        }
+
+        if (payload != null) {
+            System.out.println(payload);
+            IRCAnnounce announce = announceHashMap.get(payload.getIdentifier());
+            IRCAnnounce toAnnounce = new IRCAnnounce(payload, announce.getAnnounceToChannels());
+            announceToIRC(toAnnounce);
+        }
+        return new Response(NanoHTTPD.HTTP_OK, MIME_PLAINTEXT, "OK");
+
+
+        //IRCAnnounce announce = announceHashMap.get(payload.getIdentifier());
+
+// Clone the object, as we don't want to modify the orginal one in the announceHashMap
+        //IRCAnnounce toAnnounce = new IRCAnnounce(payload, announce.getAnnounceToChannels());
+
+        //return announceToIRC(toAnnounce);
+    }
+
+    public void httpdServerShutdown(String message) {
+        logger.error(message);
+    }
 }

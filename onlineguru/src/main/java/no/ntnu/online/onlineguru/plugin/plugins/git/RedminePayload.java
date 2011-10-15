@@ -1,15 +1,19 @@
 package no.ntnu.online.onlineguru.plugin.plugins.git;
 
+import java.io.Serializable;
+
 /**
  * @author Roy Sindre Norangshol
  */
-public class RedminePayload implements GitPayload {
+public class RedminePayload extends GitPayload implements Serializable {
     private String repository;
     private String ref;
 
-    public RedminePayload(String repository, String ref) {
+    public RedminePayload() {
+    }
+
+    public RedminePayload(String repository) {
         this.repository = repository;
-        this.ref = ref;
     }
 
     public String getRepository() {
@@ -30,6 +34,11 @@ public class RedminePayload implements GitPayload {
 
     public String getType() {
         return RedminePayload.class.getName();
+    }
+
+    @Override
+    public String getIdentifier() {
+        return repository;
     }
 
     @Override

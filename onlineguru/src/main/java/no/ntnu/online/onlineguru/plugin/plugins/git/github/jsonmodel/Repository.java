@@ -1,19 +1,24 @@
-package no.ntnu.online.onlineguru.plugin.plugins.github.jsonmodel;
+package no.ntnu.online.onlineguru.plugin.plugins.git.github.jsonmodel;
 
-import com.google.gson.annotations.SerializedName;
+import java.io.Serializable;
 
 /**
  * @author Roy Sindre Norangshol
  */
-public class Repository {
+public class Repository implements Serializable {
     private String url;
     private String name;
     private String description;
     private int watchers;
     private int forks;
-    @SerializedName("private")
-    private int privates;
+
     private User owner;
+
+    public Repository() {}
+
+    public Repository(String repositoryUrlWhichIsIdentifier) {
+        this.url = repositoryUrlWhichIsIdentifier;
+    }
 
     public String getUrl() {
         return url;
@@ -55,13 +60,6 @@ public class Repository {
         this.forks = forks;
     }
 
-    public int getPrivates() {
-        return privates;
-    }
-
-    public void setPrivates(int privates) {
-        this.privates = privates;
-    }
 
     public User getOwner() {
         return owner;
@@ -79,7 +77,6 @@ public class Repository {
                 ", description='" + description + '\'' +
                 ", watchers=" + watchers +
                 ", forks=" + forks +
-                ", privates=" + privates +
                 ", owner=" + owner +
                 '}';
     }
