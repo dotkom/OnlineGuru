@@ -143,28 +143,41 @@ public class Peak implements PluginWithDependencies {
     }
 
     private void handlePrivMsgEvent(PrivMsgEvent e) {
-        if (e.isChannelMessage()) {
-            String[] message = e.getMessage().split(" ");
-            String channel = e.getChannel();
+        String[] message = e.getMessage().split(" ");
+        String target = e.getTarget();
+        String countTarget;
+        String count;
 
-            if (message[0].equals("!peak")) {
-                String count = null;
-
-                if (message.length == 1) {
-                    count = peaks.get(channel);
+        if (message[0].equals("!peak")) {
+            if (message.length == 1) {
+                if (e.isChannelMessage()) {
+                    count = peaks.get(target);
+                    wand.sendMessageToTarget(e.getNetwork(), target, "Peak usercount for "+target+": "+peaks.get(target));
                 }
-                else if (message.length == 2) {
-                    if (message[1].startsWith("#")) {
-                        count = peaks.get(message[1]);
+                else {
+                    wand.sendMessageToTarget(e.getNetwork(), target, "[Error] You need to specify a channel to check.");
+                }
+            }
+            else if (message.length == 2) {
+                if (message[1].startsWith("#")) {
+                    count = peaks.get(message[1]);
+                    countTarget = message[1];
+                    if (count != null) {
+                        wand.sendMessageToTarget(e.getNetwork(), target, "Peak usercount for "+countTarget+": "+count);
                     }
-                    if (message[1].equals("enable")) {
-                        enabled = true;
-                        verifyMapIntegrity(peaks);
+                    else {
+                        wand.sendMessageToTarget(e.getNetwork(), target, "[Error] No such channel registered; '"+countTarget+"'.");
                     }
                 }
-
-                if (count != null) {
-                    wand.sendMessageToTarget(e.getNetwork(), channel, "Peak for "+channel+": "+peaks.get(channel));
+                if (message[1].equals("enable")) {
+                    enabled = true;
+                    verifyMapIntegrity(peaks);
+                    if (enabled) {
+                        wand.sendMessageToTarget(e.getNetwork(), target, "Successfully enabled Peak.");
+                    }
+                    else {
+                        wand.sendMessageToTarget(e.getNetwork(), target, "[Error] Failed to enable Peak. Malformed databse.");
+                    }
                 }
             }
         }
