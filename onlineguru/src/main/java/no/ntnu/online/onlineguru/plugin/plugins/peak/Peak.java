@@ -145,11 +145,13 @@ public class Peak implements PluginWithDependencies {
     private void handlePrivMsgEvent(PrivMsgEvent e) {
         if (e.isChannelMessage()) {
             String[] message = e.getMessage().split(" ");
+            String channel = e.getChannel();
+
             if (message[0].equals("!peak")) {
                 String count = null;
 
                 if (message.length == 1) {
-                    count = peaks.get(e.getTarget());
+                    count = peaks.get(channel);
                 }
                 else if (message.length == 2) {
                     if (message[1].startsWith("#")) {
@@ -162,7 +164,7 @@ public class Peak implements PluginWithDependencies {
                 }
 
                 if (count != null) {
-                    wand.sendMessageToTarget(e.getNetwork(), e.getTarget(), "Peak for "+e.getTarget()+": "+peaks.get(e.getTarget()));
+                    wand.sendMessageToTarget(e.getNetwork(), channel, "Peak for "+channel+": "+peaks.get(channel));
                 }
             }
         }
