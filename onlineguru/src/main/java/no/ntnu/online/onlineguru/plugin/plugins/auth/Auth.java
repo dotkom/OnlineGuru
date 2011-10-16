@@ -89,10 +89,10 @@ public class Auth implements Plugin {
 
 	public void incomingEvent(Event e) {
 		if (e instanceof ConnectEvent) {
-			AuthEntry nse = networks.get(e.getNetwork().getServerAlias());
-			if (nse != null) {
-				if (nse.getUsername().equals(wand.getMyNick(e.getNetwork()))) {
-					wand.sendMessageToTarget(e.getNetwork(), "NickServ", "identify "+nse.getPassword());
+			AuthEntry ae = networks.get(e.getNetwork().getServerAlias());
+			if (ae != null) {
+				if (ae.getUsername().equals(wand.getMyNick(e.getNetwork()))) {
+					wand.sendMessageToTarget(e.getNetwork(), "NickServ", "identify "+ae.getPassword());
 				}
 			}
 		}

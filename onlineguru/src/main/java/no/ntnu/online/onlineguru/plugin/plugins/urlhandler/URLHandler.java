@@ -34,12 +34,12 @@ public class URLHandler implements Plugin {
 	}
 
 	public void incomingEvent(Event e) {
-		PrivMsgEvent cme = (PrivMsgEvent)e;
+		PrivMsgEvent pme = (PrivMsgEvent)e;
 		
-		if(cme.isChannelMessage()) {
-			String channel = cme.getTarget();
+		if(pme.isChannelMessage()) {
+			String channel = pme.getTarget();
 			
-			Scanner scanner = new Scanner(cme.getMessage());
+			Scanner scanner = new Scanner(pme.getMessage());
 			String message;
 			
 			while(scanner.hasNext()) {
@@ -51,7 +51,7 @@ public class URLHandler implements Plugin {
 					if(message.startsWith("http://open.spotify.com/")) {
 						return;
 					}
-					new Entry(wand, cme.getNetwork(), message, channel);
+					new Entry(wand, pme.getNetwork(), message, channel);
 				}
 			}
 		}
