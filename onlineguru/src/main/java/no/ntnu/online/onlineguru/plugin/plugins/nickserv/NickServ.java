@@ -51,6 +51,9 @@ public class NickServ implements Plugin {
             case PART:
                 handlePartEvent((PartEvent)e);
                 break;
+            case PRIVMSG:
+                handlePrivMsgEvent((PrivMsgEvent)e);
+                break;
             case QUIT:
                 handleQuitEvent((QuitEvent) e);
                 break;
@@ -124,6 +127,26 @@ public class NickServ implements Plugin {
     }
 
     /**
+     * Handles commands in channel and private.
+     *
+     * @param e {@link PrivMsgEvent} to be used.
+     */
+    private void  handlePrivMsgEvent(PrivMsgEvent e) {
+        String[] message = e.getMessage().split(" ");
+
+        if (message[0].equals("!whois") || message[0].equals("!who")) {
+            AuthHandler ah = authHandlers.get(e.getNetwork());
+
+            if (ah.getUsername(e.getSender()).equals("0")) {
+                wand.sendMessageToTarget(e.getNetwork(), e.getTarget(), "[whois] "+ message[1] +" is not registered with NickServ on "+ e.getNetwork().getServerAlias());
+            }
+            else {
+                wand.sendMessageToTarget(e.getNetwork(), e.getTarget(), "[whois] "+ message[1] +" is registered as '"+ ah.getUsername(e.getSender()) +"' on "+ e.getNetwork().getServerAlias());
+            }
+        }
+    }
+
+    /**
      * If a user quits, their nick will be removed from the authList.
      *
      * @param e {@link QuitEvent} to be investigated.
@@ -139,6 +162,7 @@ public class NickServ implements Plugin {
         eventDistributor.addListener(this, EventType.NICK);
         eventDistributor.addListener(this, EventType.NUMERIC);
         eventDistributor.addListener(this, EventType.PART);
+        eventDistributor.addListener(this, EventType.PRIVMSG);
         eventDistributor.addListener(this, EventType.QUIT);
     }
 
