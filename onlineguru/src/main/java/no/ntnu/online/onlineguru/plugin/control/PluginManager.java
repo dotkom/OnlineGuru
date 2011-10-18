@@ -1,9 +1,8 @@
 package no.ntnu.online.onlineguru.plugin.control;
 
-import java.util.HashMap;
-
 import no.ntnu.online.onlineguru.OnlineGuru;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
+import no.ntnu.online.onlineguru.plugin.plugins.auth.Auth;
 import no.ntnu.online.onlineguru.plugin.plugins.autoop.AutoOp;
 import no.ntnu.online.onlineguru.plugin.plugins.buss.Bus;
 import no.ntnu.online.onlineguru.plugin.plugins.calendar.CalendarPlugin;
@@ -16,7 +15,6 @@ import no.ntnu.online.onlineguru.plugin.plugins.lastfm.LastFM;
 import no.ntnu.online.onlineguru.plugin.plugins.lmgtfy.LmgtfyPlugin;
 import no.ntnu.online.onlineguru.plugin.plugins.mailannouncer.MailAnnouncer;
 import no.ntnu.online.onlineguru.plugin.plugins.middag.Middag;
-import no.ntnu.online.onlineguru.plugin.plugins.auth.Auth;
 import no.ntnu.online.onlineguru.plugin.plugins.nickserv.NickServ;
 import no.ntnu.online.onlineguru.plugin.plugins.peak.Peak;
 import no.ntnu.online.onlineguru.plugin.plugins.simpletrigger.SimpleTrigger;
@@ -27,6 +25,8 @@ import no.ntnu.online.onlineguru.plugin.plugins.version.Version;
 import no.ntnu.online.onlineguru.utils.Functions;
 import no.ntnu.online.onlineguru.utils.IrcWand;
 import no.ntnu.online.onlineguru.utils.Wand;
+
+import java.util.HashMap;
 
 public class PluginManager {
 	
@@ -62,8 +62,7 @@ public class PluginManager {
         initiatePlugin(new LmgtfyPlugin());
 
         // These take a long time to load, before they are threaded, they need to be last on the list.
-        // TODO Find out why this plugin gives error in prod, but not locally.
-        //initiatePlugin(new CalendarPlugin());
+        initiatePlugin(new CalendarPlugin());
         initiatePlugin(new Git());
         initiatePlugin(new MailAnnouncer());
 
