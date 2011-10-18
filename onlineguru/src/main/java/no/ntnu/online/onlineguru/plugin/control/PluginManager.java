@@ -13,6 +13,7 @@ import no.ntnu.online.onlineguru.plugin.plugins.die.Die;
 import no.ntnu.online.onlineguru.plugin.plugins.git.Git;
 import no.ntnu.online.onlineguru.plugin.plugins.help.Help;
 import no.ntnu.online.onlineguru.plugin.plugins.lastfm.LastFM;
+import no.ntnu.online.onlineguru.plugin.plugins.lmgtfy.LmgtfyPlugin;
 import no.ntnu.online.onlineguru.plugin.plugins.mailannouncer.MailAnnouncer;
 import no.ntnu.online.onlineguru.plugin.plugins.middag.Middag;
 import no.ntnu.online.onlineguru.plugin.plugins.auth.Auth;
@@ -58,6 +59,7 @@ public class PluginManager {
         initiatePlugin(new TwitterPlugin());
         initiatePlugin(new URLHandler());
         initiatePlugin(new Version());
+        initiatePlugin(new LmgtfyPlugin());
 
         // These take a long time to load, before they are threaded, they need to be last on the list.
         // TODO Find out why this plugin gives error in prod, but not locally.
