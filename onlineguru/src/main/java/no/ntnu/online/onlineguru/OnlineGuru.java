@@ -1,11 +1,5 @@
 package no.ntnu.online.onlineguru;
 
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Vector;
-import java.util.concurrent.ConcurrentHashMap;
-
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import no.fictive.irclib.event.container.Event;
@@ -16,6 +10,12 @@ import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.control.PluginManager;
 import no.ntnu.online.onlineguru.utils.OnlineGuruDependencyModule;
 import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public class OnlineGuru implements IRCEventListener {
@@ -81,7 +81,11 @@ public class OnlineGuru implements IRCEventListener {
         ArrayList<ConnectionInformation> information = VerifySettings.readSettings();
 
         for (ConnectionInformation c : information) {
-            Network network = new Network(c.getHostname(), Integer.parseInt(c.getPort()), c.getServeralias(), c.getProfile());
+            Network network;
+            if (c.hasBindAddress())
+                network = new Network(c.getHostname(), Integer.parseInt(c.getPort()), c.getBindAddress(), c.getServeralias(), c.getProfile());
+            else
+                network = new Network(c.getHostname(), Integer.parseInt(c.getPort()), c.getServeralias(), c.getProfile());
 
             network.addListener(this);
 
