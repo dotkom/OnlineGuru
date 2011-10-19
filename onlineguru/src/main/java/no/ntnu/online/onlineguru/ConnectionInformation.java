@@ -61,9 +61,9 @@ public class ConnectionInformation {
 
     public void setBindAddress(String bindAddress) throws UnknownHostException {
         if (isIpv6)
-            this.bindAddress = Inet6Address.getByName(hostname);
+            this.bindAddress = Inet6Address.getByName(bindAddress);
         else
-            this.bindAddress = Inet4Address.getByName(hostname);
+            this.bindAddress = Inet4Address.getByName(bindAddress);
     }
 
 
