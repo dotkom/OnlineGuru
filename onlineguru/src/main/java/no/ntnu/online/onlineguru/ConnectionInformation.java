@@ -2,6 +2,8 @@ package no.ntnu.online.onlineguru;
 
 import no.fictive.irclib.model.user.Profile;
 
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Vector;
@@ -14,8 +16,9 @@ public class ConnectionInformation {
     private InetAddress bindAddress = null;
 	private String serveralias = "";
 	private Vector<String> channels = new Vector<String>();
-	
-	public boolean isValid() {
+    private Boolean isIpv6 = false; // defaults to false if not set in config.
+
+    public boolean isValid() {
 		if (!serveralias.isEmpty() && !hostname.isEmpty() && !port.isEmpty() && profile != null) {
 			return true;
 		}
@@ -57,11 +60,23 @@ public class ConnectionInformation {
     }
 
     public void setBindAddress(String bindAddress) throws UnknownHostException {
-        this.bindAddress = InetAddress.getByName(bindAddress);
+        if (isIpv6)
+            this.bindAddress = Inet6Address.getByName(hostname);
+        else
+            this.bindAddress = Inet4Address.getByName(hostname);
     }
+
 
     public void setBindAddress(InetAddress bindAddress) throws UnknownHostException {
         this.bindAddress = bindAddress;
+    }
+
+    public boolean isIpv6() {
+        return this.isIpv6;
+    }
+
+    public void setIpv6(boolean isIpv6) {
+        this.isIpv6 = isIpv6;
     }
 	
 	public String getServeralias() {

@@ -10,7 +10,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
@@ -48,10 +47,12 @@ public class VerifySettings {
                 connectionInformation.setServeralias(settings.getSetting("server_alias"));
                 connectionInformation.setHostname(settings.getSetting("hostname"));
                 connectionInformation.setPort(settings.getSetting("port"));
+                connectionInformation.setIpv6(Boolean.parseBoolean(settings.getSetting("ipv6")));
 
                 String bindAddress = settings.getSetting("bind_address");
-                if (bindAddress != null && !bindAddress.isEmpty())
-                    connectionInformation.setBindAddress(InetAddress.getByName(bindAddress));
+                if (bindAddress != null && !bindAddress.isEmpty()) {
+                    connectionInformation.setBindAddress(bindAddress);
+                }
 
 
                 String channels = settings.getSetting("channels");
@@ -93,6 +94,7 @@ public class VerifySettings {
 		writer.write("server_alias=\n");
 		writer.write("hostname=\n");
 		writer.write("port=\n");
+        writer.write("ipv6=false\n");
         writer.write("#bind_address=\n");
 		writer.write("nickname=\n");
 		writer.write("alt_nickname=\n");

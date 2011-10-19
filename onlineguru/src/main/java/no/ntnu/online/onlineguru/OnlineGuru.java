@@ -81,11 +81,10 @@ public class OnlineGuru implements IRCEventListener {
         ArrayList<ConnectionInformation> information = VerifySettings.readSettings();
 
         for (ConnectionInformation c : information) {
-            Network network;
-            if (c.hasBindAddress())
-                network = new Network(c.getHostname(), Integer.parseInt(c.getPort()), c.getBindAddress(), c.getServeralias(), c.getProfile());
-            else
-                network = new Network(c.getHostname(), Integer.parseInt(c.getPort()), c.getServeralias(), c.getProfile());
+            Network network = new Network(c.getHostname(), Integer.parseInt(c.getPort()), c.getServeralias(), c.getProfile());
+            if (c.hasBindAddress()) {
+                network.setBindAddress(c.getBindAddress());
+            }
 
             network.addListener(this);
 
