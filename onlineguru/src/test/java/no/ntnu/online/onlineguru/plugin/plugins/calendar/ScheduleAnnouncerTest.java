@@ -1,13 +1,16 @@
 package no.ntnu.online.onlineguru.plugin.plugins.calendar;
 
+import no.ntnu.online.onlineguru.plugin.plugins.calendar.jsonmodel.Item;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
 
@@ -18,6 +21,7 @@ public class ScheduleAnnouncerTest {
     private List<Event> officeHours;
     private List<Event> onlineEvents;
     private ScheduleAnnouncer scheduleAnnouncer;
+    private Item item;
 
     @Before
     public void setUp() {
@@ -43,7 +47,7 @@ public class ScheduleAnnouncerTest {
         ));
 
         scheduleAnnouncer = new ScheduleAnnouncer(new FakeGoogleCalendar(officeHours, onlineEvents));
-
+        item = new Item();
     }
 
     @Test
@@ -134,6 +138,25 @@ public class ScheduleAnnouncerTest {
 
         List<String> announces = scheduleAnnouncer.getHourlyAnnounces(now);
         assertEquals(String.format(ScheduleAnnouncer.EVENT_NOW, onlineEvents.get(0).getTitle()), announces.get(0));
+
+    }
+
+    @Test
+    public void testMonthlyNameToNumber() {
+        String[] shortMonths = new DateFormatSymbols(new Locale("no")).getShortMonths();
+
+        assertEquals(1, item.convertMonthlyNameToMonthNumber("jan"));
+        assertEquals(2, item.convertMonthlyNameToMonthNumber("feb"));
+        assertEquals(3, item.convertMonthlyNameToMonthNumber("mar"));
+        assertEquals(4, item.convertMonthlyNameToMonthNumber("apr"));
+        assertEquals(5, item.convertMonthlyNameToMonthNumber("mai"));
+        assertEquals(6, item.convertMonthlyNameToMonthNumber("jun"));
+        assertEquals(7, item.convertMonthlyNameToMonthNumber("jul"));
+        assertEquals(8, item.convertMonthlyNameToMonthNumber("aug"));
+        assertEquals(9, item.convertMonthlyNameToMonthNumber("sep"));
+        assertEquals(10, item.convertMonthlyNameToMonthNumber("okt"));
+        assertEquals(11, item.convertMonthlyNameToMonthNumber("nov"));
+        assertEquals(12, item.convertMonthlyNameToMonthNumber("des"));
 
     }
 

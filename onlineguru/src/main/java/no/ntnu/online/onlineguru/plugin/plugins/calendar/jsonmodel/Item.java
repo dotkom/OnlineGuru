@@ -5,6 +5,8 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
+import java.text.DateFormatSymbols;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,6 +17,8 @@ public class Item {
     public String id;
     public String title;
     private String details;
+
+    private static String[] shortMonths = new DateFormatSymbols(new Locale("no")).getShortMonths();
 
     private static final Pattern EVENT_START_PATTERN = Pattern.compile(".*Første start.*(\\d{4})-(\\d{2})-(\\d{2}) (\\d{2}):(\\d{2}):(\\d{2}).*");
     private static final Pattern EVENT_START_SPECIAL = Pattern.compile(".*Når: \\w+\\. (\\d{1,2})\\. (\\w+)\\. (\\d{4}) (\\d{2}):(\\d{2}) til (\\d{2}):(\\d{2}).*");
@@ -102,8 +106,12 @@ public class Item {
         return -1;
     }
 
-    private int convertMonthlyNameToMonthNumber(String monthName) {
-        return 9;
+    public int convertMonthlyNameToMonthNumber(String monthName) {
+        for(int i=0; i < shortMonths.length; i++) {
+            if (shortMonths[i].equalsIgnoreCase(monthName))
+                return i+1;
+        }
+        return -1;
     }
 
     public Event convertToEvent(Event.Type type) {
