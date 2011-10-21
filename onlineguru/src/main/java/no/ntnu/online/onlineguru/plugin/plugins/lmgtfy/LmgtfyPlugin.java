@@ -28,10 +28,11 @@ import static com.rosaloves.bitlyj.Bitly.*;
  */
 public class LmgtfyPlugin implements Plugin {
 
+    public static final String LMGTFY_BASE = "http://lmgtfy.com/?q=";
     private final String DESCRIPTION = "Lmgtfy plugin";
     private final String LMGTFYTRIGGER = "!lmgtfy";
     private final String settings_folder = "settings/";
-	private final String settings_file = settings_folder + "lmgtfy.conf";
+    private final String settings_file = settings_folder + "lmgtfy.conf";
 
     private Wand wand;
     private String bitlyUsername;
@@ -73,25 +74,36 @@ public class LmgtfyPlugin implements Plugin {
         return message != null && message.length > 1 && message[0].equalsIgnoreCase(LMGTFYTRIGGER);
     }
 
-    private void sendLmgtfyLink(Network network, String target, ArrayList<String> message) {
-        wand.sendMessageToTarget(network, target, generateLmgtfyLink(message));
+    private void sendLmgtfyLink(final Network network, final String target, final ArrayList<String> message) {
+        new Thread(new Runnable() {
+            public void run() {
+                String link = generateLmgtfyLink(message);
+
+                String sublink = link.substring(LMGTFY_BASE.length(), link.length());
+                if (sublink.length() >= 42)
+                    link = bitlyfyLink(sublink);
+
+                wand.sendMessageToTarget(network, target, link);
+            }
+        }).start();
     }
 
     public String generateLmgtfyLink(List<String> message) {
-        String link = "http://lmgtfy.com/?q=";
-        String sublink = "";
+        String link = LMGTFY_BASE;
+
         for (String term : message) {
             term = term.trim();
             if (term.length() > 1)
-                sublink += term + "+";
+                link += term + "+";
         }
-        link += sublink;
+
         link = link.substring(0, link.length() - 1);
-        if (sublink.length() >= 42) {
-            Url url = as(bitlyUsername, bitlyApiKey).call(shorten(link));
-            link = url.getShortUrl();
-        }
         return link;
+    }
+
+    public String bitlyfyLink(String link) {
+        Url url = as(bitlyUsername, bitlyApiKey).call(shorten(link));
+        return url.getShortUrl();
     }
 
     public void addEventDistributor(EventDistributor eventDistributor) {
