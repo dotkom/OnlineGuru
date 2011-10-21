@@ -81,7 +81,7 @@ public class LmgtfyPlugin implements Plugin {
 
                 String sublink = link.substring(LMGTFY_BASE.length(), link.length());
                 if (sublink.length() >= 42)
-                    link = bitlyfyLink(sublink);
+                    link = bitlyfyLink(link);
 
                 wand.sendMessageToTarget(network, target, link);
             }
