@@ -180,9 +180,6 @@ public class ScheduleAnnouncerTest {
 
         Event eventToTest = veryLongEvent.convertToEvent(Event.Type.ONLINECALENDAR);
 
-        System.out.println(eventToTest);
-        System.out.println(eventToTest.getStartDate().toString());
-
         Duration durationOnTimestamps;
         assertTrue((now.isBefore(eventToTest.getStartDate()) || eventToTest.getStartDate().isEqual(now)));
         durationOnTimestamps = new Duration(now, eventToTest.getStartDate());
@@ -194,10 +191,10 @@ public class ScheduleAnnouncerTest {
         durationOnTimestamps = new Duration(now, eventToTest.getStartDate());
         assertFalse(durationOnTimestamps.isShorterThan(Duration.standardHours(1)));
     }
-}
 
-class ItemTest extends Item {
-    public void setDescription(String description) {
-        details = description;
+    class ItemTest extends Item {
+        public void setDescription(String description) {
+            details = description;
+        }
     }
 }
