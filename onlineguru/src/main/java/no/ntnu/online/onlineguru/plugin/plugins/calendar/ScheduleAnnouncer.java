@@ -131,7 +131,6 @@ public class ScheduleAnnouncer {
                 logger.info("calendar: preschedular launching scheduler!");
                 startHourlyScheduler();
                 checkForNewDay();
-                sendMessageToOnline(getHourlyAnnounces());
             }
         }, getSecondsLeftForNewHour() * 1000);
     }
