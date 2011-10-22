@@ -17,7 +17,7 @@ import java.util.*;
 public class ScheduleAnnouncer {
     public static final String OFFICEHOUR_NOW = "[Kontorvakt] %s skal nå være kontorvakt!";
     public static final String OFFICEHOUR_ETA = "[Kontorvakt ETA] %stil %s har kontorvakt!";
-    public static final String EVENT_NOW = "[Event start] %s";
+    public static final String EVENT_NOW = "[Event start] %s  (%s)";
     public static final String EVENT_ETA = "[Event ETA] %stil %s starter!";
     Timer timer;
     private GoogleCalendar calendar;
@@ -191,7 +191,7 @@ public class ScheduleAnnouncer {
 
 
                 if (durationOnTimestamps.isShorterThan(Duration.standardHours(1))) {
-                    announces.add(String.format(EVENT_NOW, onlineEvent.getTitle()));
+                    announces.add(String.format(EVENT_NOW, onlineEvent.getTitle(), getPeriodInStringFormat(new Period(onlineEvent.getEventLengthInSeconds()*1000))));
                 }
 
                 if ((durationOnTimestamps.isEqual(Duration.standardHours(1)) || durationOnTimestamps.isLongerThan(Duration.standardHours(1))) && durationOnTimestamps.isShorterThan(Duration.standardHours(4))) {

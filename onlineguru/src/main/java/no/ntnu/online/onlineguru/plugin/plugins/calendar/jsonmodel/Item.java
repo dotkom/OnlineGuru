@@ -22,6 +22,7 @@ public class Item {
 
     private static final Pattern EVENT_START_PATTERN = Pattern.compile(".*Første start.*(\\d{4})-(\\d{2})-(\\d{2}) (\\d{2}):(\\d{2}):(\\d{2}).*");
     private static final Pattern EVENT_START_SPECIAL = Pattern.compile(".*Når: \\w+\\. (\\d{1,2})\\. (\\w+)\\. (\\d{4}) (\\d{2}):(\\d{2}) til (\\d{2}):(\\d{2}).*");
+    private static final Pattern EVENT_START_SPECIAL2 = Pattern.compile(".*Når: \\w+\\. (\\d{1,2})\\. (\\w+)\\. (\\d{4}) (\\d{2}):(\\d{2}) til \\w+\\. (\\d{1,2})\\. (\\w+)\\. (\\d{4}) (\\d{2}):(\\d{2}).*");
     private static final Pattern EVENT_LENGTH = Pattern.compile(".*Varighet: (\\d+).*");
 
     static Logger logger = Logger.getLogger(Item.class);
@@ -59,13 +60,7 @@ public class Item {
             // try special event
             matcher = EVENT_START_SPECIAL.matcher(getDetails());
             if (matcher.matches()) {
-                return new DateTime(Integer.parseInt(matcher.group(3)),
-                        convertMonthlyNameToMonthNumber(matcher.group(2)),
-                        Integer.parseInt(matcher.group(1)),
-                        Integer.parseInt(matcher.group(4)),
-                        Integer.parseInt(matcher.group(5)),
-                        0, 0);
-
+                return getEventStartFromGetEventLength(matcher);
             }
         }
         return null;
@@ -76,20 +71,16 @@ public class Item {
         if (matcher.matches())
             return Integer.parseInt(matcher.group(1));
         else {
-            matcher = EVENT_START_SPECIAL.matcher(getDetails());
-            if (matcher.matches()) {
-                DateTime eventStart = new DateTime(Integer.parseInt(matcher.group(3)),
-                        convertMonthlyNameToMonthNumber(matcher.group(2)),
-                        Integer.parseInt(matcher.group(1)),
-                        Integer.parseInt(matcher.group(4)),
-                        Integer.parseInt(matcher.group(5)),
-                        0, 0);
 
-                DateTime eventStop = new DateTime(Integer.parseInt(matcher.group(3)),
-                        convertMonthlyNameToMonthNumber(matcher.group(2)),
-                        Integer.parseInt(matcher.group(1)),
+            matcher = EVENT_START_SPECIAL2.matcher(getDetails());  // Når: fre. 21. okt. 2011 19:00 til søn. 23. okt. 2011 16:00  CEST
+            if (matcher.matches()) {
+                DateTime eventStart = getEventStartFromGetEventLength(matcher);
+
+                DateTime eventStop = new DateTime(Integer.parseInt(matcher.group(8)),
+                        convertMonthlyNameToMonthNumber(matcher.group(7)),
                         Integer.parseInt(matcher.group(6)),
-                        Integer.parseInt(matcher.group(7)),
+                        Integer.parseInt(matcher.group(9)),
+                        Integer.parseInt(matcher.group(10)),
                         0, 0);
 
                 if (eventStop.isEqual(eventStart) || eventStop.isAfter(eventStart)) {
@@ -99,6 +90,26 @@ public class Item {
                 } else {
                     logger.error(String.format("Error with Item : eventStop is before eventStart!\nstart: %s\nend: %s", eventStart.toString(), eventStop.toString()));
                 }
+            } else {
+                matcher = EVENT_START_SPECIAL.matcher(getDetails()); // Når: fre. 21. okt. 2011 19:00 til 23:00  CEST
+                if (matcher.matches()) {
+                    DateTime eventStart = getEventStartFromGetEventLength(matcher);
+
+                    DateTime eventStop = new DateTime(Integer.parseInt(matcher.group(3)),
+                            convertMonthlyNameToMonthNumber(matcher.group(2)),
+                            Integer.parseInt(matcher.group(1)),
+                            Integer.parseInt(matcher.group(6)),
+                            Integer.parseInt(matcher.group(7)),
+                            0, 0); // assumes same day.
+
+                    if (eventStop.isEqual(eventStart) || eventStop.isAfter(eventStart)) {
+                        Interval intervalBetweenEvents = new Interval(eventStart, eventStop);
+
+                        return ((int) (intervalBetweenEvents.toDurationMillis() / 1000));
+                    } else {
+                        logger.error(String.format("Error with Item : eventStop is before eventStart!\nstart: %s\nend: %s", eventStart.toString(), eventStop.toString()));
+                    }
+                }
             }
 
         }
@@ -106,10 +117,19 @@ public class Item {
         return -1;
     }
 
+    private DateTime getEventStartFromGetEventLength(Matcher matcher) {
+        return new DateTime(Integer.parseInt(matcher.group(3)),
+                convertMonthlyNameToMonthNumber(matcher.group(2)),
+                Integer.parseInt(matcher.group(1)),
+                Integer.parseInt(matcher.group(4)),
+                Integer.parseInt(matcher.group(5)),
+                0, 0);
+    }
+
     public int convertMonthlyNameToMonthNumber(String monthName) {
-        for(int i=0; i < shortMonths.length; i++) {
+        for (int i = 0; i < shortMonths.length; i++) {
             if (shortMonths[i].equalsIgnoreCase(monthName))
-                return i+1;
+                return i + 1;
         }
         return -1;
     }

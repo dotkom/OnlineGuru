@@ -137,7 +137,7 @@ public class ScheduleAnnouncerTest {
         now = now.withTime(11, 0, 0, 0); // removes minutes,seconds
 
         List<String> announces = scheduleAnnouncer.getHourlyAnnounces(now);
-        assertEquals(String.format(ScheduleAnnouncer.EVENT_NOW, onlineEvents.get(0).getTitle()), announces.get(0));
+        assertEquals(String.format(ScheduleAnnouncer.EVENT_NOW, onlineEvents.get(0).getTitle(), scheduleAnnouncer.getPeriodInStringFormat(new Period(onlineEvents.get(0).getEventLengthInSeconds()*1000))), announces.get(0));
 
     }
 
@@ -159,5 +159,34 @@ public class ScheduleAnnouncerTest {
         assertEquals(12, item.convertMonthlyNameToMonthNumber("des"));
 
     }
+
+    /**
+     * @todo do this test
+     *
+     *   - org.apache.http.wire - DEBUG - << "{"apiVersion":"1.0","data":{"kind":"calendar#eventFeed","id":"
+http://www.google.com/calendar/feeds/54v6g4v6r46qi4asf7lh5j9pcs%40group.calendar.google.com/public/basic","author":{"displa
+yName":"slettvold@gmail.com","email":"slettvold@gmail.com"},"title":"Linjeforeningen Online","details":"Kalenderen for linj
+eforeningen Online ved NTNU.","updated":"2011-10-21T14:38:45.000Z","totalResults":1,"startIndex":1,"itemsPerPage":25,"feedL
+ink":"https://www.google.com/calendar/feeds/54v6g4v6r46qi4asf7lh5j9pcs%40group.calendar.google.com/public/basic","selfLink"
+:"https://www.google.com/calendar/feeds/54v6g4v6r46qi4asf7lh5j9pcs%40group.calendar.google.com/public/basic?alt=jsonc&max-r
+esults=25&start-min=2011-10-22T00%3A00%3A00&start-max=2011-10-22T23%3A59%3A59","canPost":false,"ti"
+2011-10-22 13:00:46,392 - org.apache.http.wire - DEBUG - << "meZone":"Europe/Oslo","timesCleaned":0,"items":[{"kind":"calen
+dar#event","id":"cmjun3imcf464ccop9433japc8","selfLink":"https://www.google.com/calendar/feeds/54v6g4v6r46qi4asf7lh5j9pcs%4
+0group.calendar.google.com/public/basic/cmjun3imcf464ccop9433japc8","alternateLink":"https://www.google.com/calendar/event?
+eid=Y21qdW4zaW1jZjQ2NGNjb3A5NDMzamFwYzggNTR2Nmc0djZyNDZxaTRhc2Y3bGg1ajlwY3NAZw","canEdit":false,"title":"studLan","created"
+:"0001-12-31T00:00:00.000Z","updated":"2011-09-30T02:40:18.000Z","details":"N[0xc3][0xa5]r: fre. 21. okt. 2011 19:00 til s[
+0xc3][0xb8]n. 23. okt. 2011 16:00[0xc2][0xa0]\nCEST\u003cbr /\u003e\n\n\u003cbr /\u003eHvor: P15\n\u003cbr /\u003eAktivitet
+sstatus: bekreftet","creator":{"displayName":"Linjeforeningen Online"}}]}}"
+
+             2011-10-22 13:00:46,395 - no.ntnu.online.onlineguru.plugin.plugins.calendar.jsonmodel.Item - ERROR - Error with Item : Item{id='cmjun3imcf464ccop9433japc8', title='studLan', details='Når: fre. 21. okt. 2011 19:00 til søn. 23. okt. 2011 16:00 
+CEST<br />
+
+<br />Hvor: P15
+<br />Aktivitetsstatus: bekreftet'}
+ details: Når: fre. 21. okt. 2011 19:00 til søn. 23. okt. 2011 16:00  CEST    Hvor: P15  Aktivitetsstatus: bekreftet
+2011-10-22 13:00:51,395 - no.ntnu.online.onlineguru.plugin.plugins.calendar.ScheduleAnnouncer - DEBUG - [Event start] studLan
+
+
+     */
 
 }
