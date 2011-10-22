@@ -20,6 +20,7 @@ public class LmgtfyTest {
     List<String> badSearchTerms;
     private LmgtfyPlugin plugin;
     private static final String BASE = "http://lmgtfy.com/?q=";
+    private static final String BASE_BITLY = "http://bit.ly/";
 
     @Before
     public void setupSearchTerms() {
