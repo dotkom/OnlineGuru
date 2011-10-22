@@ -1,6 +1,7 @@
 package no.ntnu.online.onlineguru.plugin.plugins.git.github.jsonmodel;
 
 
+import com.google.gson.annotations.SerializedName;
 import no.ntnu.online.onlineguru.plugin.plugins.git.GitPayload;
 
 import java.io.Serializable;
@@ -10,6 +11,11 @@ import java.util.List;
  * @author Roy Sindre Norangshol
  */
 public class GitHubPayload extends GitPayload implements Serializable{
+    private String action;
+    @SerializedName("pull_request")
+    private PullRequest pullRequest;
+    private Issue issue;
+
     private String before;
     private Repository repository;
     private List<Commit> commits;
@@ -20,6 +26,30 @@ public class GitHubPayload extends GitPayload implements Serializable{
     public GitHubPayload() {}
     public GitHubPayload(String repositoryUrlWhichIsIdentifier) {
         setRepository(new Repository(repositoryUrlWhichIsIdentifier));
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    public PullRequest getPullRequest() {
+        return pullRequest;
+    }
+
+    public void setPullRequest(PullRequest pullRequest) {
+        this.pullRequest = pullRequest;
+    }
+
+    public Issue getIssue() {
+        return issue;
+    }
+
+    public void setIssue(Issue issue) {
+        this.issue = issue;
     }
 
     public String getCompare() {
@@ -73,7 +103,10 @@ public class GitHubPayload extends GitPayload implements Serializable{
     @Override
     public String toString() {
         return "GitHubPayload{" +
-                "before='" + before + '\'' +
+                "action='" + action + '\'' +
+                ", pullRequest=" + pullRequest +
+                ", issue=" + issue +
+                ", before='" + before + '\'' +
                 ", repository=" + repository +
                 ", commits=" + commits +
                 ", after='" + after + '\'' +
