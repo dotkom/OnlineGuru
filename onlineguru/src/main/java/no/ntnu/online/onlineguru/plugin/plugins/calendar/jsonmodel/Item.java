@@ -16,13 +16,13 @@ import java.util.regex.Pattern;
 public class Item {
     public String id;
     public String title;
-    private String details;
+    protected String details;
 
     private static String[] shortMonths = new DateFormatSymbols(new Locale("no")).getShortMonths();
 
     private static final Pattern EVENT_START_PATTERN = Pattern.compile(".*Første start.*(\\d{4})-(\\d{2})-(\\d{2}) (\\d{2}):(\\d{2}):(\\d{2}).*");
-    private static final Pattern EVENT_START_SPECIAL = Pattern.compile(".*Når: \\w+\\. (\\d{1,2})\\. (\\w+)\\. (\\d{4}) (\\d{2}):(\\d{2}) til (\\d{2}):(\\d{2}).*");
-    private static final Pattern EVENT_START_SPECIAL2 = Pattern.compile(".*Når: \\w+\\. (\\d{1,2})\\. (\\w+)\\. (\\d{4}) (\\d{2}):(\\d{2}) til \\w+\\. (\\d{1,2})\\. (\\w+)\\. (\\d{4}) (\\d{2}):(\\d{2}).*");
+    private static final Pattern EVENT_START_SPECIAL = Pattern.compile(".*Når: .* (\\d{1,2})\\. (\\w+)\\. (\\d{4}) (\\d{2}):(\\d{2}) til (\\d{2}):(\\d{2}).*");
+    private static final Pattern EVENT_START_SPECIAL2 = Pattern.compile(".*Når: .* (\\d{1,2})\\. (\\w+)\\. (\\d{4}) (\\d{2}):(\\d{2}) til .* (\\d{1,2})\\. (\\w+)\\. (\\d{4}) (\\d{2}):(\\d{2}).*");
     private static final Pattern EVENT_LENGTH = Pattern.compile(".*Varighet: (\\d+).*");
 
     static Logger logger = Logger.getLogger(Item.class);
@@ -59,9 +59,11 @@ public class Item {
         } else {
             // try special event
             matcher = EVENT_START_SPECIAL.matcher(getDetails());
-            if (matcher.matches()) {
+            Matcher matcher2 = EVENT_START_SPECIAL2.matcher(getDetails());
+            if (matcher.matches())
                 return getEventStartFromGetEventLength(matcher);
-            }
+            else if (matcher2.matches())
+                return getEventStartFromGetEventLength(matcher2);
         }
         return null;
     }

@@ -2,6 +2,7 @@ package no.ntnu.online.onlineguru.plugin.plugins.calendar;
 
 import no.ntnu.online.onlineguru.plugin.plugins.calendar.jsonmodel.Item;
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.joda.time.Period;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,6 +14,8 @@ import java.util.List;
 import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Roy Sindre Norangshol
@@ -22,6 +25,7 @@ public class ScheduleAnnouncerTest {
     private List<Event> onlineEvents;
     private ScheduleAnnouncer scheduleAnnouncer;
     private Item item;
+    private ItemTest veryLongEvent;
 
     @Before
     public void setUp() {
@@ -42,9 +46,19 @@ public class ScheduleAnnouncerTest {
                 new Event[]{
                         new Event(Event.Type.ONLINECALENDAR, "HS-møte", now.withTime(11, 0, 0, 0), 3600 * 2L),
                         new Event(Event.Type.ONLINECALENDAR, "Troll-møte", now.withTime(17, 0, 0, 0), 3600),
-                        new Event(Event.Type.ONLINECALENDAR, "Dotkom-møte", now.withTime(18, 0, 0, 0), 3600 * 6L)
+                        new Event(Event.Type.ONLINECALENDAR, "Dotkom-møte", now.withTime(18, 0, 0, 0), 3600 * 6L),
                 }
         ));
+
+        veryLongEvent = new ItemTest();
+        veryLongEvent.title = "studLan";
+        veryLongEvent.id = "cmjun3imcf464ccop9433japc8";
+        veryLongEvent.setDescription("Når: fre. 21. okt. 2011 19:00 til søn. 23. okt. 2011 16:00 \n" +
+                "CEST<br />\n" +
+                "\n" +
+                "<br />Hvor: P15\n" +
+                "<br />Aktivitetsstatus: bekreftet'");
+
 
         scheduleAnnouncer = new ScheduleAnnouncer(new FakeGoogleCalendar(officeHours, onlineEvents));
         item = new Item();
@@ -137,7 +151,7 @@ public class ScheduleAnnouncerTest {
         now = now.withTime(11, 0, 0, 0); // removes minutes,seconds
 
         List<String> announces = scheduleAnnouncer.getHourlyAnnounces(now);
-        assertEquals(String.format(ScheduleAnnouncer.EVENT_NOW, onlineEvents.get(0).getTitle(), scheduleAnnouncer.getPeriodInStringFormat(new Period(onlineEvents.get(0).getEventLengthInSeconds()*1000))), announces.get(0));
+        assertEquals(String.format(ScheduleAnnouncer.EVENT_NOW, onlineEvents.get(0).getTitle(), scheduleAnnouncer.getPeriodInStringFormat(new Period(onlineEvents.get(0).getEventLengthInSeconds() * 1000))), announces.get(0));
 
     }
 
@@ -160,33 +174,30 @@ public class ScheduleAnnouncerTest {
 
     }
 
-    /**
-     * @todo do this test
-     *
-     *   - org.apache.http.wire - DEBUG - << "{"apiVersion":"1.0","data":{"kind":"calendar#eventFeed","id":"
-http://www.google.com/calendar/feeds/54v6g4v6r46qi4asf7lh5j9pcs%40group.calendar.google.com/public/basic","author":{"displa
-yName":"slettvold@gmail.com","email":"slettvold@gmail.com"},"title":"Linjeforeningen Online","details":"Kalenderen for linj
-eforeningen Online ved NTNU.","updated":"2011-10-21T14:38:45.000Z","totalResults":1,"startIndex":1,"itemsPerPage":25,"feedL
-ink":"https://www.google.com/calendar/feeds/54v6g4v6r46qi4asf7lh5j9pcs%40group.calendar.google.com/public/basic","selfLink"
-:"https://www.google.com/calendar/feeds/54v6g4v6r46qi4asf7lh5j9pcs%40group.calendar.google.com/public/basic?alt=jsonc&max-r
-esults=25&start-min=2011-10-22T00%3A00%3A00&start-max=2011-10-22T23%3A59%3A59","canPost":false,"ti"
-2011-10-22 13:00:46,392 - org.apache.http.wire - DEBUG - << "meZone":"Europe/Oslo","timesCleaned":0,"items":[{"kind":"calen
-dar#event","id":"cmjun3imcf464ccop9433japc8","selfLink":"https://www.google.com/calendar/feeds/54v6g4v6r46qi4asf7lh5j9pcs%4
-0group.calendar.google.com/public/basic/cmjun3imcf464ccop9433japc8","alternateLink":"https://www.google.com/calendar/event?
-eid=Y21qdW4zaW1jZjQ2NGNjb3A5NDMzamFwYzggNTR2Nmc0djZyNDZxaTRhc2Y3bGg1ajlwY3NAZw","canEdit":false,"title":"studLan","created"
-:"0001-12-31T00:00:00.000Z","updated":"2011-09-30T02:40:18.000Z","details":"N[0xc3][0xa5]r: fre. 21. okt. 2011 19:00 til s[
-0xc3][0xb8]n. 23. okt. 2011 16:00[0xc2][0xa0]\nCEST\u003cbr /\u003e\n\n\u003cbr /\u003eHvor: P15\n\u003cbr /\u003eAktivitet
-sstatus: bekreftet","creator":{"displayName":"Linjeforeningen Online"}}]}}"
+    @Test
+    public void testAVeryLongEventToNotAnnounceEveryHour() {
+        DateTime now = new DateTime(2011, 10, 21, 19, 0, 0, 0);
 
-             2011-10-22 13:00:46,395 - no.ntnu.online.onlineguru.plugin.plugins.calendar.jsonmodel.Item - ERROR - Error with Item : Item{id='cmjun3imcf464ccop9433japc8', title='studLan', details='Når: fre. 21. okt. 2011 19:00 til søn. 23. okt. 2011 16:00 
-CEST<br />
+        Event eventToTest = veryLongEvent.convertToEvent(Event.Type.ONLINECALENDAR);
 
-<br />Hvor: P15
-<br />Aktivitetsstatus: bekreftet'}
- details: Når: fre. 21. okt. 2011 19:00 til søn. 23. okt. 2011 16:00  CEST    Hvor: P15  Aktivitetsstatus: bekreftet
-2011-10-22 13:00:51,395 - no.ntnu.online.onlineguru.plugin.plugins.calendar.ScheduleAnnouncer - DEBUG - [Event start] studLan
+        System.out.println(eventToTest);
+        System.out.println(eventToTest.getStartDate().toString());
 
+        Duration durationOnTimestamps;
+        assertTrue((now.isBefore(eventToTest.getStartDate()) || eventToTest.getStartDate().isEqual(now)));
+        durationOnTimestamps = new Duration(now, eventToTest.getStartDate());
 
-     */
+        assertTrue(durationOnTimestamps.isShorterThan(Duration.standardHours(1)));
 
+        now = new DateTime(2011, 10, 21, 18, 0, 0, 0);
+        assertTrue((now.isBefore(eventToTest.getStartDate()) || eventToTest.getStartDate().isEqual(now)));
+        durationOnTimestamps = new Duration(now, eventToTest.getStartDate());
+        assertFalse(durationOnTimestamps.isShorterThan(Duration.standardHours(1)));
+    }
+}
+
+class ItemTest extends Item {
+    public void setDescription(String description) {
+        details = description;
+    }
 }
