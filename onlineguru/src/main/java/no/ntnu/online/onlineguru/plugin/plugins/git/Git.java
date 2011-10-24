@@ -112,7 +112,7 @@ public class Git implements PluginWithDependencies {
     }
 
     private boolean isAddByRecipientKeyword(String[] message) {
-        return "add".equalsIgnoreCase(message[1]) && message.length == 6;
+        return "add".equalsIgnoreCase(message[1]) && message.length == 7;
     }
 
     private void listAnnounces(PrivMsgEvent privMsgEvent) {
