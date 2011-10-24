@@ -115,7 +115,7 @@ public class GitAnnounceImpl implements GitAnnounce, WebserverCallback {
                         gitHubPayload.getPullRequest().getBase().getLabel(),
                         gitHubPayload.getPullRequest().getHead().getLabel(),
                         gitHubPayload.getPullRequest().getHtmlUrl()
-                        ));
+                ));
             } else if (gitHubPayload.getIssue() != null && channelAnnounce.getVerboseLevel().ordinal() >= 2) {
                 // issue announce
                 messages.add(String.format("[github][%s] %s - %s. %s",
@@ -123,7 +123,7 @@ public class GitAnnounceImpl implements GitAnnounce, WebserverCallback {
                         gitHubPayload.getIssue().getTitle(),
                         gitHubPayload.getIssue().getUser().getLogin(),
                         gitHubPayload.getIssue().getHtmlUrl()
-                        ));
+                ));
             } else {
                 // assume normal push
 
@@ -233,15 +233,16 @@ public class GitAnnounceImpl implements GitAnnounce, WebserverCallback {
             payload = gson.fromJson(parms.getProperty("payload"), GitHubPayload.class);
         }
 
-        if (payload != null && announceHashMap.containsKey(payload.getIdentifier())) {
-            System.out.println(payload);
-            IRCAnnounce announce = announceHashMap.get(payload.getIdentifier());
-            IRCAnnounce toAnnounce = new IRCAnnounce(payload, announce.getAnnounceToChannels());
-            announceToIRC(toAnnounce);
-        } else {
-            logger.error(String.format("Missing announce settings for %s with payload %s", payload.getIdentifier(), payload.toString()));
+        if (payload != null) {
+            if (announceHashMap.containsKey(payload.getIdentifier())) {
+                IRCAnnounce announce = announceHashMap.get(payload.getIdentifier());
+                IRCAnnounce toAnnounce = new IRCAnnounce(payload, announce.getAnnounceToChannels());
+                announceToIRC(toAnnounce);
+            } else {
+                logger.error(String.format("Missing announce settings for %s with payload %s", payload.getIdentifier(), payload.toString()));
+            }
         }
-        
+
         return new Response(NanoHTTPD.HTTP_OK, MIME_PLAINTEXT, "OK");
 
 
