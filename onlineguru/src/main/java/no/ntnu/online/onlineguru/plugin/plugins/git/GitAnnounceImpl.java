@@ -105,24 +105,47 @@ public class GitAnnounceImpl implements GitAnnounce, WebserverCallback {
 
         if (ircAnnounce.getGitPayload() instanceof GitHubPayload) {
             GitHubPayload gitHubPayload = (GitHubPayload) ircAnnounce.getGitPayload();
-            String activeBranch = gitHubPayload.getRef().split("/")[2];
-            messages.add(String.format("[scm][%s] %s new commits pushed to %s: %s",
-                    gitHubPayload.getRepository().getName(),
-                    gitHubPayload.getCommits().size(),
-                    activeBranch,
-                    gitHubPayload.getCompare()
-            ));
-            if (channelAnnounce.getVerboseLevel().ordinal() >= 2) { //VerboseLevel.EVERYTHING
-                for (Commit commit : gitHubPayload.getCommits()) {
-                    messages.add(String.format(announceGitHubCommit,
-                            gitHubPayload.getRepository().getName(),
-                            activeBranch,
-                            commit.getMessage().replaceAll("\n", ", "),
-                            commit.getAuthor().getName(),
-                            commit.getAdded().size(),
-                            commit.getModified().size(),
-                            commit.getRemoved().size()
-                    ));
+
+            if (gitHubPayload.getPullRequest() != null) {
+                // pull request announce
+                messages.add(String.format("[github][%s] %s - %s. %s -> %s %s",
+                        gitHubPayload.getRepository().getName(),
+                        gitHubPayload.getPullRequest().getTitle(),
+                        gitHubPayload.getPullRequest().getUser().getLogin(),
+                        gitHubPayload.getPullRequest().getBase().getLabel(),
+                        gitHubPayload.getPullRequest().getHead().getLabel(),
+                        gitHubPayload.getPullRequest().getHtmlUrl()
+                        ));
+            } else if (gitHubPayload.getIssue() != null) {
+                // issue announce
+                messages.add(String.format("[github][%s] %s - %s. %s",
+                        gitHubPayload.getRepository().getName(),
+                        gitHubPayload.getIssue().getTitle(),
+                        gitHubPayload.getIssue().getUser().getLogin(),
+                        gitHubPayload.getIssue().getHtmlUrl()
+                        ));
+            } else {
+                // assume normal push
+
+                String activeBranch = gitHubPayload.getRef().split("/")[2];
+                messages.add(String.format("[scm][%s] %s new commits pushed to %s: %s",
+                        gitHubPayload.getRepository().getName(),
+                        gitHubPayload.getCommits().size(),
+                        activeBranch,
+                        gitHubPayload.getCompare()
+                ));
+                if (channelAnnounce.getVerboseLevel().ordinal() >= 2) { //VerboseLevel.EVERYTHING
+                    for (Commit commit : gitHubPayload.getCommits()) {
+                        messages.add(String.format(announceGitHubCommit,
+                                gitHubPayload.getRepository().getName(),
+                                activeBranch,
+                                commit.getMessage().replaceAll("\n", ", "),
+                                commit.getAuthor().getName(),
+                                commit.getAdded().size(),
+                                commit.getModified().size(),
+                                commit.getRemoved().size()
+                        ));
+                    }
                 }
             }
 

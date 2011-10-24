@@ -1,5 +1,7 @@
 package no.ntnu.online.onlineguru.plugin.plugins.git.github.jsonmodel;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 
 /**
@@ -10,6 +12,8 @@ public class Issue implements Serializable{
     private String state;
     private String title;
     private String body;
+    @SerializedName("html_url")
+    private String htmlUrl;
     private User user;
 
     public int getNumber() {
@@ -44,6 +48,14 @@ public class Issue implements Serializable{
         this.body = body;
     }
 
+    public String getHtmlUrl() {
+        return htmlUrl;
+    }
+
+    public void setHtmlUrl(String htmlUrl) {
+        this.htmlUrl = htmlUrl;
+    }
+
     public User getUser() {
         return user;
     }
@@ -59,6 +71,7 @@ public class Issue implements Serializable{
                 ", state='" + state + '\'' +
                 ", title='" + title + '\'' +
                 ", body='" + body + '\'' +
+                ", htmlUrl='" + htmlUrl + '\'' +
                 ", user=" + user +
                 '}';
     }

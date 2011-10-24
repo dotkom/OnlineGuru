@@ -8,6 +8,7 @@ import java.io.Serializable;
 public class User implements Serializable {
     private String email;
     private String name;
+    private String login;
 
     public String getEmail() {
         return email;
@@ -25,11 +26,20 @@ public class User implements Serializable {
         this.name = name;
     }
 
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
     @Override
     public String toString() {
         return "User{" +
                 "email='" + email + '\'' +
                 ", name='" + name + '\'' +
+                ", login='" + login + '\'' +
                 '}';
     }
 }

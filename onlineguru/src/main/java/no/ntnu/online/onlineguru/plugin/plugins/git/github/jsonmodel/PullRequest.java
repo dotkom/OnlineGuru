@@ -1,5 +1,7 @@
 package no.ntnu.online.onlineguru.plugin.plugins.git.github.jsonmodel;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 
 /**
@@ -12,8 +14,10 @@ public class PullRequest implements Serializable {
     private String title;
     private String body;
     private User user;
-    private String head;
-    private String base;
+    private Storage head;
+    private Storage base;
+    @SerializedName("html_url")
+    private String htmlUrl;
 
     public int getNumber() {
         return number;
@@ -63,20 +67,28 @@ public class PullRequest implements Serializable {
         this.user = user;
     }
 
-    public String getHead() {
+    public Storage getHead() {
         return head;
     }
 
-    public void setHead(String head) {
+    public void setHead(Storage head) {
         this.head = head;
     }
 
-    public String getBase() {
+    public Storage getBase() {
         return base;
     }
 
-    public void setBase(String base) {
+    public void setBase(Storage base) {
         this.base = base;
+    }
+
+    public String getHtmlUrl() {
+        return htmlUrl;
+    }
+
+    public void setHtmlUrl(String htmlUrl) {
+        this.htmlUrl = htmlUrl;
     }
 
     @Override
@@ -88,8 +100,9 @@ public class PullRequest implements Serializable {
                 ", title='" + title + '\'' +
                 ", body='" + body + '\'' +
                 ", user=" + user +
-                ", head='" + head + '\'' +
-                ", base='" + base + '\'' +
+                ", head=" + head +
+                ", base=" + base +
+                ", htmlUrl='" + htmlUrl + '\'' +
                 '}';
     }
 }
