@@ -108,8 +108,9 @@ public class GitAnnounceImpl implements GitAnnounce, WebserverCallback {
 
             if (gitHubPayload.getPullRequest() != null && channelAnnounce.getVerboseLevel().ordinal() >= 2) {
                 // pull request announce
-                messages.add(String.format("[github][%s] %s - %s. %s -> %s %s",
+                messages.add(String.format("[github][%s/%s] %s - %s. %s -> %s %s",
                         gitHubPayload.getRepository().getName(),
+                        gitHubPayload.getAction(),
                         gitHubPayload.getPullRequest().getTitle(),
                         gitHubPayload.getPullRequest().getUser().getLogin(),
                         gitHubPayload.getPullRequest().getBase().getLabel(),
@@ -118,8 +119,9 @@ public class GitAnnounceImpl implements GitAnnounce, WebserverCallback {
                 ));
             } else if (gitHubPayload.getIssue() != null && channelAnnounce.getVerboseLevel().ordinal() >= 2) {
                 // issue announce
-                messages.add(String.format("[github][%s] %s - %s. %s",
+                messages.add(String.format("[github][%s/%s] %s - %s. %s",
                         gitHubPayload.getRepository().getName(),
+                        gitHubPayload.getAction(),
                         gitHubPayload.getIssue().getTitle(),
                         gitHubPayload.getIssue().getUser().getLogin(),
                         gitHubPayload.getIssue().getHtmlUrl()
