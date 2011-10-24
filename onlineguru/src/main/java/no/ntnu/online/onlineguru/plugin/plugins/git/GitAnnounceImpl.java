@@ -82,16 +82,18 @@ public class GitAnnounceImpl implements GitAnnounce, WebserverCallback {
                             activeBranch,
                             gitHubPayload.getCompare()
                     ));
-                    for (Commit commit : gitHubPayload.getCommits()) {
-                        messages.add(String.format(announceGitHubCommit,
-                                gitHubPayload.getRepository().getName(),
-                                activeBranch,
-                                commit.getMessage().replaceAll("\n", ", "),
-                                commit.getAuthor().getName(),
-                                commit.getAdded().size(),
-                                commit.getModified().size(),
-                                commit.getRemoved().size()
-                        ));
+                    if (ircAnnounce.getAnnounceLevel().ordinal() >= 2) { //VerboseLevel.EVERYTHING
+                        for (Commit commit : gitHubPayload.getCommits()) {
+                            messages.add(String.format(announceGitHubCommit,
+                                    gitHubPayload.getRepository().getName(),
+                                    activeBranch,
+                                    commit.getMessage().replaceAll("\n", ", "),
+                                    commit.getAuthor().getName(),
+                                    commit.getAdded().size(),
+                                    commit.getModified().size(),
+                                    commit.getRemoved().size()
+                            ));
+                        }
                     }
 
                 } else if (ircAnnounce.getGitPayload() instanceof RedminePayload) {
@@ -100,13 +102,10 @@ public class GitAnnounceImpl implements GitAnnounce, WebserverCallback {
                 }
 
 
-                Iterator iterator = ircAnnounce.getAnnounceToChannels().entrySet().iterator();
-                while (iterator.hasNext()) {
-                    Map.Entry<String, List<String>> entry = (Map.Entry<String, List<String>>) iterator.next();
-
+                for (Map.Entry<String, List<String>> entry : ircAnnounce.getAnnounceToChannels().entrySet()) {
                     Network currentNetwork = wand.getNetworkByAlias(entry.getKey());
 
-                    if (currentNetwork != null && (wand.getNetworkByAlias(currentNetwork.getServerAlias()) != null ? true : false)) {
+                    if (currentNetwork != null && (wand.getNetworkByAlias(currentNetwork.getServerAlias()) != null)) {
                         for (String announceToThisChannel : entry.getValue()) {
                             if (wand.amIOnChannel(currentNetwork, announceToThisChannel)) {
                                 for (String announceText : messages) {
@@ -148,9 +147,7 @@ public class GitAnnounceImpl implements GitAnnounce, WebserverCallback {
         ConcurrentHashMap<String, List<String>> result = new ConcurrentHashMap<String, List<String>>();
         if (lists != null && lists.length > 0) {
             for (ConcurrentHashMap<String, List<String>> item : lists) {
-                Iterator<Map.Entry<String, List<String>>> data = item.entrySet().iterator();
-                while (data.hasNext()) {
-                    Map.Entry<String, List<String>> entry = data.next();
+                for (Map.Entry<String, List<String>> entry : item.entrySet()) {
                     if (result.containsKey(entry.getKey())) {
                         // merge the list's
                         List<String> mergeList = result.get(entry.getKey());

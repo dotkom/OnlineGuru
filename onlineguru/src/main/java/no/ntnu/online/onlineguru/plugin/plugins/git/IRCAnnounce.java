@@ -14,6 +14,7 @@ public class IRCAnnounce implements Serializable {
 
     private ConcurrentHashMap<String, List<String>> announceToChannels;
     private GitPayload gitPayload;
+    private VerboseLevel announceLevel;
 
     public IRCAnnounce(GitPayload gitPayload, ConcurrentHashMap<String, List<String>> announceToChannels) {
         this.gitPayload = gitPayload;
@@ -34,6 +35,14 @@ public class IRCAnnounce implements Serializable {
 
     public void setGitPayload(GitPayload gitPayload) {
         this.gitPayload = gitPayload;
+    }
+
+    public VerboseLevel getAnnounceLevel() {
+        return announceLevel;
+    }
+
+    public void setAnnounceLevel(VerboseLevel announceLevel) {
+        this.announceLevel = announceLevel;
     }
 
     @Override
@@ -58,6 +67,7 @@ public class IRCAnnounce implements Serializable {
         return "IRCAnnounce{" +
                 "announceToChannels=" + announceToChannels +
                 ", gitPayload=" + gitPayload +
+                ", announceLevel=" + announceLevel +
                 '}';
     }
 }
