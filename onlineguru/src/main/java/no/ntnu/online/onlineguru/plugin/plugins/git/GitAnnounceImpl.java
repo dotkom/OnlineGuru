@@ -62,7 +62,7 @@ public class GitAnnounceImpl implements GitAnnounce, WebserverCallback {
         IRCAnnounce announce = announceHashMap.get(payload.getIdentifier());
 
 // Clone the object, as we don't want to modify the orginal one in the announceHashMap
-        IRCAnnounce toAnnounce = new IRCAnnounce(payload, announce.getAnnounceToChannels());
+        IRCAnnounce toAnnounce = new IRCAnnounce(payload, announce.getAnnounceToChannels(), announce.getAnnounceLevel());
 
         return announceToIRC(toAnnounce);
 
@@ -207,7 +207,7 @@ public class GitAnnounceImpl implements GitAnnounce, WebserverCallback {
         if (payload != null) {
             System.out.println(payload);
             IRCAnnounce announce = announceHashMap.get(payload.getIdentifier());
-            IRCAnnounce toAnnounce = new IRCAnnounce(payload, announce.getAnnounceToChannels());
+            IRCAnnounce toAnnounce = new IRCAnnounce(payload, announce.getAnnounceToChannels(), announce.getAnnounceLevel());
             announceToIRC(toAnnounce);
         }
         return new Response(NanoHTTPD.HTTP_OK, MIME_PLAINTEXT, "OK");

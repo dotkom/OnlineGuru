@@ -131,7 +131,7 @@ public class Git implements PluginWithDependencies {
 
     private void addAnnounceByRecipient(PrivMsgEvent privMsgEvent, String[] message) {
         Boolean result;
-        result = addAnnounce(message[2], message[3], message[4], message[5]);
+        result = addAnnounce(message[2], message[3], message[4], message[5], message[6]);
         if (result) {
             wand.sendMessageToTarget(privMsgEvent.getNetwork(), privMsgEvent.getSender(), String.format("Added git %s announce for %s to network %s on channel %s", message[2], message[3], message[4], message[5]));
         } else {
@@ -149,7 +149,16 @@ public class Git implements PluginWithDependencies {
         }
     }
 
-    private Boolean addAnnounce(String repoType, String repository, String network, String channel) {
+    private Boolean addAnnounce(String repoType, String repository, String verboseLevel, String network, String channel) {
+        VerboseLevel level;
+        try {
+            level = VerboseLevel.values()[Integer.parseInt(verboseLevel)];
+        } catch (NumberFormatException nfe) {
+            return Boolean.FALSE;
+        } catch(ArrayIndexOutOfBoundsException aiofbe) {
+            return Boolean.FALSE;
+        }
+
         ConcurrentHashMap<String, List<String>> channelsToAnnounce = new ConcurrentHashMap<String, List<String>>();
         ArrayList<String> channels = new ArrayList<String>();
         channels.add(channel);
@@ -162,7 +171,7 @@ public class Git implements PluginWithDependencies {
             payload = new RedminePayload(repository);
         }
 
-        return gitAnnounce.addAnnounce(new IRCAnnounce(payload, channelsToAnnounce));
+        return gitAnnounce.addAnnounce(new IRCAnnounce(payload, channelsToAnnounce, level));
     }
 
     private Boolean delAnnounce(String repoType, String repositoryIdentifier, String network, String channel) {
