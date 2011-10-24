@@ -77,6 +77,6 @@ public class IRCAnnounce implements Serializable {
         }
         prettiFyAnnounceChannels = prettiFyAnnounceChannels.substring(0, prettiFyAnnounceChannels.length() - 2); // removes last whitespace + ,
 
-        return String.format(LIST_ANNOUNCE_FORMAT, gitPayload.getType(), gitPayload.getIdentifier(), prettiFyAnnounceChannels);
+        return String.format(LIST_ANNOUNCE_FORMAT, gitPayload.getType().substring(gitPayload.getType().lastIndexOf(".")+1, gitPayload.getType().length()), gitPayload.getIdentifier(), prettiFyAnnounceChannels);
     }
 }
