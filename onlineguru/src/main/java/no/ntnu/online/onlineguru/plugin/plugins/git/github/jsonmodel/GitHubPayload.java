@@ -22,6 +22,7 @@ public class GitHubPayload extends GitPayload implements Serializable{
     private String after;
     private String ref;
     private String compare;
+    private User pusher;
 
     public GitHubPayload() {}
     public GitHubPayload(String repositoryUrlWhichIsIdentifier) {
@@ -100,6 +101,14 @@ public class GitHubPayload extends GitPayload implements Serializable{
         this.ref = ref;
     }
 
+    public User getPusher() {
+        return pusher;
+    }
+
+    public void setPusher(User pusher) {
+        this.pusher = pusher;
+    }
+
     @Override
     public String toString() {
         return "GitHubPayload{" +
@@ -112,6 +121,7 @@ public class GitHubPayload extends GitPayload implements Serializable{
                 ", after='" + after + '\'' +
                 ", ref='" + ref + '\'' +
                 ", compare='" + compare + '\'' +
+                ", pusher=" + pusher +
                 '}';
     }
 

@@ -128,11 +128,12 @@ public class GitAnnounceImpl implements GitAnnounce, WebserverCallback {
                 // assume normal push
 
                 String activeBranch = gitHubPayload.getRef().split("/")[2];
-                messages.add(String.format("[scm][%s] %s new commits pushed to %s: %s",
+                messages.add(String.format("[scm][%s] %s new commits pushed to %s: %s (%s)",
                         gitHubPayload.getRepository().getName(),
                         gitHubPayload.getCommits().size(),
                         activeBranch,
-                        gitHubPayload.getCompare()
+                        gitHubPayload.getCompare(),
+                        gitHubPayload.getPusher().getName()
                 ));
                 if (channelAnnounce.getVerboseLevel().ordinal() >= 2) { //VerboseLevel.EVERYTHING
                     for (Commit commit : gitHubPayload.getCommits()) {
