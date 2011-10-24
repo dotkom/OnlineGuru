@@ -106,7 +106,7 @@ public class GitAnnounceImpl implements GitAnnounce, WebserverCallback {
         if (ircAnnounce.getGitPayload() instanceof GitHubPayload) {
             GitHubPayload gitHubPayload = (GitHubPayload) ircAnnounce.getGitPayload();
 
-            if (gitHubPayload.getPullRequest() != null) {
+            if (gitHubPayload.getPullRequest() != null && channelAnnounce.getVerboseLevel().ordinal() >= 2) {
                 // pull request announce
                 messages.add(String.format("[github][%s] %s - %s. %s -> %s %s",
                         gitHubPayload.getRepository().getName(),
@@ -116,7 +116,7 @@ public class GitAnnounceImpl implements GitAnnounce, WebserverCallback {
                         gitHubPayload.getPullRequest().getHead().getLabel(),
                         gitHubPayload.getPullRequest().getHtmlUrl()
                         ));
-            } else if (gitHubPayload.getIssue() != null) {
+            } else if (gitHubPayload.getIssue() != null && channelAnnounce.getVerboseLevel().ordinal() >= 2) {
                 // issue announce
                 messages.add(String.format("[github][%s] %s - %s. %s",
                         gitHubPayload.getRepository().getName(),
