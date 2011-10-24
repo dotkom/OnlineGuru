@@ -149,7 +149,7 @@ public class Git implements PluginWithDependencies {
         }
     }
 
-    private Boolean addAnnounce(String repoType, String repository, String verboseLevel, String network, String channel) {
+    private Boolean addAnnounce(String repoType, String repository, String network, String channel, String verboseLevel) {
         VerboseLevel level;
         try {
             level = VerboseLevel.values()[Integer.parseInt(verboseLevel)];
@@ -159,9 +159,9 @@ public class Git implements PluginWithDependencies {
             return Boolean.FALSE;
         }
 
-        ConcurrentHashMap<String, List<String>> channelsToAnnounce = new ConcurrentHashMap<String, List<String>>();
-        ArrayList<String> channels = new ArrayList<String>();
-        channels.add(channel);
+        ConcurrentHashMap<String, List<ChannelAnnounce>> channelsToAnnounce = new ConcurrentHashMap<String, List<ChannelAnnounce>>();
+        ArrayList<ChannelAnnounce> channels = new ArrayList<ChannelAnnounce>();
+        channels.add(new ChannelAnnounce(channel, level));
         channelsToAnnounce.put(network, channels);
 
         GitPayload payload;
@@ -171,7 +171,7 @@ public class Git implements PluginWithDependencies {
             payload = new RedminePayload(repository);
         }
 
-        return gitAnnounce.addAnnounce(new IRCAnnounce(payload, channelsToAnnounce, level));
+        return gitAnnounce.addAnnounce(new IRCAnnounce(payload, channelsToAnnounce));
     }
 
     private Boolean delAnnounce(String repoType, String repositoryIdentifier, String network, String channel) {

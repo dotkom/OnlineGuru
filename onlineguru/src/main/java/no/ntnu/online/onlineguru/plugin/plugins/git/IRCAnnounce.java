@@ -1,7 +1,6 @@
 package no.ntnu.online.onlineguru.plugin.plugins.git;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,22 +13,20 @@ import java.util.concurrent.ConcurrentHashMap;
 public class IRCAnnounce implements Serializable {
 
 
-    public static final String LIST_ANNOUNCE_FORMAT = "[%s/%s] %s (%s==%s)";
-    private ConcurrentHashMap<String, List<String>> announceToChannels;
+    public static final String LIST_ANNOUNCE_FORMAT = "[%s/%s] %s";
+    private ConcurrentHashMap<String, List<ChannelAnnounce>> announceToChannels;
     private GitPayload gitPayload;
-    private VerboseLevel announceLevel;
 
-    public IRCAnnounce(GitPayload gitPayload, ConcurrentHashMap<String, List<String>> announceToChannels, VerboseLevel announceLevel) {
+    public IRCAnnounce(GitPayload gitPayload, ConcurrentHashMap<String, List<ChannelAnnounce>> announceToChannels) {
         this.gitPayload = gitPayload;
         this.announceToChannels = announceToChannels;
-        this.announceLevel = announceLevel;
     }
 
-    public ConcurrentHashMap<String, List<String>> getAnnounceToChannels() {
+    public ConcurrentHashMap<String, List<ChannelAnnounce>> getAnnounceToChannels() {
         return announceToChannels;
     }
 
-    public void setAnnounceToChannels(ConcurrentHashMap<String, List<String>> announceToChannels) {
+    public void setAnnounceToChannels(ConcurrentHashMap<String, List<ChannelAnnounce>> announceToChannels) {
         this.announceToChannels = announceToChannels;
     }
 
@@ -39,14 +36,6 @@ public class IRCAnnounce implements Serializable {
 
     public void setGitPayload(GitPayload gitPayload) {
         this.gitPayload = gitPayload;
-    }
-
-    public VerboseLevel getAnnounceLevel() {
-        return announceLevel;
-    }
-
-    public void setAnnounceLevel(VerboseLevel announceLevel) {
-        this.announceLevel = announceLevel;
     }
 
     @Override
@@ -71,17 +60,23 @@ public class IRCAnnounce implements Serializable {
         return "IRCAnnounce{" +
                 "announceToChannels=" + announceToChannels +
                 ", gitPayload=" + gitPayload +
-                ", announceLevel=" + announceLevel +
                 '}';
     }
-    
+
     public String listIrcAnnounces() {
         String prettiFyAnnounceChannels = "";
-        for (Map.Entry<String, List<String>> networkWithChannels : announceToChannels.entrySet()) {
-            prettiFyAnnounceChannels+= String.format("%s {%s}, ", networkWithChannels.getKey(), Arrays.toString(networkWithChannels.getValue().toArray()));
-        }
-        prettiFyAnnounceChannels = prettiFyAnnounceChannels.substring(0, prettiFyAnnounceChannels.length()-2); // removes last whitespace + ,
+        for (Map.Entry<String, List<ChannelAnnounce>> networkWithChannels : announceToChannels.entrySet()) {
+            String channelWithAnnounceLevel = "";
 
-        return String.format(LIST_ANNOUNCE_FORMAT, gitPayload.getType(), gitPayload.getIdentifier(), prettiFyAnnounceChannels, announceLevel.ordinal(), announceLevel);
+            for (ChannelAnnounce channelAnnounce : networkWithChannels.getValue()) {
+                channelWithAnnounceLevel += String.format("%s(%s), ", channelAnnounce.getChannel(), channelAnnounce.getVerboseLevel());
+            }
+            channelWithAnnounceLevel = channelWithAnnounceLevel.substring(0, channelWithAnnounceLevel.length() - 2); // removes last whitespace + ,
+
+            prettiFyAnnounceChannels += String.format("%s {%s}, ", networkWithChannels.getKey(), channelWithAnnounceLevel);
+        }
+        prettiFyAnnounceChannels = prettiFyAnnounceChannels.substring(0, prettiFyAnnounceChannels.length() - 2); // removes last whitespace + ,
+
+        return String.format(LIST_ANNOUNCE_FORMAT, gitPayload.getType(), gitPayload.getIdentifier(), prettiFyAnnounceChannels);
     }
 }
