@@ -233,12 +233,15 @@ public class GitAnnounceImpl implements GitAnnounce, WebserverCallback {
             payload = gson.fromJson(parms.getProperty("payload"), GitHubPayload.class);
         }
 
-        if (payload != null) {
+        if (payload != null && announceHashMap.containsKey(payload.getIdentifier())) {
             System.out.println(payload);
             IRCAnnounce announce = announceHashMap.get(payload.getIdentifier());
             IRCAnnounce toAnnounce = new IRCAnnounce(payload, announce.getAnnounceToChannels());
             announceToIRC(toAnnounce);
+        } else {
+            logger.error(String.format("Missing announce settings for %s with payload %s", payload.getIdentifier(), payload.toString()));
         }
+        
         return new Response(NanoHTTPD.HTTP_OK, MIME_PLAINTEXT, "OK");
 
 
