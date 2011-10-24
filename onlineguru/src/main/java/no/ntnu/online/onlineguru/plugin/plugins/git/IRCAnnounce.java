@@ -1,7 +1,9 @@
 package no.ntnu.online.onlineguru.plugin.plugins.git;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -12,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class IRCAnnounce implements Serializable {
 
 
+    public static final String LIST_ANNOUNCE_FORMAT = "[%s/%s] %s (%s==%s)";
     private ConcurrentHashMap<String, List<String>> announceToChannels;
     private GitPayload gitPayload;
     private VerboseLevel announceLevel;
@@ -70,5 +73,15 @@ public class IRCAnnounce implements Serializable {
                 ", gitPayload=" + gitPayload +
                 ", announceLevel=" + announceLevel +
                 '}';
+    }
+    
+    public String listIrcAnnounces() {
+        String prettiFyAnnounceChannels = "";
+        for (Map.Entry<String, List<String>> networkWithChannels : announceToChannels.entrySet()) {
+            prettiFyAnnounceChannels+= String.format("%s {%s}, ", networkWithChannels.getKey(), Arrays.toString(networkWithChannels.getValue().toArray()));
+        }
+        prettiFyAnnounceChannels = prettiFyAnnounceChannels.substring(0, prettiFyAnnounceChannels.length()-2); // removes last whitespace + ,
+
+        return String.format(LIST_ANNOUNCE_FORMAT, gitPayload.getType(), gitPayload.getIdentifier(), prettiFyAnnounceChannels, announceLevel.ordinal(), announceLevel);
     }
 }

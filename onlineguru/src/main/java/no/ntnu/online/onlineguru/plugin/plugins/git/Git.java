@@ -121,7 +121,7 @@ public class Git implements PluginWithDependencies {
             wand.sendMessageToTarget(privMsgEvent.getNetwork(), privMsgEvent.getSender(), "Listing up git-redmine announces:");
             while (announces.hasNext()) {
                 IRCAnnounce announce = announces.next();
-                wand.sendMessageToTarget(privMsgEvent.getNetwork(), privMsgEvent.getSender(), announce.toString());
+                wand.sendMessageToTarget(privMsgEvent.getNetwork(), privMsgEvent.getSender(), announce.listIrcAnnounces());
             }
         } else {
             wand.sendMessageToTarget(privMsgEvent.getNetwork(), privMsgEvent.getSender(), "No git-redmine announces added yet...");
