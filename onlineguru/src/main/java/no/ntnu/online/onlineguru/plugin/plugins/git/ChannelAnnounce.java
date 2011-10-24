@@ -1,9 +1,11 @@
 package no.ntnu.online.onlineguru.plugin.plugins.git;
 
+import java.io.Serializable;
+
 /**
  * @author Roy Sindre Norangshol
  */
-public class ChannelAnnounce {
+public class ChannelAnnounce implements Serializable {
     private String channel;
     private VerboseLevel verboseLevel;
 
