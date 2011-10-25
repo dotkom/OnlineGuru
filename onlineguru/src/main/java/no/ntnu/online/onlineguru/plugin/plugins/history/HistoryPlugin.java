@@ -3,6 +3,7 @@ package no.ntnu.online.onlineguru.plugin.plugins.history;
 import no.fictive.irclib.event.container.Event;
 import no.fictive.irclib.event.container.command.*;
 import no.fictive.irclib.event.model.EventType;
+import no.fictive.irclib.model.channel.Channel;
 import no.fictive.irclib.model.nick.Nick;
 import no.ntnu.online.onlineguru.OnlineGuru;
 import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
@@ -68,6 +69,7 @@ public class HistoryPlugin implements Plugin {
                 PrivMsgEvent privMsgEvent = (PrivMsgEvent)e;
                 if (privMsgEvent.isChannelMessage()) {
                     history.appendHistory(new Nick(privMsgEvent.getSender()), e);
+                    history.appendChannelHistory(new Channel(privMsgEvent.getChannel()), privMsgEvent);
                 }
                 break;
             case NOTICE:

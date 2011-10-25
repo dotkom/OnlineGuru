@@ -4,6 +4,7 @@ import no.fictive.irclib.event.container.Event;
 import no.fictive.irclib.event.container.command.JoinEvent;
 import no.fictive.irclib.event.container.command.PartEvent;
 import no.fictive.irclib.event.container.command.PrivMsgEvent;
+import no.fictive.irclib.model.channel.Channel;
 import no.fictive.irclib.model.nick.Nick;
 import no.ntnu.online.onlineguru.utils.history.History;
 import org.junit.Before;
@@ -25,6 +26,7 @@ public class HistoryTest {
     private Nick fictive;
     private Nick rockj   ;
     private Nick melwil;
+    private Channel channel;
 
     @Before
     public void setUp() {
@@ -44,6 +46,17 @@ public class HistoryTest {
         for (int i=0; i < 3; i++) {
             history.appendHistory(melwil, createPrivMsgEvent("freenode", melwil.getNickname(), "#test", "Flood "+i+"!"));
         }
+
+        // Channel history here
+        channel = new Channel("#test");
+
+        history.appendChannelHistory(channel, createPrivMsgEvent("freenode", rockj.getNickname(), channel.getChannelname(), "Message 1"));
+        history.appendChannelHistory(channel, createPrivMsgEvent("freenode", rockj.getNickname(), channel.getChannelname(), "Message 2"));
+        history.appendChannelHistory(channel, createPrivMsgEvent("freenode", rockj.getNickname(), channel.getChannelname(), "Message 3"));
+        history.appendChannelHistory(channel, createPrivMsgEvent("freenode", rockj.getNickname(), channel.getChannelname(), "Message 4"));
+        history.appendChannelHistory(channel, createPrivMsgEvent("freenode", fictive.getNickname(), channel.getChannelname(), "Message 5"));
+        history.appendChannelHistory(channel, createPrivMsgEvent("freenode", rockj.getNickname(), channel.getChannelname(), "Message 6"));
+        history.appendChannelHistory(channel, createPrivMsgEvent("freenode", rockj.getNickname(), channel.getChannelname(), "Message 7"));
     }
 
     @Test
@@ -82,5 +95,22 @@ public class HistoryTest {
         assertEquals("hoho now at max", ((PrivMsgEvent)history.getLastEvents(melwil).get(1)).getMessage());
         assertTrue(history.getLastEvents(melwil).get(0) instanceof PartEvent);
         assertEquals("#test", ((PartEvent) history.getLastEvents(melwil).get(0)).getChannel());
+    }
+
+    @Test
+    public void testIfHistoryChannelMaxLimit() {
+        assertEquals(7, history.getLastChannelEvents(channel).size());
+        assertEquals("Message 1", history.getLastChannelEvents(channel).get(history.getLastChannelEvents(channel).size()-1).getMessage());
+
+        for (int i=history.getLastChannelEvents(channel).size(); i < History.MAX_EVENTS_IN_CHANNEL_HISOTRY; i++) {
+            history.appendChannelHistory(channel, createPrivMsgEvent("freenode", melwil.getNickname(), channel.getChannelname(), "Flood "+i));
+        }
+
+        assertEquals(History.MAX_EVENTS_IN_CHANNEL_HISOTRY, history.getLastChannelEvents(channel).size());
+        assertEquals("Message 1", history.getLastChannelEvents(channel).get(history.getLastChannelEvents(channel).size()-1).getMessage());
+        history.appendChannelHistory(channel, createPrivMsgEvent("freenode", melwil.getNickname(), channel.getChannelname(), "newLineAtTop"));
+        assertEquals(History.MAX_EVENTS_IN_CHANNEL_HISOTRY, history.getLastChannelEvents(channel).size());
+        assertEquals("Message 2", history.getLastChannelEvents(channel).get(history.getLastChannelEvents(channel).size()-1).getMessage());
+        assertEquals("newLineAtTop", history.getLastChannelEvents(channel).get(0).getMessage());
     }
 }
