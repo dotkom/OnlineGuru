@@ -54,8 +54,7 @@ public class HistoryPlugin implements Plugin {
                 break;
             case NICK:
                 NickEvent nickEvent = (NickEvent) e;
-                history.nickChangeHistory(new Nick(nickEvent.getOldNick()), new Nick(nickEvent.getNewNick()));
-                history.appendHistory(new Nick(nickEvent.getNewNick()), e);
+                history.nickChangeHistory(nickEvent); // it also appends history!
                 break;
             case TOPIC:
                 TopicEvent topicEvent = (TopicEvent) e;

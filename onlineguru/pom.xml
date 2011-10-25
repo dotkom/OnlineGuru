@@ -71,6 +71,12 @@
             <type>jar</type>
         </dependency>
         <dependency>
+            <groupId>no.fictive.irclib</groupId>
+            <artifactId>irclib</artifactId>
+            <version>1.2-SNAPSHOT</version>
+            <type>test-jar</type>
+        </dependency>
+        <dependency>
             <groupId>net.roarsoftware.lastfm</groupId>
             <artifactId>lastfm</artifactId>
             <version>7.3</version>
