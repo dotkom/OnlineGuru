@@ -1,18 +1,15 @@
 package no.ntnu.online.onlineguru.utils.history;
 
 import no.fictive.irclib.event.container.Event;
-import no.fictive.irclib.model.network.Network;
+import no.fictive.irclib.event.container.command.NickEvent;
 import no.fictive.irclib.model.nick.Nick;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class History {
     private Map<Nick, List<Event>> history;
-    private int max_events_in_history_for_each_nick = 10;
+    public static final int MAX_EVENTS_IN_HISTORY_PER_NICK = 5;
 
     public History() {
         this.history = new HashMap<Nick, List<Event>>();
@@ -23,19 +20,21 @@ public class History {
             List<Event> eventsForNick = history.get(nick);
 
             eventsForNick.add(0, event);
-            if (eventsForNick.size() >= 5)
-                eventsForNick.remove(5);
+            if (eventsForNick.size() > MAX_EVENTS_IN_HISTORY_PER_NICK)
+                eventsForNick.remove(MAX_EVENTS_IN_HISTORY_PER_NICK);
         } else {
-            history.put(nick, new ArrayList<Event>());
+            history.put(nick, new ArrayList<Event>(Arrays.asList(new Event[]{event})));
         }
     }
 
-    public void nickChangeHistory(Nick oldNick, Nick newNick) {
-        if (history.containsKey(oldNick)) {
-            history.put(newNick, history.get(oldNick));
+    public void nickChangeHistory(NickEvent nickEvent) {
+        if (history.containsKey(new Nick(nickEvent.getOldNick()))) {
+            history.put(new Nick(nickEvent.getNewNick()), history.get(new Nick(nickEvent.getOldNick())));
+            history.remove(new Nick(nickEvent.getOldNick()));
         } else {
-            history.put(newNick, new ArrayList<Event>());
+            history.put(new Nick(nickEvent.getNewNick()), new ArrayList<Event>(Arrays.asList(new Event[]{ nickEvent })));
         }
+        appendHistory(new Nick(nickEvent.getNewNick()), nickEvent);
     }
 
     public List<Event> getLastEvents(Nick nick) {
