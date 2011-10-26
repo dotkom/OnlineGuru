@@ -4,6 +4,7 @@ import no.fictive.irclib.event.container.Event;
 import no.fictive.irclib.event.container.command.PrivMsgEvent;
 import no.fictive.irclib.event.model.EventType;
 import no.fictive.irclib.model.channel.Channel;
+import no.fictive.irclib.model.nick.Nick;
 import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
@@ -25,7 +26,7 @@ public class RegexPlugin implements PluginWithDependencies {
 
     private final String TRIGGER = "s/";
     private final String TRIGGER_TROLL = "troll/";
-    private final Pattern FETCH_REGEX = Pattern.compile(".*\\/([^/]+)/([^/]+)\\/");
+    private final Pattern FETCH_REGEX = Pattern.compile("^(troll|s)\\/([^/]+)/([^/]+)\\/");
 
     public RegexPlugin() {
     }
@@ -56,7 +57,7 @@ public class RegexPlugin implements PluginWithDependencies {
                 if (privMsgEvent.isChannelMessage()) {
                     if (privMsgEvent.getMessage().startsWith(TRIGGER))
                         sendFixedMessage(handleMessage(TRIGGER, privMsgEvent), privMsgEvent);
-                    else if (privMsgEvent.getMessage().startsWith(TRIGGER_TROLL))
+                    else if (privMsgEvent.getMessage().startsWith(TRIGGER_TROLL) && new Nick(privMsgEvent.getSender()).isOnChannel(privMsgEvent.getChannel()))
                         sendFixedMessage(handleMessage(TRIGGER_TROLL, privMsgEvent), privMsgEvent);
                 }
             }
@@ -78,9 +79,9 @@ public class RegexPlugin implements PluginWithDependencies {
         List<PrivMsgEvent> lastLines = history.getLastChannelEvents(new Channel(seenRequestEvent.getChannel()));
         for (PrivMsgEvent line : lastLines) {
 
-            if (line.getMessage().equalsIgnoreCase(message))
+            if (isSkippingMessageIfSameAsHistoryMessage(message, line))
                 continue;
-            else if (isSkippingMessage(triggerUsed, seenRequestEvent, line)) // skips message if normal trigger is used, but message in history is not his.
+            else if (isSkippingMessageWhenNormalTriggerAndNotMyMessage(triggerUsed, seenRequestEvent, line)) // skips message if normal trigger is used, but message in history is not his.
                 continue;
 
             String lastHistoryMessage = new String(line.getMessage());
@@ -88,10 +89,10 @@ public class RegexPlugin implements PluginWithDependencies {
 
             Matcher matcher = FETCH_REGEX.matcher(message);
             if (matcher.matches()) {
-                String from = matcher.group(1);
-                String to = matcher.group(2);
+                String from = matcher.group(2);
+                String to = matcher.group(3);
 
-                if (!isMatchingTrigger(lastHistoryMessage, from, to)) {
+                if (!isMatchingTrigger(lastHistoryMessage)) {
                     fixed = lastHistoryMessage.replaceAll(from, to);
                 }
             }
@@ -103,12 +104,16 @@ public class RegexPlugin implements PluginWithDependencies {
         return null;
     }
 
-    private boolean isMatchingTrigger(String message, String from, String to) {
-        return message.startsWith(String.format("%s%s/%s", TRIGGER, from, to))
-                || message.startsWith(String.format("%s%s/%s", TRIGGER_TROLL, from, to));
+    private boolean isSkippingMessageIfSameAsHistoryMessage(String message, PrivMsgEvent line) {
+        return line.getMessage().equalsIgnoreCase(message);
     }
 
-    private boolean isSkippingMessage(String triggerUsed, PrivMsgEvent privMsgEvent, PrivMsgEvent line) {
+    private boolean isMatchingTrigger(String message) {
+        Matcher matcher = FETCH_REGEX.matcher(message);
+        return matcher.matches();
+    }
+
+    private boolean isSkippingMessageWhenNormalTriggerAndNotMyMessage(String triggerUsed, PrivMsgEvent privMsgEvent, PrivMsgEvent line) {
         return TRIGGER.equalsIgnoreCase(triggerUsed) && !line.getSender().equalsIgnoreCase(privMsgEvent.getSender());
     }
 

@@ -55,4 +55,17 @@ public class RegexTest {
         assertEquals(String.format("<%s> %s", event2.getSender(), "Du er en idiot"), plugin.handleMessage("troll/", createPrivMsgEvent("freenode", "trall", "#test", "troll/superhelt/idiot/")));
         assertEquals(String.format("<%s> %s", event1.getSender(), ":-)"), plugin.handleMessage("s/", createPrivMsgEvent("freenode", "Rockj", "#test", "s/o_O/:-)/")));
     }
+
+    @Test
+    public void testAgainstMetaReplacementTrolling() {
+        history.appendChannelHistory(channel, createPrivMsgEvent("freenode", "KinkyPinkie", "#test", "Rockj: det funker ikke" ));
+        history.appendChannelHistory(channel, createPrivMsgEvent("freenode", "Rockj", "#test", "troll/funker ikke/fungerer jo utmerket som faen jo!/"));
+        history.appendChannelHistory(channel, createPrivMsgEvent("freenode", "Fl0bB", "#test", "troll/fungerer/lawl/"));
+        // 16:33:00   @onlineguru | <Rockj> troll/funker ikke/lawl jo utmerket som faen jo!/
+        history.appendChannelHistory(channel, createPrivMsgEvent("freenode", "Fl0bB", "#test", "s/troll/gawd så meta/"));
+        // 16:33:29   @onlineguru | <Fl0bB> gawd så meta/fungerer/lawl/
+
+        assertNull(plugin.handleMessage("troll/",createPrivMsgEvent("freenode", "Fl0bB", "#test", "troll/fungerer/lawl/")));
+        assertNull(plugin.handleMessage("s/", createPrivMsgEvent("freenode", "Fl0bB", "#test", "s/troll/gawd så meta/")));
+    }
 }
