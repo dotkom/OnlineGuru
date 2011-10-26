@@ -69,29 +69,43 @@ public class RegexPlugin implements PluginWithDependencies {
     }
 
 
-    protected String handleMessage(String triggerUsed, PrivMsgEvent privMsgEvent) {
+    protected String handleMessage(String triggerUsed, PrivMsgEvent seenRequestEvent) {
         //String message = privMsgEvent.getMessage().substring(triggerUsed.length()-1, privMsgEvent.getMessage().length());
-        String message = privMsgEvent.getMessage();
+        String message = seenRequestEvent.getMessage();
         String fixed;
 
 
-        List<PrivMsgEvent> lastLines = history.getLastChannelEvents(new Channel(privMsgEvent.getChannel()));
+        List<PrivMsgEvent> lastLines = history.getLastChannelEvents(new Channel(seenRequestEvent.getChannel()));
         for (PrivMsgEvent line : lastLines) {
-            if (isSkippingMessage(triggerUsed, privMsgEvent, line)) // skips message if normal trigger is used, but message in history is not his.
+
+            if (line.getMessage().equalsIgnoreCase(message))
+                continue;
+            else if (isSkippingMessage(triggerUsed, seenRequestEvent, line)) // skips message if normal trigger is used, but message in history is not his.
                 continue;
 
-            String last = line.getMessage();
-            fixed = new String(last); // resets it every time
+            String lastHistoryMessage = new String(line.getMessage());
+            fixed = new String(lastHistoryMessage); // resets it every time
 
             Matcher matcher = FETCH_REGEX.matcher(message);
             if (matcher.matches()) {
-                fixed = last.replaceAll(matcher.group(1), matcher.group(2));
-            }
-            if (!last.equals(fixed))
-                return String.format("<%s> %s", line.getSender(), fixed);
+                String from = matcher.group(1);
+                String to = matcher.group(2);
 
+                if (!isMatchingTrigger(lastHistoryMessage, from, to)) {
+                    fixed = lastHistoryMessage.replaceAll(from, to);
+                }
+            }
+            if (!lastHistoryMessage.equals(fixed))
+                return String.format("<%s> %s", line.getSender(), fixed);
         }
+
+
         return null;
+    }
+
+    private boolean isMatchingTrigger(String message, String from, String to) {
+        return message.startsWith(String.format("%s%s/%s", TRIGGER, from, to))
+                || message.startsWith(String.format("%s%s/%s", TRIGGER_TROLL, from, to));
     }
 
     private boolean isSkippingMessage(String triggerUsed, PrivMsgEvent privMsgEvent, PrivMsgEvent line) {

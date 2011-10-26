@@ -26,7 +26,7 @@ public class RegexTest {
 
     @Before
     public void setUp() {
-               Network network = new Network();
+        Network network = new Network();
         network.setServerAlias("freenode");
         ConcurrentHashMap<String, Network> networks = new ConcurrentHashMap<String, Network>();
         ConcurrentHashMap<String, Channel> channels = new ConcurrentHashMap<String, Channel>();
@@ -41,11 +41,18 @@ public class RegexTest {
 
     @Test
     public void testSimpleRegexReplacement() {
-        PrivMsgEvent event = createPrivMsgEvent("freenode", "Rockj", "#test", "Du er en superhelt");
-        history.appendChannelHistory(channel, event);
+        assertEquals(0, history.getLastChannelEvents(channel).size());
+        PrivMsgEvent event1= createPrivMsgEvent("freenode", "Rockj", "#test", "o_O");
+        PrivMsgEvent event2 = createPrivMsgEvent("freenode", "Rockj", "#test", "Du er en superhelt");
+        PrivMsgEvent event3 = createPrivMsgEvent("freenode", "Rockj", "#test", "s/superhelt/idiot/");
+
+        history.appendChannelHistory(channel, event1);
+        history.appendChannelHistory(channel, event2);
+        history.appendChannelHistory(channel, event3);
 
         assertNull(plugin.handleMessage("s/", createPrivMsgEvent("freenode", "fictive", "#test", "s/superhelt/idiot/")));
-        assertEquals(String.format("<%s> %s", event.getSender(), "Du er en idiot"), plugin.handleMessage("s/", createPrivMsgEvent("freenode", "Rockj", "#test", "s/superhelt/idiot/")));
-        assertEquals(String.format("<%s> %s", event.getSender(), "Du er en idiot"), plugin.handleMessage("troll/", createPrivMsgEvent("freenode", "trall", "#test", "troll/superhelt/idiot/")));
+        assertEquals(String.format("<%s> %s", event2.getSender(), "Du er en idiot"), plugin.handleMessage("s/", createPrivMsgEvent("freenode", "Rockj", "#test", "s/superhelt/idiot/")));
+        assertEquals(String.format("<%s> %s", event2.getSender(), "Du er en idiot"), plugin.handleMessage("troll/", createPrivMsgEvent("freenode", "trall", "#test", "troll/superhelt/idiot/")));
+        assertEquals(String.format("<%s> %s", event1.getSender(), ":-)"), plugin.handleMessage("s/", createPrivMsgEvent("freenode", "Rockj", "#test", "s/o_O/:-)/")));
     }
 }
