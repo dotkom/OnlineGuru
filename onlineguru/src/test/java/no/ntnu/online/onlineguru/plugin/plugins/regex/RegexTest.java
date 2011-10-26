@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import static no.fictive.irclib.TestHelperFactory.createPrivMsgEvent;
+import static no.fictive.irclib.HelperFactory.createPrivMsgEvent;
 import static org.junit.Assert.*;
 
 

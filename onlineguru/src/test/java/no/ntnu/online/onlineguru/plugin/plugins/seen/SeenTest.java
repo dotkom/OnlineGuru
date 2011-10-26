@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import static no.fictive.irclib.TestHelperFactory.*;
+import static no.fictive.irclib.HelperFactory.*;
 import static org.junit.Assert.*;
 
 /**
