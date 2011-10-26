@@ -27,6 +27,9 @@ public class RegexPlugin implements PluginWithDependencies {
     private final String TRIGGER_TROLL = "troll/";
     private final Pattern FETCH_REGEX = Pattern.compile(".*\\/([^/]+)/([^/]+)\\/");
 
+    public RegexPlugin() {
+    }
+
     public RegexPlugin(Wand wand, History history) {
         this.wand = wand;
         this.history = history;
