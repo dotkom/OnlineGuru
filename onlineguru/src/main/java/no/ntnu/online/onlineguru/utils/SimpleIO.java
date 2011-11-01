@@ -1,18 +1,9 @@
 package no.ntnu.online.onlineguru.utils;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.lang.Object;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -72,6 +63,18 @@ public class SimpleIO {
 
         FileWriter writer = new FileWriter(file);
         writer.write(line);
+        writer.close();
+    }
+
+    public static void appendLinesToFile(String filename, List<String> lines) throws FileNotFoundException, IOException {
+        File file = new File(filename);
+
+        if (!file.exists()) {
+            throw new FileNotFoundException();
+        }
+        FileWriter writer = new FileWriter(file, true);
+        for (String line : lines)
+            writer.write(line);
         writer.close();
     }
 
