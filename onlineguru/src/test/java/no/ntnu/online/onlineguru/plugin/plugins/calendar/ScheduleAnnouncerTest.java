@@ -192,6 +192,25 @@ public class ScheduleAnnouncerTest {
         assertFalse(durationOnTimestamps.isShorterThan(Duration.standardHours(1)));
     }
 
+    @Test
+    public void testEventWhichCausedEventLengthToBeMinus1() {
+        //"Når: on. 2. nov 2011 19:00 til 23:00 \n" "CET"
+        DateTime now = new DateTime(2011, 11, 2, 19, 0, 0, 0);
+
+        ItemTest foo = new ItemTest();
+        foo.title = "Filmkveld";
+        foo.id = "073t2mu976v25rht6eediono8c";
+        foo.setDescription("Når: on. 2. nov 2011 19:00 til 23:00 \n" +
+                "CET < br / > \n" +
+                "\n" +
+                "< br / > Hvor:KJL1\n" +
+                "<br/>Aktivitetsstatus:\n" +
+                "bekreftet '");
+
+        Event eventWhichFails = foo.convertToEvent(Event.Type.ONLINECALENDAR);
+        assertTrue(eventWhichFails.getEventLengthInSeconds() != -1);
+    }
+
     class ItemTest extends Item {
         public void setDescription(String description) {
             details = description;

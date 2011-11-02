@@ -87,29 +87,33 @@ public class GoogleCalendar {
             if (data.data.items != null) {
                 for (Item event : data.data.items) {
                     Event convertedEvent = event.convertToEvent(eventType);
-                    if (!isSameDay(fromDate, today)) {
-                        // increase days if requesting events which is not today
-                        // has to be done since Event objects shows only startTime of when the objects were created int he calendar
+                    if (convertedEvent.getEventLengthInSeconds() != -1) {
+                        if (!isSameDay(fromDate, today)) {
+                            // increase days if requesting events which is not today
+                            // has to be done since Event objects shows only startTime of when the objects were created int he calendar
 
-                        today = today.withTime(0, 0, 0, 0); // reset today time to make it only count days.
+                            today = today.withTime(0, 0, 0, 0); // reset today time to make it only count days.
 
-                        Interval intervalBetweenFromDateAndToday;
+                            Interval intervalBetweenFromDateAndToday;
 
-                        if (fromDate.isAfter(today))
-                            intervalBetweenFromDateAndToday = new Interval(today, fromDate);
-                        else
-                            intervalBetweenFromDateAndToday = new Interval(fromDate, today);
+                            if (fromDate.isAfter(today))
+                                intervalBetweenFromDateAndToday = new Interval(today, fromDate);
+                            else
+                                intervalBetweenFromDateAndToday = new Interval(fromDate, today);
 
-                        Period period = intervalBetweenFromDateAndToday.toPeriod();
-                        //if (period.getDays() == 0)
+                            Period period = intervalBetweenFromDateAndToday.toPeriod();
+                            //if (period.getDays() == 0)
 
 
-                        convertedEvent.setStartDate(
-                                convertedEvent.getStartDate().plus(period)
-                        );
+                            convertedEvent.setStartDate(
+                                    convertedEvent.getStartDate().plus(period)
+                            );
+                        }
+
+                        events.add(convertedEvent);
+                    } else {
+                        logger.error("Error converting object " + convertedEvent.toString());
                     }
-
-                    events.add(convertedEvent);
                 }
             }
 
