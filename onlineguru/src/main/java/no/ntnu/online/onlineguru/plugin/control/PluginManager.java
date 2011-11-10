@@ -20,6 +20,7 @@ import no.ntnu.online.onlineguru.plugin.plugins.nickserv.NickServ;
 import no.ntnu.online.onlineguru.plugin.plugins.peak.Peak;
 import no.ntnu.online.onlineguru.plugin.plugins.regex.RegexPlugin;
 import no.ntnu.online.onlineguru.plugin.plugins.seen.SeenPlugin;
+import no.ntnu.online.onlineguru.plugin.plugins.shell.ShellPlugin;
 import no.ntnu.online.onlineguru.plugin.plugins.simpletrigger.SimpleTrigger;
 import no.ntnu.online.onlineguru.plugin.plugins.spotify.Spotify;
 import no.ntnu.online.onlineguru.plugin.plugins.twitter.TwitterPlugin;
@@ -66,6 +67,7 @@ public class PluginManager {
         initiatePlugin(new LmgtfyPlugin());
         initiatePlugin(new SeenPlugin());
         initiatePlugin(new RegexPlugin());
+        initiatePlugin(new ShellPlugin());
 
         // These take a long time to load, before they are threaded, they need to be last on the list.
         initiatePlugin(new CalendarPlugin());
