@@ -12,6 +12,10 @@ import org.apache.log4j.Logger;
 import java.util.Arrays;
 
 
+/**
+ * ShellPlugin
+ * Not really a safe plugin to be running ;-)
+ */
 public class ShellPlugin implements Plugin, MessageObserver {
     private static final String DESCRIPTION = "Plugin which allows to run shell commands";
     private static final String TRIGGER = "!shell";
