@@ -67,5 +67,6 @@ public class RegexTest {
 
         assertNull(plugin.handleMessage("troll/",createPrivMsgEvent("freenode", "Fl0bB", "#test", "troll/fungerer/lawl/")));
         assertNull(plugin.handleMessage("s/", createPrivMsgEvent("freenode", "Fl0bB", "#test", "s/troll/gawd så meta/")));
+        assertNull(plugin.handleMessage("s/", createPrivMsgEvent("freenode", "Fl0bB", "#test", "s/gawd/troll/")));
     }
 }
