@@ -5,7 +5,7 @@
     <artifactId>onlineguruSystem</artifactId>
     <packaging>pom</packaging>
     <version>1.2-SNAPSHOT</version>
-    <name>OnlineGuru</name>
+    <name>OnlineGuruSystem</name>
     <url>http://maven.apache.org</url>
    
     <modules>

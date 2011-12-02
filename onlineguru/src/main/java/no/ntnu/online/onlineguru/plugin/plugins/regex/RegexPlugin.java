@@ -58,7 +58,7 @@ public class RegexPlugin implements PluginWithDependencies {
                     if (privMsgEvent.getMessage().startsWith(TRIGGER))
                         sendFixedMessage(handleMessage(TRIGGER, privMsgEvent), privMsgEvent);
                     // @todo add option for troll trigger to be limited to once pr hour for normal persons..
-                    else if (privMsgEvent.getMessage().startsWith(TRIGGER_TROLL) && new Nick(privMsgEvent.getSender()).isOnChannel(privMsgEvent.getChannel()))
+                    else if (privMsgEvent.getMessage().startsWith(TRIGGER_TROLL) && new Nick(privMsgEvent.getSender()).isOp(privMsgEvent.getChannel()))
                         sendFixedMessage(handleMessage(TRIGGER_TROLL, privMsgEvent), privMsgEvent);
                 }
             }
