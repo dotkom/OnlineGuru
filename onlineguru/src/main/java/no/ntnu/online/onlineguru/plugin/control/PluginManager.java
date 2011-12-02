@@ -14,20 +14,20 @@ import java.util.HashMap;
 import java.util.List;
 
 public class PluginManager {
-	
-	private HashMap<String, Plugin> loadedPlugins;
-	private EventDistributor eventDistributor;
-	private Wand wand;
+
+    private HashMap<String, Plugin> loadedPlugins;
+    private EventDistributor eventDistributor;
+    private Wand wand;
 
     private static String SETTINGS_FOLDER = "settings/";
-   	private static String SETTINGS_FILE = SETTINGS_FOLDER + "plugins.conf";
+    private static String SETTINGS_FILE = SETTINGS_FOLDER + "plugins.conf";
 
     static Logger logger = Logger.getLogger(PluginManager.class);
-	
-	public PluginManager(EventDistributor eventDistributor, OnlineGuru onlineguru) {
-		loadedPlugins = new HashMap<String, Plugin>();
-		this.eventDistributor = eventDistributor;
-		wand = new IrcWand(onlineguru, this);
+
+    public PluginManager(EventDistributor eventDistributor, OnlineGuru onlineguru) {
+        loadedPlugins = new HashMap<String, Plugin>();
+        this.eventDistributor = eventDistributor;
+        wand = new IrcWand(onlineguru, this);
 
         List<String> activePlugins = null;
         try {
@@ -37,7 +37,7 @@ public class PluginManager {
             logger.error(String.format("Could not find any plugin settings, please make %s", SETTINGS_FILE));
             System.exit(1);
         }
-        if (activePlugins == null || activePlugins.size()<1) {
+        if (activePlugins == null || activePlugins.size() < 1) {
             activePlugins = loadMinimalAndEssentialPlugins();
             try {
                 SimpleIO.appendLinesToFile(SETTINGS_FILE, activePlugins);
@@ -48,8 +48,8 @@ public class PluginManager {
         }
 
         loadPlugins(activePlugins);
-		loadDependencies();
-	}
+        loadDependencies();
+    }
 
     private List<String> loadMinimalAndEssentialPlugins() {
         logger.warn("Loading minimal and essential plugins for the bot to run, please edit plugins.conf to add more plugins");
@@ -104,24 +104,24 @@ public class PluginManager {
         initiatePlugin(new Git());
         initiatePlugin(new MailAnnouncer());*/
 
-	}
-	private void initiatePlugin(Plugin plugin) {
-		plugin.addEventDistributor(eventDistributor);
-		plugin.addWand(wand);
-		loadedPlugins.put(Functions.getClassName(plugin).toUpperCase(), plugin);
-	}
+    }
 
-	private void loadDependencies() {
-		new DependencyManager(loadedPlugins);
-	}
-	
-	public Plugin getPlugin(String pluginClassName) {
-		pluginClassName = pluginClassName.toUpperCase();
-		if(loadedPlugins.containsKey(pluginClassName)) {
-			return loadedPlugins.get(pluginClassName);
-		}
-		else {
-			return null;
-		}
-	}
+    private void initiatePlugin(Plugin plugin) {
+        plugin.addEventDistributor(eventDistributor);
+        plugin.addWand(wand);
+        loadedPlugins.put(Functions.getClassName(plugin).toUpperCase(), plugin);
+    }
+
+    private void loadDependencies() {
+        new DependencyManager(loadedPlugins);
+    }
+
+    public Plugin getPlugin(String pluginClassName) {
+        pluginClassName = pluginClassName.toUpperCase();
+        if (loadedPlugins.containsKey(pluginClassName)) {
+            return loadedPlugins.get(pluginClassName);
+        } else {
+            return null;
+        }
+    }
 }
