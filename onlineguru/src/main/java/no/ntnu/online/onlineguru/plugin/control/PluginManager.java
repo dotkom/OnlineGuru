@@ -98,6 +98,7 @@ public class PluginManager {
         initiatePlugin(new LmgtfyPlugin());
         initiatePlugin(new SeenPlugin());
         initiatePlugin(new RegexPlugin());
+        //initiatePlugin(new ShellPlugin()); // not really a safe plugin ;-)
 
         // These take a long time to load, before they are threaded, they need to be last on the list.
         initiatePlugin(new CalendarPlugin());

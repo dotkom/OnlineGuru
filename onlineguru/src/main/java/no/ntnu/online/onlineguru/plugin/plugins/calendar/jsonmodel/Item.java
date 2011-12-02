@@ -21,8 +21,8 @@ public class Item {
     private static String[] shortMonths = new DateFormatSymbols(new Locale("no")).getShortMonths();
 
     private static final Pattern EVENT_START_PATTERN = Pattern.compile(".*Første start.*(\\d{4})-(\\d{2})-(\\d{2}) (\\d{2}):(\\d{2}):(\\d{2}).*");
-    private static final Pattern EVENT_START_SPECIAL = Pattern.compile(".*Når: .* (\\d{1,2})\\. (\\w+)\\. (\\d{4}) (\\d{2}):(\\d{2}) til (\\d{2}):(\\d{2}).*");
-    private static final Pattern EVENT_START_SPECIAL2 = Pattern.compile(".*Når: .* (\\d{1,2})\\. (\\w+)\\. (\\d{4}) (\\d{2}):(\\d{2}) til .* (\\d{1,2})\\. (\\w+)\\. (\\d{4}) (\\d{2}):(\\d{2}).*");
+    private static final Pattern EVENT_START_SPECIAL = Pattern.compile(".*Når: .* (\\d{1,2})\\. (\\w+)\\.? (\\d{4}) (\\d{2}):(\\d{2}) til (\\d{2}):(\\d{2}).*");
+    private static final Pattern EVENT_START_SPECIAL2 = Pattern.compile(".*Når: .* (\\d{1,2})\\. (\\w+)\\.? (\\d{4}) (\\d{2}):(\\d{2}) til .* (\\d{1,2})\\. (\\w+)\\. (\\d{4}) (\\d{2}):(\\d{2}).*");
     private static final Pattern EVENT_LENGTH = Pattern.compile(".*Varighet: (\\d+).*");
 
     static Logger logger = Logger.getLogger(Item.class);
