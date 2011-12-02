@@ -74,7 +74,7 @@ public class SimpleIO {
         }
         FileWriter writer = new FileWriter(file, true);
         for (String line : lines)
-            writer.write(line);
+            writer.write(line + "\r\n");
         writer.close();
     }
 
