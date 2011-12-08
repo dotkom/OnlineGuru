@@ -8,7 +8,7 @@ import java.io.IOException;
 
 import static org.junit.Assert.*;
 
-public class HttpWebFetcherTest {
+public class HttpWebFetcherITCase {
     private static final String ATB_ORACLE_BASE_URL = "http://www.atb.no/xmlhttprequest.php?service=routeplannerOracle.getOracleAnswer&question=";
 
     @Test
