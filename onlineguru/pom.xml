@@ -193,7 +193,7 @@
         <dependency>
             <groupId>no.norrs.busbuddy</groupId>
             <artifactId>public-api</artifactId>
-            <version>1.4</version>
+            <version>1.4.5</version>
         </dependency>
 
     </dependencies>
