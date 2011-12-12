@@ -25,7 +25,7 @@ public class BusBuddyTest {
     
     @Test 
     public void testRemovingDuplicates() {
-        BusBuddyPlugin busBuddyPlugin = new BusBuddyPlugin();
+        BusBuddyPlugin busBuddyPlugin = new BusBuddyPlugin("foo");
         
         List<BusStop> stops = new ArrayList<BusStop>(Arrays.asList(new BusStop[]{
                 new BusStop(1234,"Foo", "fo", "atb", "1", 0,0),

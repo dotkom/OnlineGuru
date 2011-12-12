@@ -50,6 +50,13 @@ public class BusBuddyPlugin implements Plugin {
         } catch (IOException e) {
             logger.warn("No api key found for busbuddy, only oracle support provided.");
         }
+        init(apiKey);
+    }
+    public BusBuddyPlugin(String apiKey) {
+        init(apiKey);
+    }
+
+    private void init(String apiKey) {
         busBuddyAPIServiceController = new BusBuddyAPIServiceController(apiKey);
         pattern1 = Pattern.compile("(?:Holdeplassen nærmest (?:\\w.+?) er|Buss? \\d+ (?:passerer|går fra|goes from)) (\\w.+?)(?:\\.| (?:kl|at))");
     }
