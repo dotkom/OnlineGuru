@@ -83,7 +83,7 @@ public class ScheduleAnnouncer {
                     Arrays.toString(kontorvakter.toArray())
             ));
         else
-            messages.add("I dag vil du ikke finne noen kontorvakter på kontoret.. kanskje fordi det er helg?");
+            messages.add("I dag vil du ikke finne noen kontorvakter på kontoret..");
 
         List<String> onlineEvents = getEventTitles(Event.Type.ONLINECALENDAR);
         if (onlineEvents.size() > 0)

@@ -86,7 +86,7 @@ public class BusBuddyPlugin implements Plugin {
                     if (splitQueryIntoWords.length > 1) {
                         try {
                             int cacheLookupFromEarlierSearch = Integer.parseInt(splitQueryIntoWords[1]);
-                            announceRealTime(privMsgEvent, searchStops.get(cacheLookupFromEarlierSearch+1), direction);
+                            announceRealTime(privMsgEvent, searchStops.get(cacheLookupFromEarlierSearch-1), direction);
                         } catch (NumberFormatException nfe) {
                             // Assume a search is wanted ;-)
 
@@ -97,7 +97,7 @@ public class BusBuddyPlugin implements Plugin {
                                 announceRealTime(privMsgEvent, searchAnswer.getBusStops().get(0), direction);
                             else
                                 wand.sendMessageToTarget(privMsgEvent.getNetwork(), privMsgEvent.getTarget(), String.format("[BusBuddy] Ingen søkeresultater for '%s'", searchTerms));
-                        } catch(ArrayIndexOutOfBoundsException aiofbe) {
+                        } catch(IndexOutOfBoundsException aiofbe) {
                             wand.sendMessageToTarget(privMsgEvent.getNetwork(), privMsgEvent.getTarget(), "[BusBuddy-ERR] Ugyldig indeks på mellomlager, din dust!");
                         }
                     } else {
