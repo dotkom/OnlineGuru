@@ -52,6 +52,7 @@ public class BusBuddyPlugin implements Plugin {
         }
         init(apiKey);
     }
+
     public BusBuddyPlugin(String apiKey) {
         init(apiKey);
     }
@@ -93,7 +94,7 @@ public class BusBuddyPlugin implements Plugin {
                     if (splitQueryIntoWords.length > 1) {
                         try {
                             int cacheLookupFromEarlierSearch = Integer.parseInt(splitQueryIntoWords[1]);
-                            announceRealTime(privMsgEvent, searchStops.get(cacheLookupFromEarlierSearch-1), direction);
+                            announceRealTime(privMsgEvent, searchStops.get(cacheLookupFromEarlierSearch - 1), direction);
                         } catch (NumberFormatException nfe) {
                             // Assume a search is wanted ;-)
 
@@ -104,7 +105,7 @@ public class BusBuddyPlugin implements Plugin {
                                 announceRealTime(privMsgEvent, searchAnswer.getBusStops().get(0), direction);
                             else
                                 wand.sendMessageToTarget(privMsgEvent.getNetwork(), privMsgEvent.getTarget(), String.format("[BusBuddy] Ingen søkeresultater for '%s'", searchTerms));
-                        } catch(IndexOutOfBoundsException aiofbe) {
+                        } catch (IndexOutOfBoundsException aiofbe) {
                             wand.sendMessageToTarget(privMsgEvent.getNetwork(), privMsgEvent.getTarget(), "[BusBuddy-ERR] Ugyldig indeks på mellomlager, din dust!");
                         }
                     } else {
@@ -127,9 +128,12 @@ public class BusBuddyPlugin implements Plugin {
         wand.sendMessageToTarget(privMsgEvent.getNetwork(), privMsgEvent.getTarget(), String.format("[BusBuddy] Sanntid for '%s' %s Trondheim sentrum..", busStop.getName(), (direction == 1 ? "mot" : "bort fra")));
 
         DepartureContainer departeResult = busBuddyAPIServiceController.getBusStopForecasts(locationId);
-        String departuresPrettyLine = Arrays.toString(prettyPrintDepartures(departeResult.getDepartures()).toArray());
-        departuresPrettyLine = departuresPrettyLine.substring(1, departuresPrettyLine.length()-1).replaceAll(",",""); // HACKS, DON'T LIKE IT? TROLOLOLO
-        wand.sendMessageToTarget(privMsgEvent.getNetwork(), privMsgEvent.getTarget(), String.format("[BusBuddy] %s", departuresPrettyLine));
+        if (departeResult != null && departeResult.getDepartures() != null && departeResult.getDepartures().size() > 0) {
+            String departuresPrettyLine = Arrays.toString(prettyPrintDepartures(departeResult.getDepartures()).toArray());
+            departuresPrettyLine = departuresPrettyLine.substring(1, departuresPrettyLine.length() - 1).replaceAll(",", ""); // HACKS, DON'T LIKE IT? TROLOLOLO
+            wand.sendMessageToTarget(privMsgEvent.getNetwork(), privMsgEvent.getTarget(), String.format("[BusBuddy] %s", departuresPrettyLine));
+        } else
+            wand.sendMessageToTarget(privMsgEvent.getNetwork(), privMsgEvent.getTarget(), "[BusBuddy] Fant ingen bussavganger ..");
     }
 
     private List<String> prettyPrintDepartures(List<Departure> departures) {
@@ -146,7 +150,7 @@ public class BusBuddyPlugin implements Plugin {
                 departureTime = String.format("ca. %s", getPeriodInStringFormat(scheduledDepartureTime.toDateTime()));
             }
             departureTime = departureTime.trim();
-            
+
             if (departureTime.equalsIgnoreCase("") || departureTime.equalsIgnoreCase("ca.")) {
                 if (forecast.isRealtimeData()) {
                     departureTime = String.format("< 1 %s", "minutt");
@@ -198,9 +202,9 @@ public class BusBuddyPlugin implements Plugin {
                     if (searchStops != null && searchStops.size() > 0) {
                         searchStops = removeDuplicateBusStops(searchStops);
                         String otherStops = "";
-                        for(int i=0; i < searchStops.size(); i++) 
-                            otherStops += String.format("%s (#%s), ", searchStops.get(i).getName(), i+1);
-                        
+                        for (int i = 0; i < searchStops.size(); i++)
+                            otherStops += String.format("%s (#%s), ", searchStops.get(i).getName(), i + 1);
+
                         wand.sendMessageToTarget(privMsgEvent.getNetwork(), privMsgEvent.getTarget(),
                                 String.format("[BusBuddy] Hent sanntid for %s ved å skrive !sanntid <retning> (1 mot sentrum, 0 andre veien..). Feil startplass? Prøv !sanntid <retning> <stedsnavn_nummer> gitt her: %s",
                                         searchStops.get(0).getName(),
