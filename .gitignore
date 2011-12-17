@@ -4,3 +4,5 @@
 */target
 */unitTestSerializedData
 settings
+*.idea*
+log4j.properties
