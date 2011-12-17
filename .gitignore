@@ -1,8 +1,8 @@
 *.iml
 *.iws
 *.ipr
+*.db
 */target
 */unitTestSerializedData
 settings
-*.idea*
-log4j.properties
+.idea
