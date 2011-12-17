@@ -9,6 +9,7 @@
     <url>http://maven.apache.org</url>
     <properties>
         <manifest.file>src/main/resources/META-INF/MANIFEST.MF</manifest.file>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <build>
         <plugins>
@@ -194,6 +195,13 @@
             <groupId>no.norrs.busbuddy</groupId>
             <artifactId>public-api</artifactId>
             <version>1.4.5</version>
+        </dependency>
+
+        <!-- JTidy HTML fixing / DOM parser for real world HTML -->
+        <dependency>
+            <groupId>net.sf.jtidy</groupId>
+            <artifactId>jtidy</artifactId>
+            <version>r938</version>
         </dependency>
 
     </dependencies>
