@@ -1,34 +1,35 @@
 package no.ntnu.online.onlineguru.plugin.plugins.middag;
 
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-
 import no.fictive.irclib.event.container.command.PrivMsgEvent;
 import no.ntnu.online.onlineguru.utils.urlreader.URLReader;
 import no.ntnu.online.onlineguru.utils.urlreader.URLReaderUser;
 
+import org.apache.commons.lang.WordUtils;
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.*;
 
 public class UpdateMenu implements URLReaderUser {
+
+    private boolean debug = false;
 
     static Logger logger = Logger.getLogger(UpdateMenu.class);
 	private Middag middag;
 	private int week = 0;
 	private int year = 0;
 	private String kantine;
+    private String day;
 	private PrivMsgEvent event;
-	
-	private Pattern pagePattern = Pattern.compile(
-			"class=\"ukedag\">([^<>]+)<" +									// finn dag (group 1)
-		    "|" +															// eller	
-			"\"menycelle\">([^<>]*).*?\"priscelle\">([^<>]*).*?" + 			// finn Menyen (group 2-3)
-	        "|" +															// eller
-	        "(Beklager, ingen meny er laget for uke (\\d{1,2}), (\\d{4}))"	// erroren (group 4-6)
-	);
-	
-	public UpdateMenu(Middag middag, String url, int week, int year, String kantine) {
+    private Document pageDocument;
+
+	public UpdateMenu(Middag middag, String url, String day, int week, int year, String kantine) {
 		this.middag = middag;
+        this.day = day;
 		this.week = week;
 		this.year = year;
 		this.kantine = kantine;
@@ -41,80 +42,88 @@ public class UpdateMenu implements URLReaderUser {
 	}
 	
 	public void urlReaderCallback(URLReader urlr) {
-		String weeksMenu = urlr.getInString();  
-		Matcher pageMatcher = pagePattern.matcher(weeksMenu);
-		
-		String day = "";
-		String dayMenu = "";
+         pageDocument = urlr.getDOMDocument();
 
-        boolean found = false;	
-		while (pageMatcher.find()) {
-            /*
-            Enable to show group contents.
+         parseDomDocument();
+    }
 
-            for (int i = 1; i <= pageMatcher.groupCount(); i++) {
-        		System.out.print(i+" \""+pageMatcher.group(i)+"\" ");
-        	}
-        	System.out.print("\n");
+    public void parseDomDocument() {
 
-        	*/
-        	if (pageMatcher.group(1) != null) {
-        		if (day.isEmpty()) {
-        			logger.debug("Day was null, setting it for the first time.");
-        			day = pageMatcher.group(1); 
-        		}
-        		else {
-        			logger.debug("Day was already set, Adding day menu or resetting.");
-        			if (dayMenu.equals("")) {
-        				middag.setMenu(year, week, day, kantine, "Det er ikke satt noen meny for "+day.toLowerCase()+" i "+kantine.toLowerCase()+" i uke "+week+", "+year+".");
-        			}
-        			else {
-        				middag.setMenu(year, week, day, kantine, dayMenu);
-        				dayMenu = "";
-        			}
-        			day = pageMatcher.group(1);
-        		}
-        	}
-        	else if (pageMatcher.group(4) != null) {
-        		logger.debug("No menu set for week "+week+". Setting error weekmessage for '"+kantine+"'.");
-        		middag.setWeekMenu(year, week, kantine,
-        				"SiT har ikke laget noen meny for "+kantine.toLowerCase()+" i uke "+pageMatcher.group(5)+", "+pageMatcher.group(6)+".");
-        	}
-        	else {
-        		logger.debug("Adding menu item for day: "+day+"! ");
-        		
-        		if (pageMatcher.group(2) != null) {
-        			if (!dayMenu.equals("")) {
-        				dayMenu += ", ";
-        			}
-        			dayMenu += pageMatcher.group(2).trim();
-        			if (pageMatcher.group(3) != null) {
-        				if (!pageMatcher.group(3).trim().equals("")) {
-	        				dayMenu += " - " + pageMatcher.group(3).trim().replaceAll("\\,\\-", "") + " kr"; 
-        				}
-        			}
-        		}
-        	}
-            found = true;
+        try {
+
+            if (debug) {
+                /* Used for printing the DOM Document */
+                Transformer transformer = TransformerFactory.newInstance().newTransformer();
+                Source source = new DOMSource(pageDocument);
+                Result output = new StreamResult(System.out);
+                transformer.transform(source, output);
+            }
+
+            XPathFactory factory = XPathFactory.newInstance();
+            XPath xpath = factory.newXPath();
+            XPathExpression expr = xpath.compile("//table[@id='menytable']/tbody/tr[td='"+WordUtils.capitalize(day)+"']/td/table/tr/td/text()");
+
+            Object result = expr.evaluate(pageDocument, XPathConstants.NODESET);
+            NodeList nl = (NodeList)result;
+
+            if (nl.getLength() > 0) {
+                String menu = "";
+                String nodeContent;
+
+                for (int i=0; i<nl.getLength();i++) {
+                    nodeContent = nl.item(i).getNodeValue();
+
+                    // if this is dividible by 2, it's a food
+                    if (i%2 == 0) {
+                        // append separator if there's already content in menu
+                        if (!menu.isEmpty()) {
+                            menu += ", ";
+                        }
+                        menu += nodeContent;
+                    }
+                    // else it's a price
+                    else {
+                        menu += " - " + nodeContent.replaceAll(",-", "") + " kr";
+                    }
+
+                }
+
+                setMenu(kantine, menu);
+            }
+            else {
+                setMenu(kantine, "No menu set.");
+            }
+
+            // If event is not null, the update was asked for by a user, and we need to
+            // relaunch the event to Middag can process it, now that it is updated.
+            if (event != null) {
+                middag.incomingEvent(event);
+            }
+
+        } catch (XPathExpressionException xpee) {
+            logger.error(xpee.getMessage(), xpee.getCause());
         }
-		if(!found){
-            logger.debug("No match found. "+week+"/"+year);
+        /* Catch clauses for Transformer. Used for printing The dom document */
+        catch (TransformerConfigurationException e) {
+            e.printStackTrace();
+        } catch (TransformerException e) {
+            e.printStackTrace();
         }
-		else {
-        	// Sets the meny for friday, since it will not be caught in the while loop.
-        	if (dayMenu.equals("")) {
-				middag.setMenu(year, week, day, kantine, "Det er ikke satt noen meny for "+day.toLowerCase()+" i "+kantine.toLowerCase()+" i uke "+week+", "+year+".");
-    		}
-			else {
-				middag.setMenu(year, week, day, kantine, dayMenu);
-				dayMenu = "";
-			}
-        }
-		
-		if (event != null) {
-			middag.incomingEvent(event);
-		}
+
 	}
+
+    public void setMenu(String kantine, String menu) {
+        switch (Kantiner.valueOf(kantine)) {
+            case HANGAREN: {
+                middag.setHangaren(menu);
+                break;
+            }
+            case REALFAG: {
+                middag.setRealfag(menu);
+                break;
+            }
+        }
+    }
 
 	public void urlReaderCallback(URLReader urlReader,
 			Object[] callbackParameters) {
