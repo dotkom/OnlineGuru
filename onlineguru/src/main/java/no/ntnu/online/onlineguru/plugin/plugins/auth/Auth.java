@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import no.ntnu.online.onlineguru.exceptions.MalformedSettingsException;
+import no.ntnu.online.onlineguru.exceptions.MissingSettingsException;
 import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
 
@@ -34,10 +36,14 @@ public class Auth implements Plugin {
 	private HashMap<String, AuthEntry> networks = new HashMap<String, AuthEntry>();
 
 	public Auth() {
-		initiate();
+        try {
+		    initiate();
+        } catch (MissingSettingsException mse) {
+            logger.warn(mse.getError(), mse.getCause());
+        }
 	}
 	
-	private void initiate() {
+	private void initiate() throws MissingSettingsException {
 		try {
 			SimpleIO.createFolder(settings_folder);
 			File file = new File(settings_file);
@@ -48,41 +54,45 @@ public class Auth implements Plugin {
 														"network=\n" +
 														"username=\n" +
 														"password=\n");
-				warning();
+				throw new MissingSettingsException("Missing settings file. Settings file created.");
 			}
 
-			ArrayList<Settings> settingsList = SettingsReader.readSettings(settings_file);
-			for (Settings settings : settingsList) {
-				
-				String network, username, password;
-				
-				network = settings.getSetting("network");
-				username = settings.getSetting("username");
-				password = settings.getSetting("password");
-				
-				if(
-						(network == null)	|| (network.isEmpty())
-					||	(username == null) 	|| (username.isEmpty()) 
-					|| 	(password == null) 	|| (password.isEmpty())
-					) {
-					warning();
-				}
-				else {
-					networks.put(network, new AuthEntry(username, password));
-				}
-			}
-				
-		} catch (FileNotFoundException e) {
+            try {
+                ArrayList<Settings> settingsList = SettingsReader.readSettings(settings_file);
+                readSettings(settingsList);
+            } catch (MalformedSettingsException mse) {
+                logger.warn(mse.getError(), mse.getCause());
+            }
+
+        } catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	private void warning() {
-		logger.warn("Auth.conf is not configured correctly.");
-	}
-	
+
+    private void readSettings(ArrayList<Settings> settingsList) throws MalformedSettingsException {
+        for (Settings settings : settingsList) {
+
+            String network, username, password;
+
+            network = settings.getSetting("network");
+            username = settings.getSetting("username");
+            password = settings.getSetting("password");
+
+            if(
+                    (network == null)	|| (network.isEmpty())
+                ||	(username == null) 	|| (username.isEmpty())
+                || 	(password == null) 	|| (password.isEmpty())
+                ) {
+                throw new MalformedSettingsException("Some settings were empty.");
+            }
+            else {
+                networks.put(network, new AuthEntry(username, password));
+            }
+        }
+    }
+
 	public String getDescription() {
 		return "Identifies this bot with the NickServ service on a network.";
 	}
@@ -91,7 +101,7 @@ public class Auth implements Plugin {
 		if (e instanceof ConnectEvent) {
 			AuthEntry ae = networks.get(e.getNetwork().getServerAlias());
 			if (ae != null) {
-				if (ae.getUsername().equals(wand.getMyNick(e.getNetwork()))) {
+				if (ae.getUsername().equalsIgnoreCase(wand.getMyNick(e.getNetwork()))) {
 					wand.sendMessageToTarget(e.getNetwork(), "NickServ", "identify "+ae.getPassword());
 				}
 			}

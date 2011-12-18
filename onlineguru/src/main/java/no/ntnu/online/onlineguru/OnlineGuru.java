@@ -6,6 +6,8 @@ import no.fictive.irclib.event.container.Event;
 import no.fictive.irclib.event.container.command.JoinEvent;
 import no.fictive.irclib.model.listener.IRCEventListener;
 import no.fictive.irclib.model.network.Network;
+import no.ntnu.online.onlineguru.exceptions.MalformedSettingsException;
+import no.ntnu.online.onlineguru.exceptions.MissingSettingsException;
 import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.control.PluginManager;
 import no.ntnu.online.onlineguru.utils.OnlineGuruDependencyModule;
@@ -27,7 +29,17 @@ public class OnlineGuru implements IRCEventListener {
     private Thread thread = null;
     public static Injector serviceLocator;
 
+    ArrayList<ConnectionInformation> information;
+
     public OnlineGuru() {
+        // Verify settings, this is done first as nothing else needs to be done before settings are proper.
+        try {
+            information = VerifySettings.readSettings();
+        } catch (MissingSettingsException mse) {
+            logger.error(mse.getError(), mse.getCause());
+            System.exit(1);
+        }
+
         final OnlineGuru me = this;
         try {
             Runtime.getRuntime().addShutdownHook(new ShutdownThread(me));
@@ -42,6 +54,7 @@ public class OnlineGuru implements IRCEventListener {
 
         thread = new Thread("OnlineGuru") {
             public void run() {
+
                 eventDistributor = new EventDistributor();
                 initiate();
                 new PluginManager(eventDistributor, me);
@@ -78,8 +91,6 @@ public class OnlineGuru implements IRCEventListener {
     }
 
     private void initiate() {
-        ArrayList<ConnectionInformation> information = VerifySettings.readSettings();
-
         for (ConnectionInformation c : information) {
             Network network = new Network(c.getHostname(), Integer.parseInt(c.getPort()), c.getBindAddress(), c.getServeralias(), c.getProfile());
             network.addListener(this);

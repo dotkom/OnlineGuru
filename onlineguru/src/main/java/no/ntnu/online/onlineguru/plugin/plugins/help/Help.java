@@ -88,7 +88,7 @@ public class Help implements Plugin {
 			}
 		}
 	}
-	
+
 	/*
 	 * Public methods for Help
 	 */

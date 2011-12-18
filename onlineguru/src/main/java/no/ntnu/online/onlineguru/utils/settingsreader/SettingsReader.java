@@ -6,7 +6,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import no.ntnu.online.onlineguru.exceptions.MalformedSettingsException;
 import org.apache.log4j.Logger;
+
+import javax.activity.InvalidActivityException;
 
 /**
  * 
@@ -37,7 +40,7 @@ public class SettingsReader {
 	
 	static Logger logger = Logger.getLogger(SettingsReader.class);
 	
-	public static ArrayList<Settings> readSettings(String settings_file) {
+	public static ArrayList<Settings> readSettings(String settings_file) throws MalformedSettingsException {
 		ArrayList<Settings> settingsList = new ArrayList<Settings>();
 			
 		File file = new File(settings_file);
@@ -56,6 +59,9 @@ public class SettingsReader {
 			while((line = reader.readLine()) != null) {
 				line = line.trim();
 				// In the config files "#" is used to comment
+                if(line.isEmpty()) {
+                    continue;
+                }
 				if(line.startsWith("#")) continue;
 				
 				// If a new block is found, add the current buildup of Settings to the list and make a new one
@@ -74,7 +80,7 @@ public class SettingsReader {
 							// This check basically means that if "=" is found more than once on a line or a 
 							// settings field is empty, it will produce an error and shut down.
 							if (lineParts.length > 2 || lineParts.length < 2) {
-								logger.warn("Malformed settings file: '"+settings_file+"' on line: '"+line+"'");
+								throw new MalformedSettingsException("Malformed settings file: '"+settings_file+"' on line: '"+line+"'");
 							}
 							else {
 								settings.addSetting(lineParts[0], lineParts[1]);
@@ -90,8 +96,13 @@ public class SettingsReader {
 		} catch (IOException e) {
             logger.error("I/O error", e.getCause());
 		}
-			
-		return settingsList;
+
+        if (settingsList.size() == 0) {
+            return null;
+        }
+        else {
+            return settingsList;
+        }
 	}
 	
 }
