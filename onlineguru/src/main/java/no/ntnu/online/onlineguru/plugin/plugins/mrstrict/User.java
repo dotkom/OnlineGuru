@@ -83,7 +83,7 @@
 //		floodLimitTime = 10000;
 //		new Timer(this, "newlyJoinedStateOver", 120000, false).start();
 //		/* TODO
-//		 * bug her, hvis de parter før timern går ut, så får du vel en error? 
+//		 * bug her, hvis de parter fÃ¸r timern gÃ¥r ut, sÃ¥ fÃ¥r du vel en error?
 //		 */
 //	}
 //	
