@@ -121,7 +121,7 @@ public class Entry implements URLReaderUser {
 		if(matcher.find()) {
 			return matcher.group(1);
 		}
-		return "";
+		return "";     //TODO bitly
 	}
 	
 	private String encodeURL(String url) {
