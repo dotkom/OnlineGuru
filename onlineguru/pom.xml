@@ -204,6 +204,13 @@
             <version>r938</version>
         </dependency>
 
+        <!-- XML (de)serializer similar to JAXB, just more awesome -->
+        <dependency>
+            <groupId>xstream</groupId>
+            <artifactId>xstream</artifactId>
+            <version>1.2.2</version>
+        </dependency>
+
     </dependencies>
     <repositories>
         <repository>
