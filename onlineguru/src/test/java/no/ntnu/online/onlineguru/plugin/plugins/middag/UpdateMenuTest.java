@@ -57,17 +57,14 @@ public class UpdateMenuTest {
 
     @Test
     public void testParseDomDocument() {
-        String filename = "/UpdateMenuPDD.html";
+        String filename = "/middag/UpdateMenuPDD.html";
         Document doc = makeDocument(filename);
 
         try{
 
             XPathFactory factory = XPathFactory.newInstance();
             XPath xpath = factory.newXPath();
-            XPathExpression expr = xpath.compile("//table[@id='menytable']/tbody/tr[td='Tirsdag']/td/table/tr/td/text()");
-//                                               "//table[@id='menytable']/tbody/tr[td="+day+"]/td/table/tbody/tr/td/text()"
-
-            // tbody/tr/td[class='ukedag']
+            XPathExpression expr = xpath.compile("//table[@id='menytable']/tbody/tr[td='Tirsdag']/td/table/tbody/tr/td/text()");
 
             Object result = expr.evaluate(doc, XPathConstants.NODESET);
             NodeList nl = null;

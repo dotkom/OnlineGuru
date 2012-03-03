@@ -105,7 +105,7 @@ public class Middag implements PluginWithDependencies {
                 if (triggerMatcher.group(1).equalsIgnoreCase("update")) {
                     // Only allow updates if cache is 15 minutes old. Spam prevention.
                     if (duration < 900) {
-                        sendNotice(pme, "Cache is " + (int) (duration / 60) + " minutes old. Update not allowed before 15 minutes.");
+                        sendNotice(pme, "Stopwatch is " + (int) (duration / 60) + " minutes old. Update not allowed before 15 minutes.");
                     }
                 }
                 else {
@@ -178,8 +178,8 @@ public class Middag implements PluginWithDependencies {
             setRealfag("No serving in the weekends");
         }
         else {
-            new UpdateMenu(this, "http://www.sit.no/content.ap?thisId=36444&visuke="+week+"&visaar="+year, day, week, year, "HANGAREN").setEvent(pme);
-            new UpdateMenu(this, "http://www.sit.no/content.ap?thisId=36447&visuke="+week+"&visaar="+year, day, week, year, "REALFAG").setEvent(pme);
+            new UpdateMenu(this, "http://www.sit.no/content/36444/Ukas-middagsmeny-pa-Hangaren?visuke="+week+"&visaar="+year, day, week, year, "HANGAREN").setEvent(pme);
+            new UpdateMenu(this, "http://www.sit.no/content/36447/Ukas-middagsmeny-pa-Realfag?visuke="+week+"&visaar="+year, day, week, year, "REALFAG").setEvent(pme);
         }
 	}
 	
