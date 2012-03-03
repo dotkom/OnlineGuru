@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<album xmlns="http://www.spotify.com/ns/music/1">
+  <name>The Islander</name>
+  <artist href="spotify:artist:2NPduAUeLVsfIauhRwuft1">
+    <name>Nightwish</name>
+  </artist>
+  <released>2008</released>
+  <id type="upc">0727361211967</id>
+  <availability>
+    <territories>AD AL AM AZ BA BE BG BY CY EE ES FR GB GE GF GP GR HR IE LI LT LU LV MC MD MK MQ MT NC NL PF PM PT RE RO SI SK SM TR UA VA YT</territories>
+  </availability>
+</album>

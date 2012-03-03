@@ -4,7 +4,6 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
 import no.fictive.irclib.event.container.Event;
-
 import no.fictive.irclib.event.model.EventType;
 import no.fictive.irclib.event.container.command.PrivMsgEvent;
 import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
@@ -14,14 +13,17 @@ import no.ntnu.online.onlineguru.utils.Wand;
 public class Spotify implements Plugin {
 	
 	private Wand wand;
-	private Pattern linkPattern = Pattern.compile("((http:\\/\\/)?open.spotify.com/([^\\/]+)/([^\\s]+))|(spotify:(album|artist|track):[^\\s]+)");
+	private Pattern linkPattern = Pattern.compile("((http://)?open.spotify.com/([^/]+)/([^\\s]+))|(spotify:(album|artist|track):[^\\s]+)");
 	private Matcher linkMatcher;
 	private Types linkCase;
 	
 	public String getDescription() {
 		return "";
 	}
-
+    /*
+        http://open.spotify.com/track/1x6ACsKV4UdWS2FMuPFUiT
+                        spotify:track:1x6ACsKV4UdWS2FMuPFUiT
+    */
 	public void incomingEvent(Event e) {
 		String spotifyURI = "";
 		if (e.getEventType() == EventType.PRIVMSG) {

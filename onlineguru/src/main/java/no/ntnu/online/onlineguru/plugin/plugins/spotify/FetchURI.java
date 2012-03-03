@@ -1,89 +1,80 @@
 package no.ntnu.online.onlineguru.plugin.plugins.spotify;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import no.fictive.irclib.model.network.Network;
+import no.ntnu.online.onlineguru.exceptions.IncompliantCallerException;
+import no.ntnu.online.onlineguru.plugin.plugins.spotify.model.Album;
+import no.ntnu.online.onlineguru.plugin.plugins.spotify.model.Artist;
+import no.ntnu.online.onlineguru.plugin.plugins.spotify.model.Track;
+import no.ntnu.online.onlineguru.plugin.plugins.spotify.xml.ModelFactory;
 import no.ntnu.online.onlineguru.utils.Wand;
-import no.ntnu.online.onlineguru.utils.urlreader.URLReader;
-import no.ntnu.online.onlineguru.utils.urlreader.URLReaderUser;
+import no.ntnu.online.onlineguru.utils.urlreader.impl.XMLRetriever;
+import no.ntnu.online.onlineguru.utils.urlreader.model.Retriever;
+import no.ntnu.online.onlineguru.utils.urlreader.model.URLReader;
 
-public class FetchURI implements URLReaderUser {
+import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import java.io.IOException;
+
+public class FetchURI implements URLReader {
 
 	private Wand wand;
 	private Network network;
 	private String target;
 	private Types linkCase;
-	
-	Pattern searchPattern = Pattern.compile("" +
-			"(<album[^>]+>[^<]+<name>([^>]+)</name>)" +
-			"|" +
-			"(<artist[^>]*>[^<]+<name>([^>]+)</name>)" +
-			"|" +
-			"(<track[^>]+>[^<]+<name>([^>]+)</name>)" 
-	);
+
+    static Logger logger = Logger.getLogger(FetchURI.class);
 	
 	public FetchURI(String url, Wand wand, Network network, String target, Types linkCase) {
 		this.wand = wand;
 		this.network = network;
 		this.target = target;
 		this.linkCase = linkCase;
-		
-		new URLReader(this, url);
+
+        System.out.println("In the lulz");
+        try {
+		    new XMLRetriever(this, url);
+        } catch (IncompliantCallerException e) {
+
+        }
 	}
 	
-	public void urlReaderCallback(URLReader urlr) {
-		String page = urlr.getInString();
-		
-		Matcher m = searchPattern.matcher(page);
-		String album = "", artist = "", track = "";
-		
-		while (m.find()) {
-			if (m.group(2) != null) {
-				album += m.group(2);
-			}
-			else if (m.group(4) != null) {
-				if (artist.isEmpty()) {
-					artist += m.group(4);
-				}
-				else {
-					artist += ", "+m.group(4);
-				}
-			}
-			else if (m.group(6) != null) {
-				track += m.group(6);
-			}
- 		}
-		
-		switch (linkCase) {
-			case ALBUM:
-				showAlbumInfo(album, artist);
-				break;
-			case ARTIST:
-				showArtistInfo(artist);
-				break;
-			case TRACK:
-				showTrackInfo(track, artist, album);
-				break;
-		}
-	}
-	
-	private void showAlbumInfo(String album, String artist) {
-		wand.sendMessageToTarget(network, target, "[spotify] Album: "+album+" - by "+artist);
-	}
-	
-	private void showArtistInfo(String artist) {
-		wand.sendMessageToTarget(network, target, "[spotify] Artist: "+artist);
+	public void urlReaderCallback(Retriever urlr) {
+
+        XMLRetriever xr = (XMLRetriever)urlr;
+        Document pageDocument = xr.getDOMDocument();
+        
+        Element root = pageDocument.getDocumentElement();
+                
+        try {
+            switch (Types.valueOf(root.getNodeName().toUpperCase())) {
+                case ALBUM:
+                    Album album = ModelFactory.produceAlbum(xr.getURL().openStream());
+                    showInfo(album);
+                    break;
+                case ARTIST:
+                    Artist artist = ModelFactory.produceArtist(xr.getURL().openStream());
+                    showInfo(artist);
+                    break;
+                case TRACK:
+                    Track track = ModelFactory.produceTrack(xr.getURL().openStream());
+                    showInfo(track);
+                    break;
+            }
+        } catch (IOException ioe) {
+            logger.error("Reading URL failed", ioe.getCause());
+        }
+    }
+
+    private void showInfo(Object o) {
+		wand.sendMessageToTarget(network, target, "[spotify] "+o.toString());
 	}
 
-	private void showTrackInfo(String track, String artist, String album) {
-		wand.sendMessageToTarget(network, target, "[spotify] "+artist+" - "+track+" - Album: "+album);
-	}
-
-	public void urlReaderCallback(URLReader urlReader,
+	public void urlReaderCallback(Retriever HTMLRetriever,
 			Object[] callbackParameters) {
 		// TODO Auto-generated method stub
 		
-	}
-	
+    }
+
 }

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<track xmlns="http://www.spotify.com/ns/music/1">
+  <name>Titanium (feat. Sia)</name>
+  <artist href="spotify:artist:1Cs0zKBU1kc0i8ypK3B9ai">
+    <name>David Guetta</name>
+  </artist>
+  <artist href="spotify:artist:5WUlDfRSoLAfcVSX1WnrxN">
+    <name>Sia</name>
+  </artist>
+  <album href="spotify:album:0qCuRUxCZIQuqlboSVQ1tB">
+    <name>Nothing But The Beat</name>
+    <availability>
+      <territories>AT BE CA CH CY CZ DE DK EE ES FI FR GB GR HR HU IE IT LT LU NL NO PL PT RO SE SI SK</territories>
+    </availability>
+  </album>
+  <available>true</available>
+  <id type="isrc">GB28K1100036</id>
+  <track-number>12</track-number>
+  <length>245.040000</length>
+  <popularity>0.97262</popularity>
+</track>
