@@ -1,80 +1,76 @@
 package no.ntnu.online.onlineguru.plugin.plugins.urlhandler;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import no.fictive.irclib.event.container.command.PrivMsgEvent;
+import no.ntnu.online.onlineguru.exceptions.IncompliantCallerException;
+import no.ntnu.online.onlineguru.utils.DecodeHtmlEntities;
+import no.ntnu.online.onlineguru.utils.URLShortener;
 import no.ntnu.online.onlineguru.utils.Wand;
+import no.ntnu.online.onlineguru.utils.urlreader.impl.HTMLRetriever;
+import no.ntnu.online.onlineguru.utils.urlreader.model.Retriever;
+import no.ntnu.online.onlineguru.utils.urlreader.model.URLReader;
 import org.apache.log4j.Logger;
 
-import no.fictive.irclib.model.network.Network;
 import no.ntnu.online.onlineguru.utils.Timer;
-import no.ntnu.online.onlineguru.utils.urlreader.URLReader;
-import no.ntnu.online.onlineguru.utils.urlreader.URLReaderUser;
 
-public class Entry implements URLReaderUser {
+public class Entry implements URLReader {
 
 	static Logger logger = Logger.getLogger(Entry.class);
 	
 	private Wand wand;
-	private Network network;
-	private String target;
-	
-	private String sourceURL = "";
-	private String sourceTinyURL = "";
-	
-	private Pattern tinyUrlPattern = Pattern.compile("<br><small>\\[<a\\s+href=\"(.*?)\"");
-	private static String tinyURLpart1 = "http://tinyurl.com/create.php?source=homepage&url=";
-	private static String tinyURLpart2 = "&submit=Make+TinyURL!&alias=";
-	
+    private PrivMsgEvent pme;
+    private String url, title = "", shortLink = "";
+		
 	private int TIMEOUT = 0;
 	private Timer timer;
-	private boolean fetchedURLSource = false;
-	private boolean fetchedTinyURLSource = false;
+	private boolean fetchedURLTitle = false;
+    private boolean fetchedShortLink = false;
 	private boolean isShortAlready = false;
 	
-	public Entry(Wand wand, Network network, String url, String target) {
+	public Entry(Wand wand, PrivMsgEvent pme, String url) {
 		this.wand = wand;
-		this.network = network;
-		this.target = target;
-		
-		new URLReader(this, url);
-		
-		if(url.length() > 42) { 
-			String encodedURL = encodeURL(url);
-			if(encodedURL != null) {
-				new URLReader(this, encodedURL, new Object[] {"TinyURL"});
-			}
+        this.pme = pme;
+        this.url = url;
+
+        // Start url source fetcher.
+        try {
+		    new HTMLRetriever(this, url);
+        } catch (IncompliantCallerException e) {
+            logger.error(e.getMessage(), e.getCause());
+        }
+
+        // If longer than 42 chars (youtube url is exactly 42)
+		if(url.length() > 42) {
+            shortLink = URLShortener.bitlyfyLink(url);
+            fetchedShortLink = true;
 		}
 		else {
 			isShortAlready = true;
 		}
-		
+
 		timer = new Timer(this, "update", 100, true);
 		timer.start();
 	}
 	
-	public void urlReaderCallback(URLReader urlReader) {
-		sourceURL = urlReader.getInString();
-		fetchedURLSource = true;
+	public void urlReaderCallback(Retriever retriever) {
+        HTMLRetriever hr = (HTMLRetriever)retriever;
+		title = parseTitle(hr.getInString());
+		fetchedURLTitle = true;
 	}
 	
-	public void urlReaderCallback(URLReader urlReader, Object[] parameters) {
-		sourceTinyURL = urlReader.getInString();
-		fetchedTinyURLSource = true;
+	public void urlReaderCallback(Retriever retriever, Object[] parameters) {
+        // not used
 	}
 	
 	public void update() {
 		TIMEOUT += 100;
 		if(!isShortAlready) {
-			if((fetchedURLSource && fetchedTinyURLSource) || TIMEOUT >= 6000) {
+			if((fetchedURLTitle && fetchedShortLink) || TIMEOUT >= 6000) {
 				timer.stopTimer();
 				sendURLInformation();			
 			}
 		}
 		else {
-			if(fetchedURLSource || TIMEOUT >= 6000) {
+			if(fetchedURLTitle || TIMEOUT >= 6000) {
 				timer.stopTimer();
 				sendURLInformation();
 			}
@@ -84,21 +80,21 @@ public class Entry implements URLReaderUser {
 	private void sendURLInformation() {
 		
 		String returnString = "";
-		String title = parseTitle(sourceURL);
-		String tinyUrl = parseTinyURL(sourceTinyURL);
 		
 		if(!title.isEmpty()) {
 			returnString += title;
 		}
 		
-		if(!tinyUrl.isEmpty()) {
-			if(!title.isEmpty()) returnString += " - ";
-			returnString += tinyUrl;
+		if(!shortLink.isEmpty()) {
+			if(!title.isEmpty()) {
+                returnString += " - ";
+            }
+			returnString += shortLink;
 			
 		}
 		
 		if(!returnString.isEmpty()) {
-			wand.sendMessageToTarget(network, target, returnString);
+			wand.sendMessageToTarget(pme.getNetwork(), pme.getTarget(), returnString);
 		}
 	}
 	
@@ -109,28 +105,10 @@ public class Entry implements URLReaderUser {
 		int titleEnd = sourceToLower.indexOf("</title>");
 		
 		if(titleStart != -1 && titleEnd != -1) {
-			return "«" + source.substring(titleStart + 7, titleEnd) + "»";
+			return "«" + DecodeHtmlEntities.stripHTMLEntities(source.substring(titleStart + 7, titleEnd)) + "»";
 		}
 		
 		return "";
 	}
-	
-	private String parseTinyURL(String source) {
-		
-		Matcher matcher = tinyUrlPattern.matcher(source);
-		if(matcher.find()) {
-			return matcher.group(1);
-		}
-		return "";
-	}
-	
-	private String encodeURL(String url) {
-		try {
-			URI uri = new URI(tinyURLpart1 + url + tinyURLpart2);
-			return uri.toString();
-		} catch (URISyntaxException e) {
-			logger.error("Entry.encodeURL TinyURL", e.getCause());
-		}
-		return null;
-	}
+
 }

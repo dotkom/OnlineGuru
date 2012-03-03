@@ -10,7 +10,9 @@ import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.utils.Wand;
 
 public class URLHandler implements Plugin {
-	
+
+    private final int shorteningThreshhold = 42;
+
 	private Wand wand;
 	
 	public URLHandler() {
@@ -30,7 +32,7 @@ public class URLHandler implements Plugin {
 	}
 
 	public String getDescription() {
-		return "Returns information about an URL.";
+		return "Returns the title from an URL. Also supplies a bit.ly shortened url, if the length is more than "+shorteningThreshhold+".";
 	}
 
 	public void incomingEvent(Event e) {
@@ -40,24 +42,21 @@ public class URLHandler implements Plugin {
 			String channel = pme.getTarget();
 			
 			Scanner scanner = new Scanner(pme.getMessage());
-			String message;
+			String word;
 			
 			while(scanner.hasNext()) {
-				message = scanner.next();
-				if(message.startsWith("http") || message.startsWith("www")) {
-					if(message.startsWith("www")) {
-						message = "http://" + message;
+				word = scanner.next();
+				if(word.startsWith("http") || word.startsWith("www")) {
+					if(word.startsWith("www")) {
+						word = "http://" + word;
 					}
-					if(message.startsWith("http://open.spotify.com/")) {
+					if(word.startsWith("http://open.spotify.com/")) {
 						return;
 					}
-					new Entry(wand, pme.getNetwork(), message, channel);
+					new Entry(wand, pme, word);
 				}
 			}
 		}
 	}
 
-	public void loadDependency(Plugin plugin) {
-		//Not needed
-	}
 }
