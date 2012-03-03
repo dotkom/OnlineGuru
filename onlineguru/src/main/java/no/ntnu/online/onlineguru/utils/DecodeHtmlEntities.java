@@ -598,7 +598,7 @@ public class DecodeHtmlEntities {
         return bareEntityToChar(possibleEntity.substring( 0, whereSemi ));        
 	}
 	
-	public static char bareEntityToChar(String bareEntity) {
+	private static char bareEntityToChar(String bareEntity) {
 	    // first check for alpha entity
 	    Character code = entityToChar.get(bareEntity);
 	    if (code != null) {
