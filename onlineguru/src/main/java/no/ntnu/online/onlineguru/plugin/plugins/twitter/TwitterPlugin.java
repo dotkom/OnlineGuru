@@ -15,6 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -30,6 +31,9 @@ public class TwitterPlugin implements Plugin {
     private final String TWITTERTRIGGER = "!twitter";
     private final String settings_folder = "settings/";
     private final String settings_file = settings_folder + "twitter.conf";
+    private final String URLIDENT  = "twitter.com/#!/";
+    private Pattern tweetIdentPattern;
+    private Matcher matcher;
     private Wand wand;
     private Twitter twitter;
     private String token;
@@ -49,6 +53,8 @@ public class TwitterPlugin implements Plugin {
 
         TwitterFactory factory = new TwitterFactory(builder.build());
         twitter = factory.getInstance();
+
+        tweetIdentPattern.compile(URLIDENT);
     }
 
     private void initiate() {
@@ -127,19 +133,40 @@ public class TwitterPlugin implements Plugin {
                 else if(trigger.equalsIgnoreCase(TWITTERTRIGGER)) {
                 	if(data.length == 2) {
                 		String screenName = data[1];
-                		List<Status> statuses = getStatuses(screenName);
-                		
-                		if(statuses.size() > 0) {
-                			Status latestStatus = statuses.get(0);
-                			wand.sendMessageToTarget(e.getNetwork(), privMsgEvent.getTarget(), "Tweeted by " + 
-                																				latestStatus.getUser().getScreenName() + ", " +
-                																				latestStatus.getCreatedAt().toGMTString() +
-                																				": " + latestStatus.getText());
-                		}
-                		else {
-                			wand.sendMessageToTarget(e.getNetwork(), privMsgEvent.getTarget(), "Screen name not found, or user has not tweeted anything.");
-                		}
-                		
+
+                        matcher = tweetIdentPattern.matcher(screenName);
+                        boolean matchFound = matcher.find();
+
+                        List<Status> statuses = getStatuses(screenName);
+
+                        if(!matchFound){
+
+                            if(statuses.size() > 0) {
+                                Status latestStatus = statuses.get(0);
+                                wand.sendMessageToTarget(e.getNetwork(), privMsgEvent.getTarget(), "Tweeted by " +
+                                                                                                    latestStatus.getUser().getScreenName() + ", " +
+                                                                                                    latestStatus.getCreatedAt().toGMTString() +
+                                                                                                    ": " + latestStatus.getText());
+                            }
+                            else {
+                                wand.sendMessageToTarget(e.getNetwork(), privMsgEvent.getTarget(), "Screen name not found, or user has not tweeted anything.");
+                            }
+                        }
+                        else{
+                            tweetIdentPattern.compile("\\d+");
+                            matcher =  tweetIdentPattern.matcher(screenName);
+                            String str="";
+                            while(matcher.find()){
+                                str += matcher.group();
+                            }
+                            int ident = Integer.parseInt(str);
+                            Status linkedStatus = statuses.get(ident);
+                            wand.sendMessageToTarget(e.getNetwork(), privMsgEvent.getTarget(), "Tweeted by " +
+                                                                                                linkedStatus.getUser().getScreenName() + ", " +
+                                                                                                linkedStatus.getCreatedAt().toGMTString() +
+                                                                                                ": " + linkedStatus.getText());
+
+                        }
                 	}
                 }
             }
