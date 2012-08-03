@@ -1,3 +1,4 @@
+/*
 package no.ntnu.online.onlineguru.plugin.plugins.history;
 
 import no.fictive.irclib.event.container.Event;
@@ -19,7 +20,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * @author Roy Sindre Norangshol
- */
+ /
 public class HistoryTest {
 
     private History history;
@@ -114,3 +115,4 @@ public class HistoryTest {
         assertEquals("newLineAtTop", history.getLastChannelEvents(channel).get(0).getMessage());
     }
 }
+ */
