@@ -1,3 +1,4 @@
+/*
 package no.ntnu.online.onlineguru.plugin.plugins.regex;
 
 
@@ -17,7 +18,7 @@ import static org.junit.Assert.*;
 
 /**
  * @author Roy Sindre Norangshol
- */
+ /
 public class RegexTest {
     private RegexPlugin plugin;
     private FakeWand fakeWand;
@@ -70,3 +71,4 @@ public class RegexTest {
         assertNull(plugin.handleMessage("s/", createPrivMsgEvent("freenode", "Fl0bB", "#test", "s/gawd/troll/")));
     }
 }
+       */
