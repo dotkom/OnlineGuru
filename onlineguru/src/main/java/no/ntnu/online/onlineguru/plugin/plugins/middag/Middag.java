@@ -38,6 +38,7 @@ public class Middag implements PluginWithDependencies {
 
     private String hangaren = "";
     private String realfag = "";
+    private boolean otherIsUpdated = false;
 
     static Logger logger = Logger.getLogger(Middag.class);
 	
@@ -178,8 +179,8 @@ public class Middag implements PluginWithDependencies {
             setRealfag("No serving in the weekends");
         }
         else {
-            new UpdateMenu(this, "http://www.sit.no/content/36444/Ukas-middagsmeny-pa-Hangaren?visuke="+week+"&visaar="+year, day, week, year, "HANGAREN").setEvent(pme);
-            new UpdateMenu(this, "http://www.sit.no/content/36447/Ukas-middagsmeny-pa-Realfag?visuke="+week+"&visaar="+year, day, week, year, "REALFAG").setEvent(pme);
+            new UpdateMenu(this, "http://www.sit.no/content/36444/Ukas-middagsmeny-pa-Hangaren?visuke="+week+"&visaar="+year, day, "HANGAREN").setEvent(pme);
+            new UpdateMenu(this, "http://www.sit.no/content/36447/Ukas-middagsmeny-pa-Realfag?visuke="+week+"&visaar="+year, day, "REALFAG").setEvent(pme);
         }
 	}
 	
