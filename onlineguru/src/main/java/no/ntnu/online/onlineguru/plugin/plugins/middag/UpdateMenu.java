@@ -18,18 +18,14 @@ public class UpdateMenu implements URLReader {
 
     static Logger logger = Logger.getLogger(UpdateMenu.class);
     private Middag middag;
-    private int week = 0;
-    private int year = 0;
     private String kantine;
     private String day;
     private PrivMsgEvent event;
     private Document pageDocument;
 
-    public UpdateMenu(Middag middag, String url, String day, int week, int year, String kantine) {
+    public UpdateMenu(Middag middag, String url, String day, String kantine) {
         this.middag = middag;
         this.day = day;
-        this.week = week;
-        this.year = year;
         this.kantine = kantine;
 
         try {
