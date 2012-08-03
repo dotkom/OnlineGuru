@@ -44,7 +44,8 @@ public class URLFactory {
         try {
             url = new URL(urltext);
             conn = (HttpURLConnection) url.openConnection();
-
+            conn.setRequestProperty("User-Agent", "OnlineGuru");
+            
             int code = conn.getResponseCode();
             switch (code) {
                 case HttpURLConnection.HTTP_OK:

@@ -1,6 +1,7 @@
 package no.ntnu.online.onlineguru.utils.urlreader.impl;
 
 import java.io.*;
+import java.net.URLConnection;
 
 import no.ntnu.online.onlineguru.exceptions.IncompliantCallerException;
 import no.ntnu.online.onlineguru.utils.urlreader.connection.URLFactory;
@@ -18,6 +19,7 @@ public class HTMLRetriever extends Retriever {
     static Logger logger = Logger.getLogger(HTMLRetriever.class);
     private Tidy tidy = new Tidy();
 
+    URLConnection urlc;
     Document pageDocument;
 
     public HTMLRetriever(Object caller, String urltext) throws IncompliantCallerException {
@@ -41,6 +43,13 @@ public class HTMLRetriever extends Retriever {
         charset = factory.getCharset();
 
         if (url != null && charset != null) {
+            try {
+                urlc = (URLConnection) url.openConnection();
+                urlc.setRequestProperty("User-Agent", "OnlineGuru");
+            } catch (IOException e) {
+                logger.error("Failed to open connection.", e.getCause());
+            }
+
             getPage();
             callback();
         }
@@ -53,7 +62,7 @@ public class HTMLRetriever extends Retriever {
             tidy.setShowWarnings(false);
             tidy.setShowErrors(0);
 
-            pageDocument = tidy.parseDOM(url.openStream(), null);
+            pageDocument = tidy.parseDOM(urlc.getInputStream(), null);
         } catch (IOException e) {
             logger.error("HTMLRetriever.getPage() ", e.getCause());
         }
