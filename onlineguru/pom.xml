@@ -185,6 +185,12 @@
             <version>2.0.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>no.norrs.busbuddy</groupId>
+            <artifactId>public-api</artifactId>
+            <version>1.4.5</version>
+        </dependency>
+
         <!-- JTidy HTML fixing / DOM parser for real world HTML -->
         <dependency>
             <groupId>net.sf.jtidy</groupId>
