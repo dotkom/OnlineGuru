@@ -1,3 +1,4 @@
+/*
 package no.ntnu.online.onlineguru.plugin.plugins.seen;
 
 import no.fictive.irclib.event.container.command.NickEvent;
@@ -18,7 +19,7 @@ import static org.junit.Assert.*;
 
 /**
  * @author Roy Sindre Norangshol
- */
+ /
 public class SeenTest {
 
     private History history;
@@ -76,3 +77,4 @@ public class SeenTest {
 
 
 }
+        */
