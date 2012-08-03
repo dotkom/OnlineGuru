@@ -84,15 +84,9 @@
             <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>no.fictive.irclib</groupId>
-            <artifactId>irclib</artifactId>
-            <version>1.2-SNAPSHOT</version>
-            <type>test-jar</type>
-        </dependency>
-        <dependency>
-            <groupId>net.roarsoftware.lastfm</groupId>
-            <artifactId>lastfm</artifactId>
-            <version>7.3</version>
+            <groupId>de.u-mass</groupId>
+            <artifactId>lastfm-java</artifactId>
+            <version>0.1.2</version>
             <type>jar</type>
         </dependency>
         <dependency>
@@ -191,12 +185,6 @@
             <version>2.0.0</version>
         </dependency>
 
-        <dependency>
-            <groupId>no.norrs.busbuddy</groupId>
-            <artifactId>public-api</artifactId>
-            <version>1.4.5</version>
-        </dependency>
-
         <!-- JTidy HTML fixing / DOM parser for real world HTML -->
         <dependency>
             <groupId>net.sf.jtidy</groupId>
@@ -258,6 +246,18 @@
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
+        </repository>
+        <repository>
+            <id>maven-central</id>
+            <name>Maven Central</name>
+            <url>http://repo.maven.apache.org/maven2</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
         </repository>
     </repositories>
 </project>

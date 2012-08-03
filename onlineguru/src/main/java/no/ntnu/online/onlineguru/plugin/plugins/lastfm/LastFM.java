@@ -5,9 +5,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 
-import net.roarsoftware.lastfm.Caller;
-import net.roarsoftware.lastfm.Track;
-import net.roarsoftware.lastfm.User;
+import de.umass.lastfm.Caller;
+import de.umass.lastfm.PaginatedResult;
+import de.umass.lastfm.Track;
+import de.umass.lastfm.User;
 import no.fictive.irclib.event.container.Event;
 import no.fictive.irclib.event.container.command.PrivMsgEvent;
 import no.fictive.irclib.event.model.EventType;
@@ -86,8 +87,9 @@ public class LastFM implements PluginWithDependencies {
 	}
 	
 	private void sendRecentTrack(Network network, String target, String username) {
-		Collection<Track> tracks = User.getRecentTracks(username, apikey);
-		
+		PaginatedResult<Track> pagedTracks = User.getRecentTracks(username, apikey);
+		Collection<Track> tracks = pagedTracks.getPageResults();
+
 		if(tracks.size() > 0) {
 			for(Track track : tracks) {
 				String artist = track.getArtist();
