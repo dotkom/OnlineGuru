@@ -1,4 +1,3 @@
-/*
 package no.ntnu.online.onlineguru.plugin.plugins.history;
 
 import no.fictive.irclib.event.container.Event;
@@ -20,12 +19,12 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * @author Roy Sindre Norangshol
- /
+ */
 public class HistoryTest {
 
     private History history;
     private Nick fictive;
-    private Nick rockj   ;
+    private Nick rockj;
     private Nick melwil;
     private Channel channel;
 
@@ -115,4 +114,3 @@ public class HistoryTest {
         assertEquals("newLineAtTop", history.getLastChannelEvents(channel).get(0).getMessage());
     }
 }
- */

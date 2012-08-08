@@ -84,6 +84,12 @@
             <type>jar</type>
         </dependency>
         <dependency>
+            <groupId>no.fictive.irclib</groupId>
+            <artifactId>irclib</artifactId>
+            <version>1.2-SNAPSHOT</version>
+            <type>test-jar</type>
+        </dependency>
+        <dependency>
             <groupId>de.u-mass</groupId>
             <artifactId>lastfm-java</artifactId>
             <version>0.1.2</version>
