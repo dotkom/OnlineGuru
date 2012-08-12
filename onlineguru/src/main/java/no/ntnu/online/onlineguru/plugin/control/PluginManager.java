@@ -64,16 +64,22 @@ public class PluginManager {
 
     private void loadPlugins(List<String> activePlugins) {
         for (String plugin : activePlugins) {
+            // Additional newlines in the plugins.conf file would result in empty plugins.
+            if (plugin.isEmpty()) { continue; }
+
+            // Lines starting with "#" should be ignored, so we can comment.
+            if (plugin.startsWith("#")) { continue; }
+
             try {
                 initiatePlugin((Plugin) Class.forName(plugin).newInstance());
             } catch (InstantiationException e) {
-                logger.error(e);
+                logger.error("Failed to load plugin: " + plugin, e);
                 System.exit(2);
             } catch (IllegalAccessException e) {
-                logger.error(e);
+                logger.error("Failed to load plugin: " + plugin, e);
                 System.exit(2);
             } catch (ClassNotFoundException e) {
-                logger.error(e);
+                logger.error("Failed to load plugin: " + plugin, e);
                 System.exit(2);
             }
         }
