@@ -106,11 +106,11 @@ public class Middag implements PluginWithDependencies {
                 if (triggerMatcher.group(1).equalsIgnoreCase("update")) {
                     // Only allow updates if cache is 15 minutes old. Spam prevention.
                     if (duration < 900) {
-                        sendNotice(pme, "Stopwatch is " + (int) (duration / 60) + " minutes old. Update not allowed before 15 minutes.");
+                        sendPrivateMessage(pme, "Stopwatch is " + (int) (duration / 60) + " minutes old. Update not allowed before 15 minutes.");
                     }
                 }
                 else {
-                    sendNotice(pme, "Invalid command.");
+                    sendPrivateMessage(pme, "Invalid command.");
                 }
             }
             else {
@@ -133,8 +133,8 @@ public class Middag implements PluginWithDependencies {
  		}
 	}
 
-    private void sendNotice(PrivMsgEvent pme, String message) {
-        wand.sendNoticeToTarget(pme.getNetwork(), pme.getSender(), "[Middag] "+message);
+    private void sendPrivateMessage(PrivMsgEvent pme, String message) {
+        wand.sendMessageToTarget(pme.getNetwork(), pme.getSender(), "[Middag] "+message);
     }
 
     private void sendMessage(PrivMsgEvent pme, String message) {
@@ -147,7 +147,7 @@ public class Middag implements PluginWithDependencies {
         int duration = new Duration(lastPublicTrigger,new DateTime()).toStandardSeconds().getSeconds();
 
         if (duration > 0 && duration < 300) {
-            wand.sendNoticeToTarget(network, sender, "[Middag] "+message);
+            wand.sendMessageToTarget(network, sender, "[Middag] "+message);
         }
         else {
             wand.sendMessageToTarget(network, target, "[Middag] "+message);
