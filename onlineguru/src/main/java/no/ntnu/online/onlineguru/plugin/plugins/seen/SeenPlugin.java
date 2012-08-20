@@ -53,7 +53,7 @@ public class SeenPlugin implements PluginWithDependencies {
             case PRIVMSG:
                 PrivMsgEvent privMsgEvent = (PrivMsgEvent)e;
                 if (isMessageForPlugin(privMsgEvent)) {
-                     sendReply(handleSeenQuery(privMsgEvent.getMessage().split("\\s+")[1]), privMsgEvent);
+                     sendReply(handleSeenQuery(privMsgEvent), privMsgEvent);
                 }
                 break;
         }
@@ -66,15 +66,18 @@ public class SeenPlugin implements PluginWithDependencies {
             logger.error("message to sent was empty, something is clearly wrong");
     }
 
-    protected String handleSeenQuery(String nick) {
+    protected String handleSeenQuery(PrivMsgEvent target) {
+        String nick = target.getMessage().split("\\s+")[1];
         List<Event> lastEvents = historyPlugin.getLastEvents(new Nick(nick));
         if (lastEvents.size()>0) {
-            return generateReplyString(lastEvents.get(0));
-        } else
+            return generateReplyString(target, lastEvents.get(0));
+        }
+        else {
             return "Can't find any history on "+ nick;
+        }
     }
 
-    protected String generateReplyString(Event lastEvent) {
+    protected String generateReplyString(PrivMsgEvent target, Event lastEvent) {
         switch (lastEvent.getEventType()) {
             case JOIN:
                 JoinEvent joinEvent = (JoinEvent) lastEvent;
@@ -125,10 +128,18 @@ public class SeenPlugin implements PluginWithDependencies {
                 PrivMsgEvent privMsgEvent = (PrivMsgEvent)lastEvent;
                 // only channel messages should be stored in history!
                 assert(privMsgEvent.isChannelMessage());
-                return String.format("%s sent a message to %s and said: %s",
-                        privMsgEvent.getSender(),
-                        privMsgEvent.getChannel(),
-                        privMsgEvent.getMessage());
+                if (privMsgEvent.getChannel().equals(target.getChannel())) {
+                    return String.format("%s sent a message to %s and said: %s",
+                            privMsgEvent.getSender(),
+                            privMsgEvent.getChannel(),
+                            privMsgEvent.getMessage());
+                }
+                else {
+                    return String.format("%s was seen talking in %s",
+                            privMsgEvent.getSender(),
+                            privMsgEvent.getChannel());
+                }
+
             case NOTICE:
                 NoticeEvent noticeEvent = (NoticeEvent)lastEvent;
                 return String.format("%s sent a notice to %s with message %s",

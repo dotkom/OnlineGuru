@@ -69,10 +69,14 @@ public class SeenTest {
 
     @Test
     public void testLastActionByNicksWithWand() {
-        assertEquals("Rockj sent a message to #test and said: This is a trolling message, what's up?!", plugin.handleSeenQuery("Rockj"));
-        assertEquals("fictiveLulz changed nick from Fictive", plugin.handleSeenQuery("fictiveLulz"));
-        assertEquals("melwil sent a message to #test and said: Flood 2!", plugin.handleSeenQuery("melwil"));
+        assertEquals("Rockj sent a message to #test and said: This is a trolling message, what's up?!", plugin.handleSeenQuery(createPrivMsgEvent("freenode", melwil.getNickname(), "#test", "!seen Rockj")));
+        assertEquals("fictiveLulz changed nick from Fictive", plugin.handleSeenQuery(createPrivMsgEvent("freenode", melwil.getNickname(), "#test", "!seen fictiveLulz")));
+        assertEquals("melwil sent a message to #test and said: Flood 2!", plugin.handleSeenQuery(createPrivMsgEvent("freenode", fictive.getNickname(), "#test", "!seen melwil")));
     }
 
+    @Test
+    public void testLastMessageFromAnotherChannel() {
+        assertEquals("Rockj was seen talking in #test", plugin.handleSeenQuery(createPrivMsgEvent("freenode", melwil.getNickname(), "#someotherchannel", "!seen Rockj")));
+    }
 
 }
