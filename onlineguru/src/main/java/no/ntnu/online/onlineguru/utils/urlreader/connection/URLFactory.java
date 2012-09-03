@@ -38,6 +38,7 @@ public class URLFactory {
     public void start() {
         connect();
         findCharset();
+        conn.disconnect();
     }
 
     private void connect() {
