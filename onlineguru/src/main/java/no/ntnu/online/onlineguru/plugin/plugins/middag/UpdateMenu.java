@@ -75,7 +75,6 @@ public class UpdateMenu implements URLReader {
                     else {
                         menu += " - " + nodeContent.replaceAll(",-", "") + " kr";
                     }
-
                 }
 
                 setMenu(kantine, menu);
@@ -84,8 +83,12 @@ public class UpdateMenu implements URLReader {
                 setMenu(kantine, "No menu set.");
             }
 
+            // Tell the plugin this kantine is updated.
+            middag.finishedUpdates();
+
             // If event is not null, the update was asked for by a user, and we need to
-            // relaunch the event to Middag can process it, now that it is updated.
+            // relaunch the event to Middag can process it now that it is updated.
+            // This will result in a display of the menues when all menues are updated.
             if (event != null) {
                 middag.incomingEvent(event);
             }

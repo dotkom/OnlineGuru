@@ -28,6 +28,8 @@ public class Middag implements PluginWithDependencies {
 	private Wand wand;
 	private Help help;
 
+    private final int totalMenues = 2;
+
     private DateTimeFormatter day = DateTimeFormat.forPattern("e");
 	private DateTimeFormatter week = DateTimeFormat.forPattern("w");
 	private DateTimeFormatter year = DateTimeFormat.forPattern("y");
@@ -38,7 +40,7 @@ public class Middag implements PluginWithDependencies {
 
     private String hangaren = "";
     private String realfag = "";
-    private boolean otherIsUpdated = false;
+    private int finishedUpdating = 0;
 
     static Logger logger = Logger.getLogger(Middag.class);
 	
@@ -54,6 +56,10 @@ public class Middag implements PluginWithDependencies {
 
     public void setHangaren(String hangaren) {
         this.hangaren = hangaren;
+    }
+
+    public void finishedUpdates() {
+        finishedUpdating++;
     }
     
     /*
@@ -97,44 +103,50 @@ public class Middag implements PluginWithDependencies {
 	 */
 	
 	private void handlePrivMsgEvent(PrivMsgEvent pme) {
-		Matcher triggerMatcher = triggerPattern.matcher(pme.getMessage());
+        if (finishedUpdating == totalMenues) {
+            Matcher triggerMatcher = triggerPattern.matcher(pme.getMessage());
 
-		if (triggerMatcher.find()) {
-            int duration = new Duration(cache, new DateTime()).toStandardSeconds().getSeconds();
+            if (triggerMatcher.find()) {
+                int duration = new Duration(cache, new DateTime()).toStandardSeconds().getSeconds();
 
-            if (triggerMatcher.group(1) != null) {
-                if (triggerMatcher.group(1).equalsIgnoreCase("update")) {
-                    // Only allow updates if cache is 15 minutes old. Spam prevention.
-                    if (duration < 900) {
-                        sendPrivateMessage(pme, "Stopwatch is " + (int) (duration / 60) + " minutes old. Update not allowed before 15 minutes.");
-                    }
-                }
-                else {
-                    sendPrivateMessage(pme, "Invalid command.");
-                }
-            }
-            else {
-                // Update automatically if cache is 1 hour old.
-                if (duration > 3600) {
-                    updateMenu();
-                }
-                else {
-                    // If they are empty or equal, that means there's no menu,
-                    // or at least the message can be displayed once, instead of twice.
-                    if (!hangaren.isEmpty() && !realfag.equals(hangaren)) {
-                        sendMessage(pme, "Hangaren: " + hangaren);
-                        sendMessage(pme, "Realfag: " + realfag);
+                if (triggerMatcher.group(1) != null) {
+                    if (triggerMatcher.group(1).equalsIgnoreCase("update")) {
+                        // Only allow updates if cache is 15 minutes old. Spam prevention.
+                        if (duration < 900) {
+                            sendPrivateMessage(pme, "Current data is " + (int) (duration / 60) + " minutes old. Update not allowed before 15 minutes.");
+                        }
+                        else {
+                            System.out.println("WTF");
+                            updateMenu();
+                        }
                     }
                     else {
-                        sendMessage(pme, realfag);
+                        sendPrivateMessage(pme, "Invalid 'middag' subcommand.");
+                    }
+                }
+                else {
+                    // Update automatically if cache is 1 hour old.
+                    if (duration > 10) {
+                        updateMenu(pme);
+                    }
+                    else {
+                        // If they are empty or equal, that means there's no menu,
+                        // or at least the message can be displayed once, instead of twice.
+                        if (!hangaren.isEmpty() && !realfag.equals(hangaren)) {
+                            sendMessage(pme, "Hangaren: " + hangaren);
+                            sendMessage(pme, "Realfag: " + realfag);
+                        }
+                        else {
+                            sendMessage(pme, "Hangaren & Realfag: " + realfag);
+                        }
                     }
                 }
             }
- 		}
+        }
 	}
 
     private void sendPrivateMessage(PrivMsgEvent pme, String message) {
-        wand.sendMessageToTarget(pme.getNetwork(), pme.getSender(), "[Middag] "+message);
+        wand.sendMessageToTarget(pme.getNetwork(), pme.getSender(), "[Middag] " + message);
     }
 
     private void sendMessage(PrivMsgEvent pme, String message) {
@@ -147,7 +159,7 @@ public class Middag implements PluginWithDependencies {
         int duration = new Duration(lastPublicTrigger,new DateTime()).toStandardSeconds().getSeconds();
 
         if (duration > 0 && duration < 300) {
-            wand.sendMessageToTarget(network, sender, "[Middag] "+message);
+            wand.sendMessageToTarget(network, sender, "[Middag] " + message);
         }
         else {
             wand.sendMessageToTarget(network, target, "[Middag] "+message);
@@ -170,9 +182,14 @@ public class Middag implements PluginWithDependencies {
 	private void updateMenu() {
 		updateMenu(getYear(), getWeek(), getStrDayOfWeek(), null);
 	}
+
+    private void updateMenu(PrivMsgEvent pme) {
+		updateMenu(getYear(), getWeek(), getStrDayOfWeek(), pme);
+    }
 	
 	private void updateMenu(int year, int week, String day, PrivMsgEvent pme) {
         cache = new DateTime();
+        finishedUpdating = 0;
 
         if(day.equals("lørdag") || day.equals("søndag")) {
             setHangaren("No serving in the weekends");
