@@ -2,6 +2,7 @@ package no.ntnu.online.onlineguru.plugin.plugins.help;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import no.fictive.irclib.event.container.Event;
 import no.fictive.irclib.event.container.command.PrivMsgEvent;
@@ -9,19 +10,25 @@ import no.fictive.irclib.event.model.EventType;
 import no.fictive.irclib.model.network.Network;
 import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
+import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
+import no.ntnu.online.onlineguru.plugin.plugins.flags.FlagsPlugin;
+import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
 import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
 
 /**
-*
 * @author melwil
 */
 
-public class Help implements Plugin {
+public class Help implements PluginWithDependencies {
     static Logger logger = Logger.getLogger(Help.class);
 	
 	private Wand wand;
-	private ArrayList<String> triggers = new ArrayList<String>(); 
+    private FlagsPlugin flags;
+
+    private Map<String, Flag> triggers = new HashMap<String, Flag>();
+
+	private ArrayList<String> trigs = new ArrayList<String>();
 	private HashMap<String, String> publicHelp = new HashMap<String, String>();
 
 	public String getDescription() {
@@ -41,49 +48,60 @@ public class Help implements Plugin {
 	public void addWand(Wand wand) {
 		this.wand = wand;
 	}
-	
+
+    @Override
+    public String[] getDependencies() {
+        return new String[]{"Flags", };  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void loadDependency(Plugin plugin) {
+        if (plugin instanceof FlagsPlugin) {
+            this.flags = (FlagsPlugin) plugin;
+        }
+    }
+
 	private void handleMessage(Event e) {
 		PrivMsgEvent pme = (PrivMsgEvent)e;
 		String message = pme.getMessage();
 		String sender = pme.getSender();
 		Network network = pme.getNetwork();
-		
+
 		if (message.split(" ")[0].equals("!help") || message.split(" ")[0].equals("!hjelp") || message.split(" ")[0].equals("??")) {
 
 			String helptrigger = message.replaceAll("^[^\\s]+\\s?", "");
 
-			// If there is no argument other than the help trigger, display all the basic triggers.
+			// If there is no argument other than the help trigger, display all the basic trigs.
 			if (helptrigger.isEmpty()) {
-				
-				wand.sendNoticeToTarget(network, sender, "Here is a list of available triggers, use !help <trigger> for more info;");
+
+				wand.sendMessageToTarget(network, sender, "Here is a list of available trigs, use !help <trigger> for more info;");
 
 				String output = "";
-								
-				for (String trigger : triggers) {
-					output += trigger+" ";
+
+				for (String trigger : trigs) {
+                    if (!output.isEmpty()) {
+                        output += ", ";
+                    }
+					output += trigger;
 					if (output.length() > 100) {
-						output = output.trim();
-						output = output.replaceAll("\\s+", ", ");
-						wand.sendNoticeToTarget(network, sender, output);
+						wand.sendMessageToTarget(network, sender, output);
 						output = "";
 					}
 				}
 				if (!output.isEmpty()) {
-					output = output.trim();
-					output = output.replaceAll("\\s+", ", ");
-					wand.sendNoticeToTarget(network, sender, output);;
+					wand.sendMessageToTarget(network, sender, output);;
 				}
 			}
 			// Otherwise, display help text for the supplied trigger
 			else {
 				// Find the help item
 				if (publicHelp.containsKey(helptrigger)) {
-					wand.sendNoticeToTarget(network, sender, publicHelp.get(helptrigger));
+					wand.sendMessageToTarget(network, sender, publicHelp.get(helptrigger));
 				}
 				else {
-					wand.sendNoticeToTarget(network, sender, "No help item for '" + helptrigger + "'");
+					wand.sendMessageToTarget(network, sender, "No help item for '" + helptrigger + "'");
 				}
-				
+
 				// Send message to server
 			}
 		}
@@ -92,12 +110,22 @@ public class Help implements Plugin {
 	/*
 	 * Public methods for Help
 	 */
+    public void addTrigger(String helpTrigger, Flag flag) {
+        if (triggers.containsKey(helpTrigger)) {
+            logger.error(String.format("Another trigger already exists for %s", helpTrigger));
+        }
+        else {
+            triggers.put(helpTrigger, flag);
+        }
+    }
+
+
 	public void addPublicTrigger(String helpTrigger) {
-		if (triggers.contains(helpTrigger)) {
+		if (trigs.contains(helpTrigger)) {
             logger.error(String.format("Another trigger already exists for %s", helpTrigger));
 		}
 		else {
-			triggers.add(helpTrigger.toLowerCase());
+			trigs.add(helpTrigger.toLowerCase());
 		}
 	}
 	public void addPublicHelp(String helpTrigger, String helpText) {
@@ -108,4 +136,5 @@ public class Help implements Plugin {
 			publicHelp.put(helpTrigger.toLowerCase(), helpText);
 		}
 	}
+
 }

@@ -192,8 +192,10 @@ public class LastFM implements PluginWithDependencies {
 	public void loadDependency(Plugin plugin) {
 		if (plugin instanceof Help) {
 			this.help = (Help)plugin;
-			help.addPublicTrigger("!np");
-			help.addPublicHelp("!np", "!!np <Last.fm username> - Displays the last track played by the supplied Last.fm api.");
+			help.addPublicTrigger("!np [register|unregister]");
+			help.addPublicHelp("!np", "!np <Last.fm username> - Displays the last track played by the supplied Last.fm api.");
+			help.addPublicHelp("!np register", "!np register <Last.fm username> - Links the Last.fm username to your nick.");
+			help.addPublicHelp("!np unregister", "!np unregister <Last.fm username> - Links the Last.fm username to your nick.");
 		}
 	}
 	
