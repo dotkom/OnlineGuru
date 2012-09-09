@@ -39,7 +39,6 @@ public class ShellTest {
         plugin = new ShellPlugin(new FakeWand(networks, channels), messageObserver);
     }
 
-    /*
     @Test
     public void testUptime() {
         plugin.incomingEvent(HelperFactory.createPrivMsgEvent("freenode", "Rockj", ShellPlugin.ADMIN_CHANNEL, "!shell uptime"));
@@ -53,5 +52,4 @@ public class ShellTest {
 
         }
     }
-    */
 }
