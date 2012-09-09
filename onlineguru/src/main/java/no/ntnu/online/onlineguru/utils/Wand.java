@@ -61,7 +61,9 @@ public interface Wand {
 
     void sendNoticeToTarget(Network network, String target, String message);
 
-    void sendCTCPToTarget(Network network, String target, String message);
+    void sendCTCPToTarget(Network network, String target, String command, String value);
+
+    void sendCTCPReplyToTarget(Network network, String target, String command, String value);
 
     String getMyNick(Network network);
 

@@ -19,7 +19,7 @@ public class Version implements Plugin {
 		if (e.getEventType() == EventType.CTCP) {
 			CTCPEvent ev = (CTCPEvent)e;
 			if (ev.getMessage().equals("VERSION")) {
-				wand.sendNoticeToTarget(ev.getNetwork(), ev.getSender(), "OnlineGuru built on Java IRClib by dotkom of Online, student association for Informatics at NTNU, Norway");
+				wand.sendCTCPReplyToTarget(ev.getNetwork(), ev.getSender(), "VERSION", "OnlineGuru built on Java IRClib by dotkom of Online, student association for Informatics at NTNU, Norway");
 			}
 		}
 	}

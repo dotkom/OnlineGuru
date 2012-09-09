@@ -119,7 +119,11 @@ public class FakeWand implements Wand {
         // ignore
     }
 
-    public void sendCTCPToTarget(Network network, String target, String message) {
+    public void sendCTCPToTarget(Network network, String target, String command, String message) {
+        // ignore
+    }
+
+    public void sendCTCPReplyToTarget(Network network, String target, String command, String message) {
         // ignore
     }
 

@@ -117,10 +117,14 @@ public class IrcWand implements Wand {
 	public void sendNoticeToTarget(Network network, String target, String message) {
 		onlineguru.sendMessageToServer(network, "NOTICE " + target + " :" + message);
 	}
-	
-	public void sendCTCPToTarget(Network network, String target, String message) {
-		onlineguru.sendMessageToServer(network, "CTCP " + target + " :" + message);
-	}
+
+    public void sendCTCPToTarget(Network network, String target, String command, String value) {
+        onlineguru.sendMessageToServer(network, "PRIVMSG " + target + " :" + (char)1 + command + " " + value + (char)1);
+    }
+
+    public void sendCTCPReplyToTarget(Network network, String target, String command, String value) {
+        onlineguru.sendMessageToServer(network, "NOTICE " + target + " :" + (char)1 + command + " " + value + (char)1);
+    }
 	
 	public String getMyNick(Network network) {
 		return network.getProfile().getNickname();
