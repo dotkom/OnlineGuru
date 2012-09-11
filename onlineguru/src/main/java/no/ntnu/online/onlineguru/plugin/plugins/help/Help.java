@@ -22,9 +22,9 @@ public class Help implements PluginWithDependencies {
     static Logger logger = Logger.getLogger(Help.class);
 	
 	private Wand wand;
-    private FlagsPlugin flags;
+    //private FlagsPlugin flags;
 
-    private Map<String, Flag> triggers = new HashMap<String, Flag>();
+    //private Map<String, Flag> triggers = new HashMap<String, Flag>();
 
 	private ArrayList<String> trigs = new ArrayList<String>();
 	private HashMap<String, String> publicHelp = new HashMap<String, String>();
@@ -49,7 +49,8 @@ public class Help implements PluginWithDependencies {
 
     @Override
     public String[] getDependencies() {
-        return new String[]{"Flags", };  //To change body of implemented methods use File | Settings | File Templates.
+        return new String[0];
+        //return new String[]{"Flags", };  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
@@ -108,6 +109,7 @@ public class Help implements PluginWithDependencies {
 	/*
 	 * Public methods for Help
 	 */
+     /*
     public void addTrigger(String helpTrigger, Flag flag) {
         if (triggers.containsKey(helpTrigger)) {
             logger.error(String.format("Another trigger already exists for %s", helpTrigger));
@@ -116,7 +118,7 @@ public class Help implements PluginWithDependencies {
             triggers.put(helpTrigger, flag);
         }
     }
-
+*/
 
 	public void addPublicTrigger(String helpTrigger) {
 		if (trigs.contains(helpTrigger)) {
