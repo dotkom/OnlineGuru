@@ -54,9 +54,9 @@ public class Help implements PluginWithDependencies {
 
     @Override
     public void loadDependency(Plugin plugin) {
-        if (plugin instanceof FlagsPlugin) {
+        /*if (plugin instanceof FlagsPlugin) {
             this.flags = (FlagsPlugin) plugin;
-        }
+        }*/
     }
 
 	private void handleMessage(Event e) {
