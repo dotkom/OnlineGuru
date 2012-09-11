@@ -11,8 +11,6 @@ import no.fictive.irclib.model.network.Network;
 import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
-import no.ntnu.online.onlineguru.plugin.plugins.flags.FlagsPlugin;
-import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
 import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
 
