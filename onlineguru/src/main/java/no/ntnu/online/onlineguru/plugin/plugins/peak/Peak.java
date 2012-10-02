@@ -5,9 +5,12 @@ import no.fictive.irclib.event.container.command.JoinEvent;
 import no.fictive.irclib.event.container.command.NumericEvent;
 import no.fictive.irclib.event.container.command.PrivMsgEvent;
 import no.fictive.irclib.event.model.EventType;
+import no.fictive.irclib.model.channel.Channel;
+import no.fictive.irclib.model.network.Network;
 import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
+import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
 import no.ntnu.online.onlineguru.plugin.plugins.help.Help;
 import no.ntnu.online.onlineguru.utils.SimpleIO;
 import no.ntnu.online.onlineguru.utils.Wand;
@@ -80,8 +83,8 @@ public class Peak implements PluginWithDependencies {
     public void loadDependency(Plugin plugin) {
 		if (plugin instanceof Help) {
 			this.help = (Help)plugin;
-			help.addPublicTrigger("!peak");
-			help.addPublicHelp("!peak", "!peak [channel] - Display the peak user count for the current channel, or specify a [channel].");
+			help.addTrigger("!peak", Flag.ANYONE);
+			help.addHelp("!peak", "!peak [channel] - Display the peak user count for the current channel, or specify a [channel].", Flag.ANYONE);
 		}
 	}
 
@@ -117,29 +120,38 @@ public class Peak implements PluginWithDependencies {
         }
     }
 
-    private void handleNumericEvent(NumericEvent e) {
-        if (e.getNumeric() == 366) {
-            int count = -1;
+    private void handleNumericEvent(NumericEvent ne) {
+        if (ne.getNumeric() == 366) {
+            Channel channel = ne.getNetwork().getChannel(ne.getParamaters().get(1));
 
-            String channel = e.getParamaters().get(1);
-
-            try {
-                count = Integer.parseInt(peaks.get(channel));
-            } catch (NumberFormatException ex) {
-                logger.error("Malformed data for Peak plugin stored in peaks. Deactivating plugin.");
-                this.enabled = false;
-            }
-
-            int numberOnChannel = e.getNetwork().getChannel(channel).getNicks().size();
-            if (count < numberOnChannel) {
-                peaks.put(channel, ""+numberOnChannel);
+            if (updatePeakForChannel(ne.getNetwork(), channel)) {
                 try {
                     SimpleIO.saveConfig(database_file, peaks);
-                } catch (IOException ex) {
-                    ex.printStackTrace();
+                } catch (IOException e) {
+                    logger.error("Failed to store peak after update to %s.", e.getCause());
                 }
             }
         }
+    }
+
+    private boolean updatePeakForChannel(Network network, Channel channel) {
+        int count = -1;
+
+        try {
+            count = Integer.parseInt(peaks.get(channel));
+        } catch (NumberFormatException nfe) {
+            logger.error("Malformed data for Peak plugin stored in peaks. Deactivating plugin.", nfe.getCause());
+            this.enabled = false;
+        }
+
+        int numberOnChannel = channel.getNicks().size();
+
+        if (count < numberOnChannel) {
+            peaks.put(channel.getChannelname(), ""+numberOnChannel);
+            return true;
+        }
+
+        return false;
     }
 
     private void handlePrivMsgEvent(PrivMsgEvent e) {
@@ -152,7 +164,7 @@ public class Peak implements PluginWithDependencies {
             if (message.length == 1) {
                 if (e.isChannelMessage()) {
                     count = peaks.get(target);
-                    wand.sendMessageToTarget(e.getNetwork(), target, "Peak usercount for "+target+": "+peaks.get(target));
+                    wand.sendMessageToTarget(e.getNetwork(), target, "Peak usercount for "+target+": "+count);
                 }
                 else {
                     wand.sendMessageToTarget(e.getNetwork(), target, "[Error] You need to specify a channel to check.");
