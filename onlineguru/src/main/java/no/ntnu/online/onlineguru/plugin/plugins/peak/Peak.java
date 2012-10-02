@@ -47,12 +47,12 @@ public class Peak implements PluginWithDependencies {
             SimpleIO.createFolder(database_folder);
             SimpleIO.createFile(database_file);
             peaks = SimpleIO.loadConfig(database_file);
+            enabled = true;
+            verifyMapIntegrity(peaks);
         } catch (IOException e) {
             e.printStackTrace();
+            enabled = false;
         }
-
-        enabled = true;
-        verifyMapIntegrity(peaks);
     }
 
     /**
@@ -108,19 +108,30 @@ public class Peak implements PluginWithDependencies {
         }
     }
 
+    protected String channelIdentifier(Network network, Channel channel) {
+        return String.format("%s@%s", channel.getChannelname(), network.getServerAlias());
+    }
+
+    protected String channelIdentifier(Network network, String channel) {
+        return String.format("%s@%s", channel, network.getServerAlias());
+    }
+
     /**
      * Checks if the channel already has a count, and adds it if it doesn't.
      *
      * @param e {@link JoinEvent} to be investigated.
      */
     private void handleJoinEvent(JoinEvent e) {
-        String count = peaks.get(e.getChannel());
+        String count = peaks.get(channelIdentifier(e.getNetwork(), e.getChannel()));
         if (count == null) {
             peaks.put(e.getChannel(),""+0);
         }
     }
 
     private void handleNumericEvent(NumericEvent ne) {
+        // Numeric 366 is end of names list. It appears automatically when you join channels, or if triggered.
+        // irclib uses the names list to get the number of people in a channel, so when end of names comes,
+        // we should get an accurate number.
         if (ne.getNumeric() == 366) {
             Channel channel = ne.getNetwork().getChannel(ne.getParamaters().get(1));
 
@@ -134,11 +145,11 @@ public class Peak implements PluginWithDependencies {
         }
     }
 
-    private boolean updatePeakForChannel(Network network, Channel channel) {
+    protected boolean updatePeakForChannel(Network network, Channel channel) {
         int count = -1;
 
         try {
-            count = Integer.parseInt(peaks.get(channel));
+            count = Integer.parseInt(peaks.get(channelIdentifier(network, channel)));
         } catch (NumberFormatException nfe) {
             logger.error("Malformed data for Peak plugin stored in peaks. Deactivating plugin.", nfe.getCause());
             this.enabled = false;
@@ -163,7 +174,7 @@ public class Peak implements PluginWithDependencies {
         if (message[0].equals("!peak")) {
             if (message.length == 1) {
                 if (e.isChannelMessage()) {
-                    count = peaks.get(target);
+                    count = peaks.get(channelIdentifier(e.getNetwork(), target));
                     wand.sendMessageToTarget(e.getNetwork(), target, "Peak usercount for "+target+": "+count);
                 }
                 else {
@@ -172,7 +183,7 @@ public class Peak implements PluginWithDependencies {
             }
             else if (message.length == 2) {
                 if (message[1].startsWith("#")) {
-                    count = peaks.get(message[1]);
+                    count = peaks.get(channelIdentifier(e.getNetwork(), message[1]));
                     countTarget = message[1];
                     if (count != null) {
                         wand.sendMessageToTarget(e.getNetwork(), target, "Peak usercount for "+countTarget+": "+count);
