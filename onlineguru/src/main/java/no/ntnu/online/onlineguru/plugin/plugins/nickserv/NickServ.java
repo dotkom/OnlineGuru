@@ -136,12 +136,13 @@ public class NickServ implements Plugin {
 
         if (message[0].equals("!whois") || message[0].equals("!who")) {
             AuthHandler ah = authHandlers.get(e.getNetwork());
+            String lookupNick = message[1];
 
-            if (ah.getUsername(e.getSender()).equals("0")) {
-                wand.sendMessageToTarget(e.getNetwork(), e.getTarget(), "[whois] "+ message[1] +" is not registered with NickServ on "+ e.getNetwork().getServerAlias());
+            if (ah.getUsername(lookupNick).equals("0")) {
+                wand.sendMessageToTarget(e.getNetwork(), e.getTarget(), "[whois] "+ lookupNick +" is not registered with NickServ on "+ e.getNetwork().getServerAlias());
             }
             else {
-                wand.sendMessageToTarget(e.getNetwork(), e.getTarget(), "[whois] "+ message[1] +" is registered as '"+ ah.getUsername(e.getSender()) +"' on "+ e.getNetwork().getServerAlias());
+                wand.sendMessageToTarget(e.getNetwork(), e.getTarget(), "[whois] "+ lookupNick +" is registered as '"+ ah.getUsername(lookupNick) +"' on "+ e.getNetwork().getServerAlias());
             }
         }
     }
