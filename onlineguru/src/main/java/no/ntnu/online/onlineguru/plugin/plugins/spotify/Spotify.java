@@ -13,12 +13,12 @@ import no.ntnu.online.onlineguru.utils.Wand;
 public class Spotify implements Plugin {
 	
 	private Wand wand;
-	private Pattern linkPattern = Pattern.compile("((http://)?open.spotify.com/([^/]+)/([^\\s]+))|(spotify:(album|artist|track):[^\\s]+)");
+	private Pattern linkPattern = Pattern.compile("((http://)?open.spotify.com/(album|artist|track)/([^\\s]+))|(spotify:(album|artist|track):[^\\s]+)");
 	private Matcher linkMatcher;
 	private Types linkCase;
 	
 	public String getDescription() {
-		return "";
+		return "Returns information about a track, artist or album from the Spotify lookup API.";
 	}
     /*
         http://open.spotify.com/track/1x6ACsKV4UdWS2FMuPFUiT
@@ -55,5 +55,9 @@ public class Spotify implements Plugin {
 	public void addWand(Wand wand) {
 		this.wand = wand;
 	}
-			
+
+    public Pattern getLinkPattern() {
+        return linkPattern;
+    }
+
 }
