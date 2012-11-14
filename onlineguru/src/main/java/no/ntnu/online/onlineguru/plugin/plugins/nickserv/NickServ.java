@@ -136,14 +136,29 @@ public class NickServ implements Plugin {
 
         if (message[0].equals("!whois") || message[0].equals("!who")) {
             AuthHandler ah = authHandlers.get(e.getNetwork());
-            String lookupNick = message[1];
+            String lookupNick, reply;
 
-            if (ah.getUsername(lookupNick).equals("0")) {
-                wand.sendMessageToTarget(e.getNetwork(), e.getTarget(), "[whois] "+ lookupNick +" is not registered with NickServ on "+ e.getNetwork().getServerAlias());
+            // See if there was a specific nick to look up.
+            if (message.length > 1) {
+                lookupNick = message[1];
             }
             else {
-                wand.sendMessageToTarget(e.getNetwork(), e.getTarget(), "[whois] "+ lookupNick +" is registered as '"+ ah.getUsername(lookupNick) +"' on "+ e.getNetwork().getServerAlias());
+                lookupNick = e.getSender();
             }
+
+            // Generate appropriate reply.
+            if (ah.getUsername(lookupNick) == null) {
+                reply = String.format("[whois] %s is not known to me on %s.", lookupNick, e.getNetwork().getServerAlias());
+            }
+            else if (ah.getUsername(lookupNick).equals("0")) {
+                reply = String.format("[whois] %s is not registered with NickServ on %s.", lookupNick, e.getNetwork().getServerAlias());
+            }
+            else {
+                reply = String.format("[whois] %s is registered as '%s' on %s.", lookupNick, ah.getUsername(lookupNick), e.getNetwork().getServerAlias());
+            }
+
+            // Send the reply.
+            wand.sendMessageToTarget(e.getNetwork(), e.getTarget(), reply);
         }
     }
 
