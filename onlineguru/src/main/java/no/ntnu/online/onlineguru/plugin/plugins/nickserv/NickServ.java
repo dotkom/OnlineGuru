@@ -6,6 +6,9 @@ import no.fictive.irclib.event.model.EventType;
 import no.fictive.irclib.model.network.Network;
 import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
+import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
+import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
+import no.ntnu.online.onlineguru.plugin.plugins.help.Help;
 import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
 
@@ -17,9 +20,10 @@ import java.util.Map;
  *
  * @author Håvard Slettvold
  */
-public class NickServ implements Plugin {
+public class NickServ implements PluginWithDependencies {
 
     private Wand wand;
+    private Help help;
 
     private Map<Network, AuthHandler> authHandlers;
 
@@ -160,6 +164,16 @@ public class NickServ implements Plugin {
             // Send the reply.
             wand.sendMessageToTarget(e.getNetwork(), e.getTarget(), reply);
         }
+
+        if (message[0].equals("!refreshauth")) {
+            if (message.length > 1) {
+                wand.sendServerMessage(e.getNetwork(), "WHO "+ message[1] +" %na");
+            }
+            else {
+                wand.sendServerMessage(e.getNetwork(), "WHO "+ e.getSender() +" %na");
+            }
+
+        }
     }
 
     /**
@@ -212,5 +226,20 @@ public class NickServ implements Plugin {
     public String getUsername(Network network, String nick) {
         return authHandlers.get(network)
                 .getUsername(nick);
+    }
+
+    @Override
+    public String[] getDependencies() {
+        return new String[] {"Help", };
+    }
+
+    public void loadDependency(Plugin plugin) {
+        if (plugin instanceof Help) {
+            this.help = (Help)plugin;
+            help.addTrigger("!whois", Flag.ANYONE);
+            help.addTrigger("!refreshauth", Flag.ANYONE);
+            help.addHelp("!whois", "!whois [nick] - Show the username that you or a nick is authenticated with.", Flag.ANYONE);
+            help.addHelp("!refreshauth", "!refreshauth [nick] - Update the information about your or another nicks authentication username.", Flag.ANYONE);
+        }
     }
 }
