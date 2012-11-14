@@ -1,5 +1,6 @@
 package no.ntnu.online.onlineguru.utils;
 
+import com.rosaloves.bitlyj.BitlyException;
 import com.rosaloves.bitlyj.Url;
 import org.apache.log4j.Logger;
 
@@ -7,6 +8,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import static com.rosaloves.bitlyj.Bitly.as;
+import static com.rosaloves.bitlyj.Bitly.expand;
 import static com.rosaloves.bitlyj.Bitly.shorten;
 
 /**
@@ -23,9 +25,16 @@ public class URLShortener {
 
     public static String bitlyfyLink(String link) {
         initiate();
+        Url url;
 
-        Url url = as(bitlyUsername, bitlyApiKey).call(shorten(link));
-        return url.getShortUrl();
+        try {
+            url = as(bitlyUsername, bitlyApiKey).call(shorten(link));
+            return url.getShortUrl();
+        } catch (BitlyException be) {
+            logger.error("Failed to shorten URL.", be.getCause());
+        }
+
+        return "";
     }
 
     private static void initiate() {
