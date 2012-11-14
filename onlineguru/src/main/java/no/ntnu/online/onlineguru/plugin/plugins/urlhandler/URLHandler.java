@@ -13,6 +13,7 @@ public class URLHandler implements Plugin {
 
     private final int shorteningThreshhold = 42;
 
+
 	private Wand wand;
 	
 	public URLHandler() {
@@ -50,8 +51,10 @@ public class URLHandler implements Plugin {
 					if(word.startsWith("www")) {
 						word = "http://" + word;
 					}
-					if(word.startsWith("http://open.spotify.com/")) {
-						return;
+					if( word.startsWith("http://open.spotify.com/track/") ||
+                        word.startsWith("http://open.spotify.com/artist/") ||
+                        word.startsWith("http://open.spotify.com/album/")) {
+						    return;
 					}
 					new Entry(wand, pme, word);
 				}
