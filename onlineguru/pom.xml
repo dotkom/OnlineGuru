@@ -240,7 +240,7 @@
         </repository>
         <repository>
             <id>absint-busbuddy</id>
-            <url>http://absint.online.ntnu.no:8080/nexus/content/repositories/releases/</url>
+            <url>https://online.ntnu.no/nexus/content/repositories/releases/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
