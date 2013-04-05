@@ -229,16 +229,6 @@
             </releases>
         </repository>
         <repository>
-            <id>absint-online</id>
-            <url>http://absint.online.ntnu.no:8080/nexus/content/repositories/thirdparty/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-        </repository>
-        <repository>
             <id>absint-busbuddy</id>
             <url>https://online.ntnu.no/nexus/content/repositories/releases/</url>
             <snapshots>
