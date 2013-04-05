@@ -55,6 +55,24 @@ public class URLFactory {
                 case HttpURLConnection.HTTP_ACCEPTED:
                     connected = true;
                     return;
+                case HttpURLConnection.HTTP_MULT_CHOICE:
+                    logger.error("Error: 300 Multiple Choices. Not handled.");
+                    return;
+                case HttpURLConnection.HTTP_MOVED_PERM:
+                    logger.error("Error: 301 Moved Permanently. Not handled.");
+                    return;
+                case HttpURLConnection.HTTP_MOVED_TEMP:
+                    logger.error("Error: 302 Moved Temporary. Not handled.");
+                    return;
+                case HttpURLConnection.HTTP_SEE_OTHER:
+                    logger.error("Error: 303 See Other. Not handled.");
+                    return;
+                case HttpURLConnection.HTTP_NOT_MODIFIED:
+                    logger.error("Error: 304 Not Modified. Not handled.");
+                    return;
+                case HttpURLConnection.HTTP_USE_PROXY:
+                    logger.error("Error: 305 Use Proxy. Not handled.");
+                    return;
                 case HttpURLConnection.HTTP_BAD_REQUEST:
                     logger.error("Error: 400 Bad Request");
                     return;
