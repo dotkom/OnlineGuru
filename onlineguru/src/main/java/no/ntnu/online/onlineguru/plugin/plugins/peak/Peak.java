@@ -21,8 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
- * @author melwil
+ * @author Håvard Slettvold
  */
 
 public class Peak implements PluginWithDependencies {
@@ -75,7 +74,6 @@ public class Peak implements PluginWithDependencies {
     /*
      * Metoder som arves fra PluginWithDependencies
      */
-
     public String[] getDependencies() {
         return new String[] {"Help", };
     }
@@ -117,14 +115,17 @@ public class Peak implements PluginWithDependencies {
     }
 
     /**
-     * Checks if the channel already has a count, and adds it if it doesn't.
+     * When a JoinEvent occurs, tries to update the count on the channel and store it.
      *
-     * @param e {@link JoinEvent} to be investigated.
+     * @param je {@link JoinEvent} to be investigated.
      */
-    private void handleJoinEvent(JoinEvent e) {
-        String count = peaks.get(channelIdentifier(e.getNetwork(), e.getChannel()));
-        if (count == null) {
-            peaks.put(e.getChannel(),""+0);
+    private void handleJoinEvent(JoinEvent je) {
+        if (updatePeakForChannel(je.getNetwork(), je.getNetwork().getChannel(je.getChannel()))) {
+            try {
+                SimpleIO.saveConfig(database_file, peaks);
+            } catch (IOException e) {
+                logger.error("Failed to store peak after update to %s.", e.getCause());
+            }
         }
     }
 
@@ -143,26 +144,6 @@ public class Peak implements PluginWithDependencies {
                 }
             }
         }
-    }
-
-    protected boolean updatePeakForChannel(Network network, Channel channel) {
-        int count = -1;
-
-        try {
-            count = Integer.parseInt(peaks.get(channelIdentifier(network, channel)));
-        } catch (NumberFormatException nfe) {
-            logger.error("Malformed data for Peak plugin stored in peaks. Deactivating plugin.", nfe.getCause());
-            this.enabled = false;
-        }
-
-        int numberOnChannel = channel.getNicks().size();
-
-        if (count < numberOnChannel) {
-            peaks.put(channel.getChannelname(), ""+numberOnChannel);
-            return true;
-        }
-
-        return false;
     }
 
     private void handlePrivMsgEvent(PrivMsgEvent e) {
@@ -204,6 +185,53 @@ public class Peak implements PluginWithDependencies {
                 }
             }
         }
+    }
+
+    /**
+     * Checks the count for a channel against the current amount of users on a channel.
+     *
+     * @param network The network to look up
+     * @param channel The channel to look up
+     * @return true if update occurred
+     */
+    protected boolean updatePeakForChannel(Network network, Channel channel) {
+        try {
+            int storedCount = getCount(network, channel);
+            int numberCurrentlyOnChannel = channel.getNicks().size();
+
+            if (storedCount < numberCurrentlyOnChannel) {
+                peaks.put(channelIdentifier(network, channel), "" + numberCurrentlyOnChannel);
+                return true;
+            }
+        } catch (NumberFormatException nfe) {
+            logger.error("Malformed data for Peak plugin stored in peaks. Deactivating plugin.", nfe.getCause());
+            this.enabled = false;
+        }
+
+        return false;
+    }
+
+    /**
+     * Fetches count for a channel in the specificed network.
+     * If no count was found ???
+     *
+     * @param network
+     * @param channel
+     * @return
+     */
+    protected int getCount(Network network, Channel channel) {
+        try {
+            String storedPeak = peaks.get(channelIdentifier(network, channel));
+            if (storedPeak == null) {
+                return 0;
+            }
+            return Integer.parseInt(peaks.get(channelIdentifier(network, channel)));
+        } catch (NumberFormatException nfe) {
+            logger.error("Malformed data for Peak plugin stored in peaks. Deactivating plugin.", nfe.getCause());
+            this.enabled = false;
+        }
+
+        return Integer.MAX_VALUE;
     }
 
     public void addEventDistributor(EventDistributor eventDistributor) {
