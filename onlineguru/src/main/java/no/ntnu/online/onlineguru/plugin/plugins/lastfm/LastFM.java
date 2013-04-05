@@ -16,6 +16,7 @@ import no.fictive.irclib.model.network.Network;
 import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
+import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
 import no.ntnu.online.onlineguru.plugin.plugins.help.Help;
 import no.ntnu.online.onlineguru.utils.SimpleIO;
 import no.ntnu.online.onlineguru.utils.Wand;
@@ -33,7 +34,6 @@ public class LastFM implements PluginWithDependencies {
 	
 	private Map<String, String> usernameMapping = new HashMap<String, String>();
 	private Wand wand;
-	private Help help;
 	
 	public LastFM() {
 		initiate();
@@ -191,11 +191,14 @@ public class LastFM implements PluginWithDependencies {
 
 	public void loadDependency(Plugin plugin) {
 		if (plugin instanceof Help) {
-			this.help = (Help)plugin;
-			help.addPublicTrigger("!np [register|unregister]");
-			help.addPublicHelp("!np", "!np <Last.fm username> - Displays the last track played by the supplied Last.fm api.");
-			help.addPublicHelp("!np register", "!np register <Last.fm username> - Links the Last.fm username to your nick.");
-			help.addPublicHelp("!np unregister", "!np unregister <Last.fm username> - Links the Last.fm username to your nick.");
+			Help help = (Help)plugin;
+			help.addHelp(
+                    "!np",
+                    Flag.ANYONE,
+                    "!np <Last.fm username> - Displays the last track played by the supplied Last.fm api.",
+                    "!np register <Last.fm username> - Links the Last.fm username to your nick.",
+                    "!np unregister <Last.fm username> - Unlinks the Last.fm username from your nick."
+            );
 		}
 	}
 	

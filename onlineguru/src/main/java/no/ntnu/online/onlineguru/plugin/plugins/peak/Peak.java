@@ -27,7 +27,6 @@ import java.util.Map;
 public class Peak implements PluginWithDependencies {
 
     private Wand wand;
-    private Help help;
 
     static Logger logger = Logger.getLogger(Peak.class);
 
@@ -80,9 +79,8 @@ public class Peak implements PluginWithDependencies {
 
     public void loadDependency(Plugin plugin) {
 		if (plugin instanceof Help) {
-			this.help = (Help)plugin;
-			help.addTrigger("!peak", Flag.ANYONE);
-			help.addHelp("!peak", "!peak [channel] - Display the peak user count for the current channel, or specify a [channel].", Flag.ANYONE);
+			Help help = (Help)plugin;
+			help.addHelp("!peak", Flag.ANYONE, "!peak [channel] - Display the peak user count for the current channel, or specify a [channel].");
 		}
 	}
 

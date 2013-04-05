@@ -3,6 +3,7 @@ package no.ntnu.online.onlineguru.plugin.plugins.middag;
 import java.util.regex.*;
 
 import no.fictive.irclib.model.network.Network;
+import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
 import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
@@ -26,7 +27,6 @@ import no.ntnu.online.onlineguru.plugin.plugins.help.Help;
 public class Middag implements PluginWithDependencies {
 	 
 	private Wand wand;
-	private Help help;
 
     private final int totalMenues = 2;
 
@@ -92,16 +92,20 @@ public class Middag implements PluginWithDependencies {
 
 	public void loadDependency(Plugin plugin) {
 		if (plugin instanceof Help) {
-			this.help = (Help)plugin;
-			help.addPublicTrigger("!middag");
-			help.addPublicHelp("!middag", "!middag [update] - Display dinner menu for the canteens Hangaren and Realfag. Optional argument [update] tried to update the cached menu.");
+			Help help = (Help)plugin;
+			help.addHelp(
+                    "!middag",
+                    Flag.ANYONE,
+                    "!middag [update] - Display dinner menu for the canteens Hangaren and Realfag.",
+                    "Optional argument [update] tried to update the cached menu."
+            );
 		}
 	}
 
 	/*
 	 * Triggerprosessering
 	 */
-	
+
 	private void handlePrivMsgEvent(PrivMsgEvent pme) {
         if (finishedUpdating == totalMenues) {
             Matcher triggerMatcher = triggerPattern.matcher(pme.getMessage());
@@ -116,7 +120,6 @@ public class Middag implements PluginWithDependencies {
                             sendPrivateMessage(pme, "Current data is " + (int) (duration / 60) + " minutes old. Update not allowed before 15 minutes.");
                         }
                         else {
-                            System.out.println("WTF");
                             updateMenu();
                         }
                     }
@@ -126,7 +129,7 @@ public class Middag implements PluginWithDependencies {
                 }
                 else {
                     // Update automatically if cache is 1 hour old.
-                    if (duration > 10) {
+                    if (duration > 3600) {
                         updateMenu(pme);
                     }
                     else {
@@ -194,6 +197,8 @@ public class Middag implements PluginWithDependencies {
         if(day.equals("lørdag") || day.equals("søndag")) {
             setHangaren("No serving in the weekends");
             setRealfag("No serving in the weekends");
+
+            finishedUpdating = 2;
         }
         else {
             new UpdateMenu(this, "http://www.sit.no/content/36444/Ukas-middagsmeny-pa-Hangaren?visuke="+week+"&visaar="+year, day, "HANGAREN").setEvent(pme);

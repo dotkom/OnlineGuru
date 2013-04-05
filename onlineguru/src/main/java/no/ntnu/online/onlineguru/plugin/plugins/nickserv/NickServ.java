@@ -23,12 +23,10 @@ import java.util.Map;
 public class NickServ implements PluginWithDependencies {
 
     private Wand wand;
-    private Help help;
 
     private Map<Network, AuthHandler> authHandlers;
 
     static Logger logger = Logger.getLogger(NickServ.class);
-
 
     public NickServ() {
         authHandlers = new HashMap<Network, AuthHandler>();
@@ -228,18 +226,15 @@ public class NickServ implements PluginWithDependencies {
                 .getUsername(nick);
     }
 
-    @Override
     public String[] getDependencies() {
         return new String[] {"Help", };
     }
 
     public void loadDependency(Plugin plugin) {
         if (plugin instanceof Help) {
-            this.help = (Help)plugin;
-            help.addTrigger("!whois", Flag.ANYONE);
-            help.addTrigger("!refreshauth", Flag.ANYONE);
-            help.addHelp("!whois", "!whois [nick] - Show the username that you or a nick is authenticated with.", Flag.ANYONE);
-            help.addHelp("!refreshauth", "!refreshauth [nick] - Update the information about your or another nicks authentication username.", Flag.ANYONE);
+            Help help = (Help)plugin;
+            help.addHelp("!whois", Flag.ANYONE,  "!whois [nick] - Show the username that you or a nick is authenticated with.");
+            help.addHelp("!refreshauth", Flag.ANYONE, "!refreshauth [nick] - Update the information about your nick or another [nick] authentication username.");
         }
     }
 }
