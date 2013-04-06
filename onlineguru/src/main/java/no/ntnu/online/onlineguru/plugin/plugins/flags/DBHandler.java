@@ -96,6 +96,7 @@ public class DBHandler {
      * DB Handling
      */
 
+    // Has test
     protected Connection connect(Network network) {
         try {
             return DriverManager.getConnection("jdbc:sqlite:" + getDBNetworkPath(network));
@@ -105,6 +106,7 @@ public class DBHandler {
         return null;
     }
 
+    // Has test
     protected void disconnect() {
         try {
             if(conn != null) {
@@ -115,61 +117,63 @@ public class DBHandler {
         }
     }
 
-    // Works
-    protected void createSuperuserTable(Network network) {
+    // Has test
+    protected boolean createSuperuserTable(Network network) {
+        boolean success = true;
         try {
             conn = connect(network);
             conn.setAutoCommit(true);
             Statement statement = conn.createStatement();
-            statement.execute("CREATE TABLE IF NOT EXISTS Superuser(username TEXT PRIMARY KEY, password TEXT);");
+            statement.execute("CREATE TABLE IF NOT EXISTS superuser(username TEXT PRIMARY KEY, password TEXT);");
         } catch(SQLException e) {
-            logger.error(String.format("Failed to create Superuser table for %s.", network), e.getCause());
-        }
-        disconnect();
-    }
-
-    // Works
-    protected void createSuperuser(Network network, String username, String password) {
-        try {
-            conn = connect(network);
-            PreparedStatement ps = conn.prepareStatement("INSERT INTO Superuser (username, password) VALUES (?, ?);");
-            ps.setString(1, username);
-            ps.setString(2, shaHex(password));
-            ps.execute();
-
-        } catch (SQLException e) {
-            logger.error(String.format("Failed to create Superuser for %s.", network.getServerAlias()), e.getCause());
-        }
-        disconnect();
-    }
-
-    // TODO test
-    protected boolean removeSuperuser(Network network, String username) {
-        boolean success = false;
-        try {
-            conn = connect(network);
-            PreparedStatement ps = conn.prepareStatement("DELETE FROM Superuser WHERE username=?;");
-            ps.setString(1, username);
-            ps.execute();
-            success = true;
-        } catch (SQLException e) {
-            logger.error(String.format("Failed to remove Superuser from %s.", network.getServerAlias()), e.getCause());
+            logger.error(String.format("Failed to create superuser table for %s.", network), e.getCause());
             success = false;
         }
         disconnect();
         return success;
     }
 
-    protected String getFlags(Network network, String username) {
-        return null;
+    // Has test
+    protected boolean createSuperuser(Network network, String username, String password) {
+        boolean success = true;
+        try {
+            conn = connect(network);
+            PreparedStatement ps = conn.prepareStatement("INSERT INTO superuser (username, password) VALUES (?, ?);");
+            ps.setString(1, username);
+            ps.setString(2, shaHex(password));
+            ps.execute();
+
+        } catch (SQLException e) {
+            logger.error(String.format("Failed to create superuser for %s.", network.getServerAlias()), e.getCause());
+            success = false;
+        }
+        disconnect();
+        return success;
     }
 
-    // Works
+    // Has test
+    protected boolean removeSuperuser(Network network, String username) {
+        boolean success = false;
+        try {
+            conn = connect(network);
+            PreparedStatement ps = conn.prepareStatement("DELETE FROM superuser WHERE username=?;");
+            ps.setString(1, username);
+            ps.execute();
+            success = true;
+        } catch (SQLException e) {
+            logger.error(String.format("Failed to remove superuser from %s.", network.getServerAlias()), e.getCause());
+            success = false;
+        }
+        disconnect();
+        return success;
+    }
+
+    // Has test
     protected boolean isSuperuser(Network network, String username) {
         boolean success = false;
         try {
             conn = connect(network);
-            PreparedStatement ps = conn.prepareStatement("SELECT 1 FROM Superuser WHERE username=?;");
+            PreparedStatement ps = conn.prepareStatement("SELECT 1 FROM superuser WHERE username=?;");
             ps.setString(1, username);
             ResultSet result = ps.executeQuery();
             while (result.next()) {
@@ -185,19 +189,24 @@ public class DBHandler {
     }
 
     // Works
-    protected void createChannel(JoinEvent e) {
+    protected boolean createChannel(JoinEvent e) {
         String channel = getAndCleanChannel(e.getChannel());
 
+        boolean success = true;
         try {
             conn = connect(e.getNetwork());
             conn.setAutoCommit(true);
             Statement statement = conn.createStatement();
             statement.execute("CREATE TABLE IF NOT EXISTS " + channel + "(username TEXT PRIMARY KEY, flags TEXT);");
+            if (!userExistsInChannel(e.getNetwork(), e.getChannel(), e.getNick())) {
+                statement.execute("INSERT INTO " + channel + "(username, flags) VALUES ('"+ e.getNick() + "', '');");
+            }
         } catch (SQLException sqle) {
-            sqle.printStackTrace();
             logger.error(String.format("Failed to create channel '%s' in DB.", e.getChannel()), sqle.getCause());
+            success = false;
         }
         disconnect();
+        return success;
     }
 
     public boolean userExistsInChannel(Network network, String channel, String username) {
@@ -206,9 +215,8 @@ public class DBHandler {
         boolean success = false;
         try {
             conn = connect(network);
-            PreparedStatement ps = conn.prepareStatement("SELECT 1 FROM ? WHERE username=?;");
-            ps.setString(1, c);
-            ps.setString(2, username);
+            PreparedStatement ps = conn.prepareStatement("SELECT 1 FROM "+ c +" WHERE username=?;");
+            ps.setString(1, username);
             ResultSet result = ps.executeQuery();
             while (result.next()) {
                 success = true;
@@ -222,39 +230,39 @@ public class DBHandler {
         return success;
     }
 
-    public void setFlags(Network network, String channel, String username, String flags) {
+    public boolean setFlags(Network network, String channel, String username, String flags) {
         String c = getAndCleanChannel(channel);
 
+        boolean success = true;
         try {
             conn = connect(network);
-            PreparedStatement ps = conn.prepareStatement("SELECT flags FROM ? WHERE username=?;");
-            ps.setString(1, c);
+            PreparedStatement ps = conn.prepareStatement("UPDATE "+ c +" SET flags=? WHERE username=?;");
+            ps.setString(1, flags);
             ps.setString(2, username);
-            ResultSet result = ps.executeQuery();
-
-
+            ps.executeUpdate();
         } catch(SQLException e) {
-            logger.error(String.format("Failed to retrieve flags for '%s' in %s on network %s", username, channel, network.getServerAlias()));
+            logger.error(String.format("Failed to update flags for '%s' in %s on network %s", username, channel, network.getServerAlias()));
         }
         disconnect();
-
+        return success;
     }
 
-    public void getFlags(Network network, String channel, String username) {
+    public String getFlags(Network network, String channel, String username) {
         String c = getAndCleanChannel(channel);
 
         try {
             conn = connect(network);
-            PreparedStatement ps = conn.prepareStatement("SELECT flags FROM ? WHERE username=?;");
-            ps.setString(1, c);
-            ps.setString(2, username);
+            PreparedStatement ps = conn.prepareStatement("SELECT flags FROM "+ c +" WHERE username=?;");
+            ps.setString(1, username);
             ResultSet result = ps.executeQuery();
-
-
+            while (result.next()) {
+                return result.getString("flags");
+            }
         } catch(SQLException e) {
             logger.error(String.format("Failed to retrieve flags for '%s' in %s on network %s", username, channel, network.getServerAlias()));
         }
         disconnect();
+        return "";
     }
 
 }
