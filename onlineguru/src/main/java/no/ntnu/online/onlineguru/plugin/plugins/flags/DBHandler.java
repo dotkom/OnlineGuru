@@ -1,4 +1,4 @@
-package no.ntnu.online.onlineguru.plugin.plugins.flags.storage;
+package no.ntnu.online.onlineguru.plugin.plugins.flags;
 
 import no.fictive.irclib.event.container.command.JoinEvent;
 import no.fictive.irclib.model.network.Network;
@@ -33,6 +33,7 @@ public class DBHandler {
         try {
             Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException e) {
+            logger.error("Need sqlite JDBC.");
             e.printStackTrace();
         }
 
@@ -71,12 +72,11 @@ public class DBHandler {
     /*
      * Helper methods
      */
-
-    public String getDBNetworkPath(Network network) {
+    protected String getDBNetworkPath(Network network) {
         return flags_database_folder + network.getServerAlias() + ".db";
     }
 
-    public void initiate(Network network) throws IOException {
+    protected void initiate(Network network) throws IOException {
         SimpleIO.createFile(getDBNetworkPath(network));
         createSuperuserTable(network);
         if (!isSuperuser(network, root_username)) {
@@ -96,7 +96,7 @@ public class DBHandler {
      * DB Handling
      */
 
-    public Connection connect(Network network) {
+    protected Connection connect(Network network) {
         try {
             return DriverManager.getConnection("jdbc:sqlite:" + getDBNetworkPath(network));
         } catch (SQLException e) {
@@ -105,17 +105,18 @@ public class DBHandler {
         return null;
     }
 
-    public void disconnect() {
+    protected void disconnect() {
         try {
-            if(conn != null)
+            if(conn != null) {
                 conn.close();
+            }
         } catch(SQLException e) {
             logger.error("Could not disconnect sqlite", e.getCause());
         }
     }
 
     // Works
-    public void createSuperuserTable(Network network) {
+    protected void createSuperuserTable(Network network) {
         try {
             conn = connect(network);
             conn.setAutoCommit(true);
@@ -128,7 +129,7 @@ public class DBHandler {
     }
 
     // Works
-    public void createSuperuser(Network network, String username, String password) {
+    protected void createSuperuser(Network network, String username, String password) {
         try {
             conn = connect(network);
             PreparedStatement ps = conn.prepareStatement("INSERT INTO Superuser (username, password) VALUES (?, ?);");
@@ -143,7 +144,7 @@ public class DBHandler {
     }
 
     // TODO test
-    public boolean removeSuperuser(Network network, String username) {
+    protected boolean removeSuperuser(Network network, String username) {
         boolean success = false;
         try {
             conn = connect(network);
@@ -159,12 +160,12 @@ public class DBHandler {
         return success;
     }
 
-    public String getFlags(Network network, String username) {
+    protected String getFlags(Network network, String username) {
         return null;
     }
 
     // Works
-    public boolean isSuperuser(Network network, String username) {
+    protected boolean isSuperuser(Network network, String username) {
         boolean success = false;
         try {
             conn = connect(network);
@@ -184,7 +185,7 @@ public class DBHandler {
     }
 
     // Works
-    public void createChannel(JoinEvent e) {
+    protected void createChannel(JoinEvent e) {
         String channel = getAndCleanChannel(e.getChannel());
 
         try {
@@ -233,7 +234,7 @@ public class DBHandler {
 
 
         } catch(SQLException e) {
-            logger.error(String.format("Failed to rerieve flags for '%s' in %s on network %s", username, channel, network.getServerAlias()));
+            logger.error(String.format("Failed to retrieve flags for '%s' in %s on network %s", username, channel, network.getServerAlias()));
         }
         disconnect();
 
@@ -251,7 +252,7 @@ public class DBHandler {
 
 
         } catch(SQLException e) {
-            logger.error(String.format("Failed to rerieve flags for '%s' in %s on network %s", username, channel, network.getServerAlias()));
+            logger.error(String.format("Failed to retrieve flags for '%s' in %s on network %s", username, channel, network.getServerAlias()));
         }
         disconnect();
     }
