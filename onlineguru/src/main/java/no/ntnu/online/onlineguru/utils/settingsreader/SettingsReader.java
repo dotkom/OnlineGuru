@@ -25,9 +25,9 @@ import javax.activity.InvalidActivityException;
  * 
  * SettingsReader does not check any structure of the file other than [block] and field=setting.
  * The settings will be returned to the caller in an ArrayList containing Settings objects.
- * There will be one Settings objeckt ber [block] in the conf file.
+ * There will be one Settings objeckt per [block] in the conf file.
  * Each Settings object contains a HashMap with the values from the file. 
- * Settings has methods for getting the fields form the HashMap.
+ * Settings has methods for getting the fields from the HashMap.
  * 
  * The reason for making this is that many Plugins might require settings spread across 
  * multiple servers, so a generic SettingsReader might be a good idea.
