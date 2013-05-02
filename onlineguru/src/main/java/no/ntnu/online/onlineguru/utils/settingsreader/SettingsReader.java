@@ -69,7 +69,7 @@ public class SettingsReader {
 					if(settings != null) {
 						settingsList.add(settings);
 					}
-					settings = new Settings();
+					settings = new Settings(line.substring(1,line.length()-1));
 				}
 				
 				// No new block; keep adding settings
@@ -97,12 +97,7 @@ public class SettingsReader {
             logger.error("I/O error", e.getCause());
 		}
 
-        if (settingsList.size() == 0) {
-            return null;
-        }
-        else {
-            return settingsList;
-        }
+        return settingsList;
 	}
 	
 }
