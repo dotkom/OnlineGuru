@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import no.ntnu.online.onlineguru.exceptions.MalformedSettingsException;
+import no.ntnu.online.onlineguru.exceptions.MissingSettingsException;
 import org.apache.log4j.Logger;
 
 import javax.activity.InvalidActivityException;
@@ -33,14 +34,13 @@ import javax.activity.InvalidActivityException;
  * multiple servers, so a generic SettingsReader might be a good idea.
  * 
  * @author Håvard Slettvold
- *
  */
 
 public class SettingsReader {
 	
 	static Logger logger = Logger.getLogger(SettingsReader.class);
 	
-	public static ArrayList<Settings> readSettings(String settings_file) throws MalformedSettingsException {
+	public static ArrayList<Settings> readSettings(String settings_file) throws MalformedSettingsException, MissingSettingsException {
 		ArrayList<Settings> settingsList = new ArrayList<Settings>();
 			
 		File file = new File(settings_file);
@@ -48,7 +48,7 @@ public class SettingsReader {
 		try {
 				
 			if(!file.exists()) {
-				return null;
+				throw new MissingSettingsException();
 			}
 				
 			BufferedReader reader = new BufferedReader(new FileReader(file));
