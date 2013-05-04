@@ -8,6 +8,9 @@ import no.ntnu.online.onlineguru.utils.settingsreader.Settings;
 import no.ntnu.online.onlineguru.utils.settingsreader.SettingsReader;
 import org.apache.log4j.Logger;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
@@ -64,7 +67,9 @@ public class NetworkFlags {
     public boolean saveFlags(String channel, String username, String flags) {
         ChannelFlags cf = channels.get(channel);
         if (cf != null) {
-            return cf.saveFlags(username, flags);
+            boolean success = cf.saveFlags(username, flags);
+            serializeToFile();
+            return success;
         }
         return false;
     }
@@ -90,6 +95,7 @@ public class NetworkFlags {
         }
         else {
             superUsers.add(username);
+            serializeToFile();
             return true;
         }
     }
@@ -103,7 +109,42 @@ public class NetworkFlags {
         }
         else {
             superUsers.remove(username);
+            serializeToFile();
             return true;
+        }
+    }
+
+    private void serializeToFile() {
+        File db = new File(networkFlagsFile);
+
+        if (!db.exists()) {
+            try {
+                SimpleIO.createFile(networkFlagsFile);
+            } catch (IOException e) {
+                logger.error("Failed to create db file: " + networkFlagsFile);
+            }
+        }
+
+        BufferedWriter writer;
+
+        try {
+            writer = new BufferedWriter(new FileWriter(db.getAbsoluteFile()));
+
+            writer.write("[superusers]");
+            writer.newLine();
+            for (String s : superUsers) {
+                writer.write(s+"=1");
+                writer.newLine();
+            }
+            for (String channel : channels.keySet()) {
+                writer.write(String.format("[%s]", channel));
+                writer.newLine();
+                channels.get(channel).serializeToFile(writer);
+            }
+
+            writer.close();
+        } catch (IOException e) {
+            logger.error("Failed to serialize flags to file: "+networkFlagsFile);
         }
     }
 

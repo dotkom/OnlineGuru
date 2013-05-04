@@ -1,5 +1,7 @@
 package no.ntnu.online.onlineguru.plugin.plugins.flags.storage;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +27,13 @@ public class ChannelFlags {
 
     public String getFlags(String username) {
         return this.flags.get(username);
+    }
+
+    protected void serializeToFile(BufferedWriter writer) throws IOException {
+        for (Map.Entry<String, String> entry : flags.entrySet()) {
+            writer.write(entry.getKey()+"="+entry.getValue());
+            writer.newLine();
+        }
     }
 
 }
