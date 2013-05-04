@@ -6,7 +6,6 @@ import no.fictive.irclib.event.container.Event;
 import no.fictive.irclib.event.container.command.JoinEvent;
 import no.fictive.irclib.model.listener.IRCEventListener;
 import no.fictive.irclib.model.network.Network;
-import no.ntnu.online.onlineguru.exceptions.MalformedSettingsException;
 import no.ntnu.online.onlineguru.exceptions.MissingSettingsException;
 import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.control.PluginManager;
@@ -20,68 +19,79 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
 
-public class OnlineGuru implements IRCEventListener {
-    static Logger logger = Logger.getLogger(OnlineGuru.class);
+public class OnlineGuru implements IRCEventListener, Runnable {
+
+    private static Logger logger = Logger.getLogger(OnlineGuru.class);
+    public static Injector serviceLocator;
+
+
     private ConcurrentHashMap<String, Network> networks = new ConcurrentHashMap<String, Network>();
     private Hashtable<Network, Vector<String>> channelsOnConnect = new Hashtable<Network, Vector<String>>();
-    //	private ConnectionManager connectionManager;
     private EventDistributor eventDistributor;
     private Thread thread = null;
-    public static Injector serviceLocator;
 
     ArrayList<ConnectionInformation> information;
 
     public OnlineGuru() {
-        // Verify settings, this is done first as nothing else needs to be done before settings are proper.
+        verifySettings();
+        addShutdownHook();
+        configureServiceLocator();
+
+        eventDistributor = new EventDistributor();
+        initiate();
+        new PluginManager(eventDistributor, this);
+
+        thread = new Thread(this);
+        thread.setName("OnlineGuru");
+        thread.start();
+    }
+
+    public void run() {
+
+        //Keep the program rolling.
+        while (true) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ie) {
+                break;
+            }
+        }
+
+        logger.info("[OnlineGuru] Stopped");
+    }
+
+    /**
+     * Java version 1.2.3 or newer is required for this.
+     */
+    private void addShutdownHook() {
+        try {
+            Runtime.getRuntime().addShutdownHook(new ShutdownThread(this));
+            logger.info("[Main thread] Shutdown hook added");
+        } catch (Throwable t) {
+            logger.warn("[Main thread] Could not add Shutdown hook. Update your Java version.");
+        }
+    }
+
+    private void verifySettings() {
+
         try {
             information = VerifySettings.readSettings();
         } catch (MissingSettingsException mse) {
             logger.error(mse.getError(), mse.getCause());
             System.exit(1);
         }
-
-        final OnlineGuru me = this;
-        try {
-            Runtime.getRuntime().addShutdownHook(new ShutdownThread(me));
-            logger.info("[Main thread] Shutdown hook added");
-        } catch (Throwable t) {
-            // we get here when the program is run with java
-            // version 1.2.2 or older
-            logger.warn("[Main thread] Could not add Shutdown hook");
-        }
-
-        configureServiceLocator();
-
-        thread = new Thread("OnlineGuru") {
-            public void run() {
-
-                eventDistributor = new EventDistributor();
-                initiate();
-                new PluginManager(eventDistributor, me);
-
-                while (true) {
-                    try {
-                        Thread.currentThread().sleep(1000);
-                    } catch (InterruptedException ie) {
-                        break;
-                    }
-                }
-                logger.info("[OnlineGuru] Stopped");
-            }
-        };
-        thread.start();
     }
 
     private void configureServiceLocator() {
         serviceLocator = Guice.createInjector(new OnlineGuruDependencyModule());
     }
 
-    public void stopThread() {
+    protected void stopThread() {
         rudeDisconnect();
         thread.interrupt();
     }
 
-    private void rudeDisconnect() {
+    protected void rudeDisconnect() {
         Enumeration<Network> networkEnumeration = getNetworks();
         while (networkEnumeration.hasMoreElements()) {
             Network network = networkEnumeration.nextElement();
@@ -157,30 +167,6 @@ public class OnlineGuru implements IRCEventListener {
 
     public Enumeration<Network> getNetworks() {
         return networks.elements();
-    }
-
-    // The ShutdownThread is the thread we pass to the
-    // addShutdownHook method
-    private static class ShutdownThread extends Thread {
-        private OnlineGuru onlineGuru = null;
-
-        public ShutdownThread(OnlineGuru onlineGuru) {
-            super();
-            this.onlineGuru = onlineGuru;
-        }
-
-        public void run() {
-            logger.info("[Shutdown thread] Shutting down");
-            onlineGuru.rudeDisconnect();
-            try {
-                logger.warn("[Shutdown thread] Giving Onlineguru 15 seconds to disconnect..");
-                sleep(15000L);
-            } catch (InterruptedException e) {
-                // ignore
-            }
-            onlineGuru.stopThread();
-            logger.info("[Shutdown thread] Shutdown complete");
-        }
     }
 
     public static void main(String[] args) {
