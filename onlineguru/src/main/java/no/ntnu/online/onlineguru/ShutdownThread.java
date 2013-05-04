@@ -2,7 +2,7 @@ package no.ntnu.online.onlineguru;
 
 import org.apache.log4j.Logger;
 
-public class ShutdownThread extends Thread {
+public class ShutdownThread implements Runnable {
 
     private OnlineGuru onlineGuru = null;
     private static Logger logger;
@@ -21,7 +21,7 @@ public class ShutdownThread extends Thread {
 
         try {
             logger.warn("[Shutdown thread] Giving Onlineguru 15 seconds to disconnect..");
-            sleep(15000L);
+            Thread.sleep(15000L);
         }
         catch (InterruptedException e) {
             logger.warn(e);

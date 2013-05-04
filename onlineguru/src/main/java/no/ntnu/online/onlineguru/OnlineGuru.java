@@ -65,7 +65,7 @@ public class OnlineGuru implements IRCEventListener, Runnable {
      */
     private void addShutdownHook() {
         try {
-            Runtime.getRuntime().addShutdownHook(new ShutdownThread(this));
+            Runtime.getRuntime().addShutdownHook(new Thread(new ShutdownThread(this)));
             logger.info("[Main thread] Shutdown hook added");
         } catch (Throwable t) {
             logger.warn("[Main thread] Could not add Shutdown hook. Update your Java version.");
