@@ -1,11 +1,20 @@
 package no.ntnu.online.onlineguru.plugin.plugins.flags.model;
 
 /**
+ * This enum is the collection of all flags that are available.
+ *
+ * If a new flag is needed, all you have to do is add it to the list. Superusers will
+ * automatically have all flags, but you can start using the new flag immediately.
+ *
+ * Flags need to consist of one character.
+ *
  * @author Håvard Slettvold
  */
 public enum Flag {
 
     ANYONE (""),  // This flag is never given, only passed to allow anyone
+    a ("a"),  // small administrative tasks
+    A ("A"),  // large administrative tasks
     B ("B"),  // can unban
     b ("b"),  // can ban
     f ("f"),  // can change channel flags
