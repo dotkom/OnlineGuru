@@ -68,8 +68,7 @@ public class CommandHandler {
 
             // Verify that sender has access to change flags in the channel in question.
             if (!flagsPlugin.getFlags(e.getNetwork(), matchedChannel, sender).contains(controlFlag)) {
-                // TODO Sender does not have access
-                System.out.println("sender does not have access");
+                wand.sendMessageToTarget(e.getNetwork(), target, "[flags] You do not have permission to use this command.");
             }
             else {
                 String matchedNick = matcher.group(2);
@@ -84,8 +83,7 @@ public class CommandHandler {
         if (matcher.find()) {
             // Verify that sender has access to change flags in the channel in question.
             if (!flagsPlugin.isSuperuser(e.getNetwork(), sender)) {
-                // TODO Sender does not have access
-                System.out.println("sender does not have access");
+                wand.sendMessageToTarget(e.getNetwork(), target, "[flags] You do not have permission to use this command.");
             }
             else {
                 String matchedNick = matcher.group(1);
@@ -99,13 +97,11 @@ public class CommandHandler {
     private void handleFlagsCommand(Network network, String target, String channel, String nick, String flags) {
         // If we got no usable channel, respond with error
         if (channel == null) {
-            // TODO Handle error of empty channel
-            System.out.println("Channel is null, bla bla error.");
+            wand.sendMessageToTarget(network, target, "[flags] Unable to find a usable channel.");
         }
         // Check if the requested username exists.
         else if (!flagsPlugin.isUser(network, nick)) {
-            // TODO Handle error if nick is non-existant
-            System.out.println("NickServ username is null");
+            wand.sendMessageToTarget(network, target, String.format("[flags] No username associated with nick '%s'.", nick));
         }
         // Flags shouldn't be set for superusers
         else {
@@ -127,7 +123,12 @@ public class CommandHandler {
                     Set<Flag> updatedFlags = flagsPlugin.updateFlags(currentFlags, flags);
                     flagsPlugin.saveFlags(network, channel, nick, updatedFlags);
 
-                    wand.sendMessageToTarget(network, target, String.format("[flags] Flags for %s updated to %s.", nick, flagsPlugin.serializeFlags(updatedFlags)));
+                    if (updatedFlags.size() > 0) {
+                        wand.sendMessageToTarget(network, target, String.format("[flags] Flags for %s updated to %s.", nick, flagsPlugin.serializeFlags(updatedFlags)));
+                    }
+                    else {
+                        wand.sendMessageToTarget(network, target, String.format("[flags] No more flags for %s in %s.", nick, channel));
+                    }
                 }
                 else {
                     wand.sendMessageToTarget(network, target, String.format("[flags] Invalid syntax '%s'", flags));
@@ -139,8 +140,7 @@ public class CommandHandler {
     private void handleSuperuserCommand(Network network, String target, String nick, boolean add) {
         // Check if the requested username exists.
         if (!flagsPlugin.isUser(network, nick)) {
-            // TODO Handle error if nick is non-existant
-            System.out.println("NickServ username is null");
+            wand.sendMessageToTarget(network, target, String.format("[flags] No username associated with nick '%s'.", nick));
         }
         else {
             if (add) {
