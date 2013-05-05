@@ -80,7 +80,7 @@ public class SimpleTrigger implements PluginWithDependencies {
         String target = pme.getTarget();
 
         if (message.startsWith(ADD_KEYWORD) && message.length() > ADD_KEYWORD.length() + 1) {
-            if (flagsPlugin.getFlags(pme.getNetwork(), pme.getChannel(), pme.getSender()).contains(CONTROL_FLAG)) {
+            if (flagsPlugin.hasFlag(pme.getNetwork(), pme.getChannel(), pme.getSender(), CONTROL_FLAG)) {
                 String triggerLine = message.substring(ADD_KEYWORD.length() + 1);
                 String[] triggerSplit = triggerLine.split("\\s+");
 
@@ -98,7 +98,7 @@ public class SimpleTrigger implements PluginWithDependencies {
             }
         }
         else if (message.startsWith(DELETE_KEYWORD) && message.length() > DELETE_KEYWORD.length() + 1) {
-                if (flagsPlugin.getFlags(pme.getNetwork(), pme.getChannel(), pme.getSender()).contains(CONTROL_FLAG)) {
+            if (flagsPlugin.hasFlag(pme.getNetwork(), pme.getChannel(), pme.getSender(), CONTROL_FLAG)) {
                 String triggerLine = message.substring(DELETE_KEYWORD.length() + 1);
                 String[] triggerSplit = triggerLine.split("\\s+");
 

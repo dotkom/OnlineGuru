@@ -312,4 +312,17 @@ public class FlagsPlugin implements PluginWithDependencies {
         return flags;
     }
 
+    /**
+     * Shortcut to check if a nick has a certain flag.
+     *
+     * @param network Network to check.
+     * @param channel Channel to check.
+     * @param nick Nick to check.
+     * @param flag Flag to check if Nick has.
+     * @return boolean
+     */
+    public boolean hasFlag(Network network, String channel, String nick, Flag flag) {
+        return getFlags(network, channel, nick).contains(flag);
+    }
+
 }
