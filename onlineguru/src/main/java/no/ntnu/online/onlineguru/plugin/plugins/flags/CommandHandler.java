@@ -51,8 +51,6 @@ public class CommandHandler {
         String sender = e.getSender(); // sender is the one who sent the message.
         String target = e.getTarget();
 
-        String[] parts = message.split("\\s+");
-
         Matcher matcher = flagChangePattern.matcher(message);
 
         if (matcher.find()) {
