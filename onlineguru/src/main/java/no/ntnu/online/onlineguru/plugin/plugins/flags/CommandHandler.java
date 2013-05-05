@@ -14,8 +14,6 @@ import java.util.regex.Pattern;
  */
 public class CommandHandler {
 
-    //  A-Za-z0-9[]{}`^\|_-
-
     private Wand wand;
     private FlagsPlugin flagsPlugin;
 
