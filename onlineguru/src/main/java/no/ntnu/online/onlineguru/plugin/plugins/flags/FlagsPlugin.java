@@ -11,6 +11,7 @@ import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.storage.NetworkFlags;
+import no.ntnu.online.onlineguru.plugin.plugins.help.Help;
 import no.ntnu.online.onlineguru.plugin.plugins.nickserv.NickServ;
 import no.ntnu.online.onlineguru.utils.SimpleIO;
 import no.ntnu.online.onlineguru.utils.Wand;
@@ -74,12 +75,26 @@ public class FlagsPlugin implements PluginWithDependencies {
      */
 
     public String[] getDependencies() {
-        return new String[]{"NickServ",};
+        return new String[]{"NickServ","Help",};
     }
 
     public void loadDependency(Plugin plugin) {
         if (plugin instanceof NickServ) {
             this.nickserv = (NickServ) plugin;
+        }
+        if (plugin instanceof Help) {
+            Help help = (Help) plugin;
+            help.addHelp(
+                    "flags",
+                    Flag.f,
+                    "<botname> flags [channel] nick [flags] - Updates flags for a user. <botname> is only needed in channel.",
+                    "[channel] argument can be skipped when used in channel. [flags] can be left blank to show a users current flags."
+            );
+            help.addHelp(
+                    "su",
+                    Flag.f,
+                    "<botname> su(peruser) nick [add|rem(ove)] - Sets superuser status for a nick on a network. <botname> is only needed in channel."
+            );
         }
     }
 
