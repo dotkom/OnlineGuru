@@ -9,8 +9,8 @@ import org.apache.log4j.Logger;
 
 public class Settings {
 
-	static Logger logger = Logger.getLogger(Settings.class);
-	private ConcurrentHashMap<String, String> settings = new ConcurrentHashMap<String, String>();
+    static Logger logger = Logger.getLogger(Settings.class);
+    private ConcurrentHashMap<String, String> settings = new ConcurrentHashMap<String, String>();
 
     private String blockName;
 
@@ -26,18 +26,18 @@ public class Settings {
         return settings;
     }
 
-	public String getSetting(String field) {
-		return settings.get(field);
-	}
-	
-	public void addSetting(String field, String value) {
-		String s = settings.get(field);
-		if (s == null) {
-			settings.putIfAbsent(field, value);
-		}
-		else {
-			logger.error(String.format("Duplicate settings for '%s'", field));
-		}
-	}
-	
+    public String getSetting(String field) {
+        return settings.get(field);
+    }
+
+    public void addSetting(String field, String value) {
+        String s = settings.get(field);
+        if (s == null) {
+            settings.putIfAbsent(field, value);
+        }
+        else {
+            logger.error(String.format("Duplicate settings for '%s'", field));
+        }
+    }
+
 }
