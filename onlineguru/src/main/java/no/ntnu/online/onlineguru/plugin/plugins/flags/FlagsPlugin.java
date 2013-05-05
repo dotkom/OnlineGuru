@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.util.*;
 
 /**
+ * Manages flags and superusers for the bot.
+ *
  * @author Håvard Slettvold
  */
 public class FlagsPlugin implements PluginWithDependencies {
@@ -236,6 +238,16 @@ public class FlagsPlugin implements PluginWithDependencies {
      * Public methods
      */
 
+    /**
+     * Fetches flags that a user has in a channel.
+     *
+     * Superusers will override and channel flags, essentially having all flags.
+     *
+     * @param network Network to check.
+     * @param channel Channel to check.
+     * @param nick Nick to check.
+     * @return Set of flags belonging to Nick in Channel on Network.
+     */
     public Set<Flag> getFlags(Network network, String channel, String nick) {
         String username = nickserv.getUsername(network, nick);
 
@@ -261,6 +273,13 @@ public class FlagsPlugin implements PluginWithDependencies {
         return flags;
     }
 
+    /**
+     * Will get flags for a nick on a server. Typically a fallback if no channel can be obtained.
+     *
+     * @param network Network to check.
+     * @param nick Nick to check.
+     * @return Set of flags the nick has.
+     */
     public Set<Flag> getFlags(Network network, String nick) {
         String username = nickserv.getUsername(network, nick);
 
