@@ -132,9 +132,7 @@ public class FakeWand implements Wand {
     }
 
     public boolean isMe(Network network, String nickname) {
-        System.out.println("Checking nick");
         if (nick.equals(nickname)) {
-            System.out.println("was me");
             return true;
         }
         else {

@@ -22,8 +22,8 @@ import org.apache.log4j.Logger;
 
 public class Help implements PluginWithDependencies {
     static Logger logger = Logger.getLogger(Help.class);
-	
-	private Wand wand;
+
+    private Wand wand;
     private FlagsPlugin flagsPlugin;
 
     private ArrayList<HelpItem> helpItems = new ArrayList<HelpItem>();
@@ -31,26 +31,26 @@ public class Help implements PluginWithDependencies {
     /*
      * Plugin with dependencies methods
      */
-	public String getDescription() {
-		return "Provides information about OnlineGuru's commands.";
-	}
+    public String getDescription() {
+        return "Provides information about OnlineGuru's commands.";
+    }
 
-	public void incomingEvent(Event e) {
-		if (e.getEventType() == EventType.PRIVMSG) {
-			handleMessage(e);
-		}
-	}
+    public void incomingEvent(Event e) {
+        if (e.getEventType() == EventType.PRIVMSG) {
+            handleMessage(e);
+        }
+    }
 
-	public void addEventDistributor(EventDistributor eventDistributor) {
-		eventDistributor.addListener(this, EventType.PRIVMSG);
-	}
+    public void addEventDistributor(EventDistributor eventDistributor) {
+        eventDistributor.addListener(this, EventType.PRIVMSG);
+    }
 
-	public void addWand(Wand wand) {
-		this.wand = wand;
-	}
+    public void addWand(Wand wand) {
+        this.wand = wand;
+    }
 
     public String[] getDependencies() {
-        return new String[]{"FlagsPlugin", };
+        return new String[]{"FlagsPlugin",};
     }
 
     public void loadDependency(Plugin plugin) {
@@ -62,32 +62,38 @@ public class Help implements PluginWithDependencies {
     /*
      * Event handling
      */
-	private void handleMessage(Event e) {
-		PrivMsgEvent pme = (PrivMsgEvent)e;
-		String message = pme.getMessage();
-		String sender = pme.getSender();
-		Network network = pme.getNetwork();
-
-        Set<Flag> userFlags;
-
-        if (flagsPlugin == null) {
-            // If this dependency isn't loaded properly, fallback to show only triggers that anyone can see
-            logger.debug("Missing dependency; FlagsPlugin. Showing basic triggers.");
-            userFlags = new HashSet<Flag>();
-            userFlags.add(Flag.ANYONE);
-        }
-        else {
-            // Fetch flags for the user
-            userFlags = flagsPlugin.getFlags(network, sender);
-        }
+    private void handleMessage(Event e) {
+        PrivMsgEvent pme = (PrivMsgEvent) e;
+        String message = pme.getMessage();
 
         // Process the trigger
-		if (message.split(" ")[0].equals("!help") || message.split(" ")[0].equals("!hjelp") || message.split(" ")[0].equals("??")) {
-            // Remove the first word
-			String helpTrigger = message.replaceAll("^[^\\s]+\\s?", "");
+        if (message.split(" ")[0].equals("!help") || message.split(" ")[0].equals("!hjelp") || message.split(" ")[0].equals("??")) {
+            String sender = pme.getSender();
+            Network network = pme.getNetwork();
 
-			// If there is no argument other than the help trigger, display all the triggers
-			if (helpTrigger.isEmpty()) {
+            Set<Flag> userFlags;
+
+            if (flagsPlugin == null) {
+                // If this dependency isn't loaded properly, fallback to show only triggers that anyone can see
+                logger.debug("Missing dependency; FlagsPlugin. Showing basic triggers.");
+                userFlags = new HashSet<Flag>();
+                userFlags.add(Flag.ANYONE);
+            }
+            // Fetch flags for the user
+            else {
+                if (pme.isChannelMessage()) {
+                    userFlags = flagsPlugin.getFlags(network, pme.getChannel(), sender);
+                }
+                else {
+                    userFlags = flagsPlugin.getFlags(network, sender);
+                }
+            }
+
+            // Remove the first word
+            String helpTrigger = message.replaceAll("^[^\\s]+\\s?", "");
+
+            // If there is no argument other than the help trigger, display all the triggers
+            if (helpTrigger.isEmpty()) {
 
                 wand.sendMessageToTarget(network, sender, "Here is a list of available triggers, use !help <trigger> for more info;");
 
@@ -113,8 +119,8 @@ public class Help implements PluginWithDependencies {
                     wand.sendMessageToTarget(network, sender, output);
                 }
             }
-			// If there are more words, display help text for the supplied trigger
-			else {
+            // If there are more words, display help text for the supplied trigger
+            else {
                 boolean found = false;
 
                 for (HelpItem helpItem : helpItems) {
@@ -134,34 +140,35 @@ public class Help implements PluginWithDependencies {
 
                 // If no matching and allowed trigger
                 if (!found) {
-					wand.sendMessageToTarget(network, sender, String.format("No help item for '%s'", helpTrigger));
+                    wand.sendMessageToTarget(network, sender, String.format("No help item for '%s'", helpTrigger));
                 }
-			}
-		}
-	}
+            }
+        }
+    }
 
 	/*
-	 * Public methods for Help
+     * Public methods for Help
 	 */
+
     /**
      * This method creates help entries based on callback from plugins.
      * Current limits are 5 lines of help text and 200 characters per line of help text.
      *
-     * @param helpTrigger String trigger for the command.
+     * @param helpTrigger  String trigger for the command.
      * @param flagRequired The {@link Flag} required to use the command, which will also be required to view the help entry.
-     * @param helpText String Variable Argument of help texts.
+     * @param helpText     String Variable Argument of help texts.
      */
-	public void addHelp(String helpTrigger, Flag flagRequired, String... helpText) {
+    public void addHelp(String helpTrigger, Flag flagRequired, String... helpText) {
         int maxHelpTextLength = 200;
 
         if (helpText.length > 5) {
-            logger.error("Help does not accept more than 5 lines of text per trigger. '"+helpTrigger+"'");
+            logger.error("Help does not accept more than 5 lines of text per trigger. '" + helpTrigger + "'");
         }
         else {
             boolean approved = true;
             for (String text : helpText) {
                 if (text.length() > maxHelpTextLength) {
-                    logger.error("Help does not accept more than "+maxHelpTextLength+" characters per line of help text. '"+helpTrigger+"'");
+                    logger.error("Help does not accept more than " + maxHelpTextLength + " characters per line of help text. '" + helpTrigger + "'");
                     approved = false;
                 }
             }
@@ -176,6 +183,6 @@ public class Help implements PluginWithDependencies {
                 }
             }
         }
-	}
+    }
 
 }
