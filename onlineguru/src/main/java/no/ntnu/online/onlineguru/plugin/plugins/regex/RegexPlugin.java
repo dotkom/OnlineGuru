@@ -36,7 +36,6 @@ public class RegexPlugin implements PluginWithDependencies {
         this.history = history;
     }
 
-    @Override
     public String[] getDependencies() {
         return new String[]{"HistoryPlugin"};
     }
