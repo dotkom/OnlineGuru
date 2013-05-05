@@ -21,7 +21,12 @@ public class ChannelFlags {
     }
 
     public boolean saveFlags(String username, String flags) {
-        this.flags.put(username, flags);
+        if (flags.isEmpty()) {
+            this.flags.remove(username);
+        }
+        else {
+            this.flags.put(username, flags);
+        }
         return true;
     }
 
@@ -29,10 +34,19 @@ public class ChannelFlags {
         return this.flags.get(username);
     }
 
+    public boolean hasFlags() {
+        return this.flags.size() > 0;
+    }
+
     protected void serializeToFile(BufferedWriter writer) throws IOException {
         for (Map.Entry<String, String> entry : flags.entrySet()) {
-            writer.write(entry.getKey()+"="+entry.getValue());
-            writer.newLine();
+            if (entry.getValue().isEmpty()) {
+                flags.remove(entry.getKey());
+            }
+            else {
+                writer.write(entry.getKey()+"="+entry.getValue());
+                writer.newLine();
+            }
         }
     }
 

@@ -137,9 +137,11 @@ public class NetworkFlags {
                 writer.newLine();
             }
             for (String channel : channels.keySet()) {
-                writer.write(String.format("[%s]", channel));
-                writer.newLine();
-                channels.get(channel).serializeToFile(writer);
+                if (channels.get(channel).hasFlags()) {
+                    writer.write(String.format("[%s]", channel));
+                    writer.newLine();
+                    channels.get(channel).serializeToFile(writer);
+                }
             }
 
             writer.close();
