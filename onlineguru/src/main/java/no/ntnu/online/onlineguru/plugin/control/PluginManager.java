@@ -9,9 +9,7 @@ import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class PluginManager {
 
@@ -29,18 +27,18 @@ public class PluginManager {
         this.eventDistributor = eventDistributor;
         wand = new IrcWand(onlineguru, this);
 
-        List<String> activePlugins = null;
+        Set<String> activePlugins = new HashSet<String>();
         try {
-            activePlugins = SimpleIO.readFileAsList(SETTINGS_FILE);
+            activePlugins.addAll(SimpleIO.readFileAsList(SETTINGS_FILE));
         } catch (IOException e) {
             logger.error(e);
             logger.error(String.format("Could not find any plugin settings, please make %s", SETTINGS_FILE));
             System.exit(1);
         }
-        if (activePlugins == null || activePlugins.size() < 1) {
+        if (activePlugins.size() < 1) {
             activePlugins = loadMinimalAndEssentialPlugins();
             try {
-                SimpleIO.appendLinesToFile(SETTINGS_FILE, activePlugins);
+                SimpleIO.appendLinesToFile(SETTINGS_FILE, new ArrayList<String>(activePlugins));
             } catch (IOException e) {
                 logger.error(e);
                 logger.error(String.format("Could not save minimal and essential plugins to %s", SETTINGS_FILE));
@@ -51,18 +49,23 @@ public class PluginManager {
         loadDependencies();
     }
 
-    private List<String> loadMinimalAndEssentialPlugins() {
+    private Set<String> loadMinimalAndEssentialPlugins() {
         logger.warn("Loading minimal and essential plugins for the bot to run, please edit plugins.conf to add more plugins");
-        return Arrays.asList("no.ntnu.online.onlineguru.plugin.plugins.auth.Auth",
-                "no.ntnu.online.onlineguru.plugin.plugins.chanserv.control.ChanServ",
-                "no.ntnu.online.onlineguru.plugin.plugins.channeljoiner.ChannelJoiner",
-                "no.ntnu.online.onlineguru.plugin.plugins.die.Die",
-                "no.ntnu.online.onlineguru.plugin.plugins.help.Help",
-                "no.ntnu.online.onlineguru.plugin.plugins.nickserv.NickServ",
-                "no.ntnu.online.onlineguru.plugin.plugins.version.Version");
+        return new HashSet<String>(
+                Arrays.asList(
+                        "no.ntnu.online.onlineguru.plugin.plugins.auth.Auth",
+                        "no.ntnu.online.onlineguru.plugin.plugins.chanserv.control.ChanServ",
+                        "no.ntnu.online.onlineguru.plugin.plugins.channeljoiner.ChannelJoiner",
+                        "no.ntnu.online.onlineguru.plugin.plugins.die.Die",
+                        "no.ntnu.online.onlineguru.plugin.plugins.help.Help",
+                        "no.ntnu.online.onlineguru.plugin.plugins.nickserv.NickServ",
+                        "no.ntnu.online.onlineguru.plugin.plugins.version.Version"
+                )
+        );
+
     }
 
-    private void loadPlugins(List<String> activePlugins) {
+    private void loadPlugins(Set<String> activePlugins) {
         for (String plugin : activePlugins) {
             // Additional newlines in the plugins.conf file would result in empty plugins.
             if (plugin.isEmpty()) { continue; }
