@@ -182,11 +182,11 @@ public class FlagsPlugin implements PluginWithDependencies {
         return result;
     }
 
-    protected Set<Flag> updateFlags(Set<Flag> flags, String delta) {
+    protected Set<Flag> updateFlags(Set<Flag> currentFlags, String flagsDelta) {
         char action = '.';
         Flag currentFlag;
 
-        for (Character c : delta.toCharArray()) {
+        for (Character c : flagsDelta.toCharArray()) {
             currentFlag = null;
 
             switch (c) {
@@ -205,16 +205,16 @@ public class FlagsPlugin implements PluginWithDependencies {
             if (currentFlag != null) {
                 switch (action) {
                     case '-':
-                        flags.remove(currentFlag);
+                        currentFlags.remove(currentFlag);
                         break;
                     case '+':
-                        flags.add(currentFlag);
+                        currentFlags.add(currentFlag);
                         break;
                 }
             }
 
         }
-        return flags;
+        return currentFlags;
     }
 
     protected boolean saveFlags(Network network, String channel, String nick, Set<Flag> flags) {
