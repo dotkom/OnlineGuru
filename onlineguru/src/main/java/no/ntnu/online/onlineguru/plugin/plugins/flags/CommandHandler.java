@@ -5,6 +5,7 @@ import no.fictive.irclib.model.network.Network;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
 import no.ntnu.online.onlineguru.utils.Wand;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -121,7 +122,10 @@ public class CommandHandler {
                     Set<Flag> updatedFlags = flagsPlugin.updateFlags(currentFlags, flags);
                     flagsPlugin.saveFlags(network, channel, nick, updatedFlags);
 
-                    if (updatedFlags.size() > 0) {
+                    if (updatedFlags.equals(currentFlags)) {
+                        wand.sendMessageToTarget(network, target, String.format("[flags] Flags for %s unchanged.", nick));
+                    }
+                    else if (updatedFlags.size() > 0) {
                         wand.sendMessageToTarget(network, target, String.format("[flags] Flags for %s updated to %s.", nick, flagsPlugin.serializeFlags(updatedFlags)));
                     }
                     else {
