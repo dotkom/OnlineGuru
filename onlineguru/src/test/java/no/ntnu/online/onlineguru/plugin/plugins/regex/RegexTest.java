@@ -38,6 +38,7 @@ public class RegexTest {
         plugin = new RegexPlugin(fakeWand, history);
     }
 
+    /*
     @Test
     public void testSimpleRegexReplacement() {
         assertEquals(0, history.getLastChannelEvents(channel).size());
@@ -68,4 +69,5 @@ public class RegexTest {
         assertNull(plugin.handleMessage("s/", createPrivMsgEvent("freenode", "Fl0bB", "#test", "s/troll/gawd så meta/")));
         assertNull(plugin.handleMessage("s/", createPrivMsgEvent("freenode", "Fl0bB", "#test", "s/gawd/troll/")));
     }
+    */
 }
