@@ -53,7 +53,7 @@ public class FlagsPlugin implements PluginWithDependencies {
 
         try {
             Map<String, String> settings = SimpleIO.loadConfig(flags_settings_file);
-            root_username = settings.get("admin");
+            root_username = settings.get("root_username");
 
             if (root_username == null) {
                 SimpleIO.appendLineToFile(flags_settings_file, "root_username=");

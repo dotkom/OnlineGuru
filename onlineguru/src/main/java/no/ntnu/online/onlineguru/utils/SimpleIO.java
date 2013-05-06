@@ -58,7 +58,7 @@ public class SimpleIO {
         File file = new File(filename);
 
         if (!file.exists()) {
-            throw new FileNotFoundException();
+            createFile(filename);
         }
 
         FileWriter writer = new FileWriter(file);
