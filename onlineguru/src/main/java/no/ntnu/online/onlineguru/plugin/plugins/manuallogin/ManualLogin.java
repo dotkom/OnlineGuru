@@ -152,6 +152,10 @@ public class ManualLogin implements PluginWithDependencies {
         String username = tokens[0];
         String password = tokens[1];
 
+        if(!username.equalsIgnoreCase(sender) && !username.equals(Settings.defaultRootUser)) {
+            wand.sendMessageToTarget(network, sender, "You are not allowed to log in as somebody else, except for the root user.");
+        }
+
         if(networkLogins.get(network).containsKey(username) && networkLogins.get(network).get(username).equals(password)) {
             nickServ.fakeNickServAuthentication(network, sender, sender);
             wand.sendMessageToTarget(network, sender, "Login successful.");
