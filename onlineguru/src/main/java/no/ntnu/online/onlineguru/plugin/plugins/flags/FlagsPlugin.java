@@ -226,14 +226,14 @@ public class FlagsPlugin implements PluginWithDependencies {
                 saveFlags(channel, username, serializeFlags(flags));
     }
 
-    protected boolean isUser(Network network, String username) {
+    public boolean isUser(Network network, String username) {
         if (username == null) {
             return false;
         }
         return nickserv.getUsername(network, username) != null;
     }
 
-    protected boolean isSuperuser(Network network, String nick) {
+    public boolean isSuperuser(Network network, String nick) {
         String username = nickserv.getUsername(network, nick);
 
         return networks.get(network).isSuperuser(username);

@@ -130,7 +130,7 @@ public class NickServ implements PluginWithDependencies {
         Throwable t = new Throwable();
         String classname = t.getStackTrace()[1].getClassName();
 
-        if(classname != ManualLogin.class.getName()) {
+        if(!classname.equals(ManualLogin.class.getName())) {
             logger.warn(String.format("Class %s is NOT allowed to use this method!", classname));
             throw new IllegalAccessError();
         }

@@ -69,7 +69,7 @@ public class Storage {
 
     private static void createDefaultRootUserPassword(Network network) throws IOException {
         SimpleIO.writelineToFile(getNetworkDatabasePath(network).toString(),
-                                 String.format("root=%s", Settings.defaultRootPassword));
+                                 String.format("%s=%s", Settings.defaultRootUser, Settings.defaultRootPassword));
 
         logger.info(String.format("Login database for %s loaded with default password '%s'",
                                   network.getServerAlias(), Settings.defaultRootPassword));

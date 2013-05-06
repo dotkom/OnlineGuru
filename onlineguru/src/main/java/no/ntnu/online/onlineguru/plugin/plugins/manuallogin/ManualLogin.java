@@ -8,6 +8,7 @@ import no.fictive.irclib.model.network.Network;
 import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
+import no.ntnu.online.onlineguru.plugin.plugins.flags.FlagsPlugin;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
 import no.ntnu.online.onlineguru.plugin.plugins.help.Help;
 import no.ntnu.online.onlineguru.plugin.plugins.nickserv.NickServ;
@@ -23,11 +24,13 @@ public class ManualLogin implements PluginWithDependencies {
     private static Logger logger;
     private Map<Network, Map<String, String>> networkLogins;
     private NickServ nickServ;
+    private FlagsPlugin flagsPlugin;
     private Wand wand;
 
     public ManualLogin() {
         logger = Logger.getLogger(this.getClass());
-        networkLogins = new HashMap<>();
+        networkLogins = new HashMap<Network, Map<String, String>>();
+        Settings.LoadSettings();
     }
 
     public String getDescription() {
@@ -55,7 +58,7 @@ public class ManualLogin implements PluginWithDependencies {
 
     public String[] getDependencies() {
 
-        return new String[] { "NickServ", "Help" };
+        return new String[] { "NickServ", "Help" , "FlagsPlugin" };
     }
 
     public void loadDependency(Plugin plugin) {
@@ -63,6 +66,8 @@ public class ManualLogin implements PluginWithDependencies {
             nickServ = (NickServ)plugin;
         if (plugin instanceof Help)
             injectHelp((Help)plugin);
+        if (plugin instanceof FlagsPlugin)
+            flagsPlugin = (FlagsPlugin)plugin;
     }
 
     private void handleConnect(ConnectEvent e) {
@@ -72,21 +77,22 @@ public class ManualLogin implements PluginWithDependencies {
     private void injectHelp(Help help) {
 
         help.addHelp("register", Flag.A, "register [nick] [password] - Register a user with the bot.");
+        help.addHelp("reloadlogin", Flag.A, "reloadlogin - Reload the login database.");
         help.addHelp("login", Flag.ANYONE, "login [nick] [password] - Log in to the bot.");
     }
 
     private void handlePrivMsg(PrivMsgEvent e) {
 
-        String[] tokens = e.getMessage().trim().split("\\s+");
+        String command = e.getMessage().trim().split("\\s+")[0];
 
-        switch(tokens[0].toLowerCase()) {
-            case Settings.registerKeyword:
-                handleRegisterEvent(e);
-                break;
-            case Settings.loginKeyword:
-                handleLoginEvent(e);
-                break;
-        }
+        if(command.equals(Settings.registerKeyword))
+            handleRegisterEvent(e);
+
+        else if (command.equals(Settings.loginKeyword))
+            handleLoginEvent(e);
+
+        else if (command.equals(Settings.reloadLoginKeyword))
+            handleUpdateLogin(e);
     }
 
     private void handleRegisterEvent(PrivMsgEvent e) {
@@ -102,23 +108,22 @@ public class ManualLogin implements PluginWithDependencies {
         }
 
 
-        //If the syntax is not correct and the user is authenticated, send a message to help the user out
-        if (tokens.length != 2 && nickServ.isAuthed(network, sender)) {
+        //If the syntax is not correct and the user is authenticated and superuser, send a message to help the user out
+        if (tokens.length != 2 && nickServ.isAuthed(network, sender) && flagsPlugin.isSuperuser(network, sender)) {
             wand.sendMessageToTarget(network, sender, "Wrong syntax. See !help register.");
             return;
         }
 
 
-        //A user must be authed in order to register users
-        if (nickServ.isAuthed(network, sender)) {
+        //A user must be authed and be superuser in order to register users
+        if (nickServ.isAuthed(network, sender) && flagsPlugin.isSuperuser(network, sender)) {
             String username = tokens[0];
             String password = tokens[1];
 
             networkLogins.get(network).put(username, password);
             Storage.saveNetworkLoginDatabase(network, networkLogins.get(network));
-            wand.sendMessageToTarget(network, sender,
-                                     String.format("User with username %s was added to network %s.",
-                                                   username, network));
+            wand.sendMessageToTarget(network, sender, String.format("User with username %s was added to network %s.",
+                                                                    username, network));
         }
         else {
             wand.sendMessageToTarget(network, sender, "You do not have the rights to register users.");
@@ -153,5 +158,20 @@ public class ManualLogin implements PluginWithDependencies {
         }
         else
             wand.sendMessageToTarget(network, sender, "Login failed.");
+    }
+
+    private void handleUpdateLogin(PrivMsgEvent e) {
+
+        Network network = e.getNetwork();
+        String sender = e.getSender();
+
+        if(nickServ.isAuthed(network, sender) && flagsPlugin.isSuperuser(network, sender)) {
+            networkLogins.put(network, Storage.loadNetworkLoginDatabase(network));
+            wand.sendMessageToTarget(network, sender, String.format("Database successfully reloaded for network %s",
+                                                                    network.getServerAlias()));
+        }
+        else {
+            wand.sendMessageToTarget(network, sender, "You do not have the rights to perform that action.");
+        }
     }
 }
