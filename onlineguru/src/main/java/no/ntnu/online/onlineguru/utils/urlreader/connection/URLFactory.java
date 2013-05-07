@@ -230,7 +230,7 @@ public class URLFactory {
     }
 
     public String htmlRegex() {
-        return "<meta (?:http-equiv=\"Content-Type\" content=\"text/html; )?charset=(?:\"|')?([^\"']+)(?:\"|') ?/?>";
+        return "<meta (?:http-equiv=\"Content-Type\" content=\"text/html;\\s*)?charset=(?:\"|')?([^\"']+)(?:\"|') ?/?>";
     }
     
 }
