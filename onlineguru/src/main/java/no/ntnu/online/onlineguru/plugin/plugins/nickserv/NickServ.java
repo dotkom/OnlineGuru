@@ -125,7 +125,7 @@ public class NickServ implements PluginWithDependencies {
      * @param nickname Nickname to fake
      * @param username Username to fake
      */
-    public void fakeNickServAuthentication(Network network, String nickname, String username) {
+    public final void fakeNickServAuthentication(Network network, String nickname, String username) {
 
         Throwable t = new Throwable();
         String classname = t.getStackTrace()[1].getClassName();
