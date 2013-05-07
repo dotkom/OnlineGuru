@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ManualLogin implements PluginWithDependencies {
+public class ManualLoginPlugin implements PluginWithDependencies {
 
 
     private static Logger logger;
@@ -27,7 +27,7 @@ public class ManualLogin implements PluginWithDependencies {
     private FlagsPlugin flagsPlugin;
     private Wand wand;
 
-    public ManualLogin() {
+    public ManualLoginPlugin() {
         logger = Logger.getLogger(this.getClass());
         networkLogins = new HashMap<Network, Map<String, String>>();
         Settings.LoadSettings();
