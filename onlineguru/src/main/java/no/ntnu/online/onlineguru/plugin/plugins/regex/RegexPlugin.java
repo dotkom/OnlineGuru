@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 /**
- * Ideen til denne pluginen tilhører Roy Sindre Norangshol. Fullstendig skrevet om av Håvard Slettvold.
+ * The idea for this plugin belongs to Roy Sindre Norangshol. Completely rewritten by Håvard Slettvold.
  *
  * @author Håvard Slettvold
  */
@@ -26,7 +26,7 @@ public class RegexPlugin implements PluginWithDependencies {
     static Logger logger = Logger.getLogger(RegexPlugin.class);
 
     private History history;
-    private static final String DESCRIPTION = "Plugin implements sed for you first match in the channel history.";
+    private static final String DESCRIPTION = "Plugin implements sed for your first match in the channel history.";
     private Wand wand;
 
     private final Pattern SED_PATTERN = Pattern.compile(
