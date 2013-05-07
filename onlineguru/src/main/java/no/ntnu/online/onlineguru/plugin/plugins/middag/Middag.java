@@ -20,93 +20,88 @@ import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
 import no.ntnu.online.onlineguru.plugin.plugins.help.Help;
 
 /**
- *
- * @author melwil
+ * @author Håvard Slettvold
  */
 
 public class Middag implements PluginWithDependencies {
-	 
-	private Wand wand;
 
-    private final int totalMenues = 2;
+    private Wand wand;
+
 
     private DateTimeFormatter day = DateTimeFormat.forPattern("e");
-	private DateTimeFormatter week = DateTimeFormat.forPattern("w");
-	private DateTimeFormatter year = DateTimeFormat.forPattern("y");
+    private String[] strDays = {"", "mandag", "tirsdag", "onsdag", "torsdag", "fredag", "lørdag", "søndag",};
 
-	private String[] strDays = { "", "mandag", "tirsdag", "onsdag", "torsdag", "fredag", "lørdag", "søndag", };
-	private DateTime cache;
-    private DateTime lastPublicTrigger = new DateTime().withYear(getYear()-5);
+    private DateTime cache;
+    private DateTime lastPublicTrigger = new DateTime().withYear(2012);
 
     private String hangaren = "";
     private String realfag = "";
     private int finishedUpdating = 0;
+    private final int totalMenues = 2;
 
     static Logger logger = Logger.getLogger(Middag.class);
-	
+
     private final Pattern triggerPattern = Pattern.compile("^!middag ?(update)?$", Pattern.CASE_INSENSITIVE);
- 
+
     public Middag() {
-    	updateMenu();
+        updateMenu();
     }
 
     public void setRealfag(String realfag) {
         this.realfag = realfag;
+        finishedUpdating++;
     }
 
     public void setHangaren(String hangaren) {
         this.hangaren = hangaren;
-    }
-
-    public void finishedUpdates() {
         finishedUpdating++;
     }
-    
+
     /*
      * Metoder som arves fra PluginWithDependencies
      */
 
-	public String getDescription() {
-		return "This Plugin fetches the dinner-menues from Realfagskantina and Hangaren at NTNU Gløshaugen.";
-	}
+    public String getDescription() {
+        return "This Plugin fetches the dinner-menues from Realfagskantina and Hangaren at NTNU Gløshaugen.";
+    }
 
-	public void incomingEvent(Event e) {
-		switch (e.getEventType()) {
-			case PRIVMSG:
-				handlePrivMsgEvent((PrivMsgEvent)e);
-				break;
-		}
-	}
+    public void incomingEvent(Event e) {
+        switch (e.getEventType()) {
+            case PRIVMSG:
+                handlePrivMsgEvent((PrivMsgEvent) e);
+                break;
+        }
+    }
 
-	public void addEventDistributor(EventDistributor eventDistributor) {
-		eventDistributor.addListener(this, EventType.PRIVMSG);
-	}
+    public void addEventDistributor(EventDistributor eventDistributor) {
+        eventDistributor.addListener(this, EventType.PRIVMSG);
+    }
 
-	public void addWand(Wand wand) {
-		this.wand = wand;
-	}
+    public void addWand(Wand wand) {
+        this.wand = wand;
+    }
 
-	public String[] getDependencies() {
-		return new String[] {"Help", };
-	}
+    public String[] getDependencies() {
+        return new String[]{"Help",};
+    }
 
-	public void loadDependency(Plugin plugin) {
-		if (plugin instanceof Help) {
-			Help help = (Help)plugin;
-			help.addHelp(
+    public void loadDependency(Plugin plugin) {
+        if (plugin instanceof Help) {
+            Help help = (Help) plugin;
+            help.addHelp(
                     "!middag",
                     Flag.ANYONE,
                     "!middag [update] - Display dinner menu for the canteens Hangaren and Realfag.",
                     "Optional argument [update] tried to update the cached menu."
             );
-		}
-	}
+        }
+    }
 
 	/*
-	 * Triggerprosessering
+     * Triggerprosessering
 	 */
 
-	private void handlePrivMsgEvent(PrivMsgEvent pme) {
+    private void handlePrivMsgEvent(PrivMsgEvent pme) {
         if (finishedUpdating == totalMenues) {
             Matcher triggerMatcher = triggerPattern.matcher(pme.getMessage());
 
@@ -117,7 +112,7 @@ public class Middag implements PluginWithDependencies {
                     if (triggerMatcher.group(1).equalsIgnoreCase("update")) {
                         // Only allow updates if cache is 15 minutes old. Spam prevention.
                         if (duration < 900) {
-                            sendPrivateMessage(pme, "Current data is " + (int) (duration / 60) + " minutes old. Update not allowed before 15 minutes.");
+                            sendPrivateMessage(pme, "Current data is " + (duration / 60) + " minutes old. Update not allowed before 15 minutes.");
                         }
                         else {
                             updateMenu();
@@ -130,7 +125,7 @@ public class Middag implements PluginWithDependencies {
                 else {
                     // Update automatically if cache is 1 hour old.
                     if (duration > 3600) {
-                        updateMenu(pme);
+                        updateMenu();
                     }
                     else {
                         // If they are empty or equal, that means there's no menu,
@@ -146,7 +141,7 @@ public class Middag implements PluginWithDependencies {
                 }
             }
         }
-	}
+    }
 
     private void sendPrivateMessage(PrivMsgEvent pme, String message) {
         wand.sendMessageToTarget(pme.getNetwork(), pme.getSender(), "[Middag] " + message);
@@ -159,51 +154,37 @@ public class Middag implements PluginWithDependencies {
 
         // Check how long since last public triggering of !middag
         // Notice if it wasn't very long ago (5 minutes)
-        int duration = new Duration(lastPublicTrigger,new DateTime()).toStandardSeconds().getSeconds();
+        int duration = new Duration(lastPublicTrigger, new DateTime()).toStandardSeconds().getSeconds();
 
         if (duration > 0 && duration < 300) {
             wand.sendMessageToTarget(network, sender, "[Middag] " + message);
         }
         else {
-            wand.sendMessageToTarget(network, target, "[Middag] "+message);
+            wand.sendMessageToTarget(network, target, "[Middag] " + message);
             lastPublicTrigger = new DateTime();
         }
     }
 
-	private String getStrDayOfWeek() {
-		return strDays[Integer.parseInt(day.print(new DateTime()))];
-	}
-	
-	private int getWeek() {
-		return Integer.parseInt(week.print(new DateTime()));
-	}
-        
-	private int getYear() {
-		return Integer.parseInt(year.print(new DateTime()));
-	}
-	
-	private void updateMenu() {
-		updateMenu(getYear(), getWeek(), getStrDayOfWeek(), null);
-	}
-
-    private void updateMenu(PrivMsgEvent pme) {
-		updateMenu(getYear(), getWeek(), getStrDayOfWeek(), pme);
+    private String getStrDayOfWeek() {
+        return strDays[Integer.parseInt(day.print(new DateTime()))];
     }
-	
-	private void updateMenu(int year, int week, String day, PrivMsgEvent pme) {
+
+    private void updateMenu() {
         cache = new DateTime();
         finishedUpdating = 0;
 
-        if(day.equals("lørdag") || day.equals("søndag")) {
+        String currentDay = getStrDayOfWeek();
+
+        if (currentDay.equals("lørdag") || currentDay.equals("søndag")) {
             setHangaren("No serving in the weekends");
             setRealfag("No serving in the weekends");
 
-            finishedUpdating = 2;
+            finishedUpdating = totalMenues;
         }
         else {
-            new UpdateMenu(this, "http://www.sit.no/content/36444/Ukas-middagsmeny-pa-Hangaren?visuke="+week+"&visaar="+year, day, "HANGAREN").setEvent(pme);
-            new UpdateMenu(this, "http://www.sit.no/content/36447/Ukas-middagsmeny-pa-Realfag?visuke="+week+"&visaar="+year, day, "REALFAG").setEvent(pme);
+            new UpdateMenu(this, "HANGAREN");
+            new UpdateMenu(this, "REALFAG");
         }
-	}
-	
+    }
+
 }
