@@ -29,15 +29,28 @@ public class RegexPlugin implements PluginWithDependencies {
     private static final String DESCRIPTION = "Plugin implements sed for you first match in the channel history.";
     private Wand wand;
 
-    private final Pattern SED_PATTERN = Pattern.compile("^s(.)((?:(?!\\1).)+?)\\1((?:(?!\\1).)*?)\\1((?:[ig]|\\d+)*)$");
+    private final Pattern SED_PATTERN = Pattern.compile(
+            "^s(.)" +                       // First group contains a single character, which is the separator.
+            "((?:(?!\\1).|\\\\\\1)+?)" +    // Matches any character that isn't group 1, or an escaped group 1, needs to me 1 or more occurrences.
+            "\\1" +                         // Separator.
+            "((?:(?!\\1).|\\\\\\1)*?)" +    // Matches any character that isn't group 1, or an escaped group 1, can be empty.
+            "\\1" +                         // Separator.
+            "(" +                           // Flags, group 4
+            "(?:[ig]" +                     // Matches ignore case (i) or replace all (g)
+            "|" +                           // Or
+            "(?:(?!\\d\\D+?\\d)\\d)+" +     // One or more digits that aren't followed by one or more nondigits and then another digit.
+            ")*" +                          // Can be empty
+            ")$"
+    );
+    // The whole pattern with no comments or java escapes:
+    // ^s(.)((?:(?!\1).|\\\1)+?)\1((?:(?!\1).|\\\1)*?)\1((?:[ig]|(?:(?!\d\D+?\d)\d)+)*)$
 
     public RegexPlugin() {
         // Need empty constructor.
     }
 
     public RegexPlugin(Wand wand, History history) {
-        System.out.println("this never happens");
-            this.wand = wand;
+        this.wand = wand;
         this.history = history;
     }
 
@@ -76,24 +89,45 @@ public class RegexPlugin implements PluginWithDependencies {
 
     private void handlePrivMsgEvent(PrivMsgEvent e) {
         if (e.isChannelMessage()) {
-            Matcher matcher = SED_PATTERN.matcher(e.getMessage());
-
-            if (matcher.find()) {
-                handleSed(e, matcher);
+            // At least filter out some unnecessary checking.
+            if (e.getMessage().startsWith("s")) {
+                    wand.sendMessageToTarget(e.getNetwork(), e.getTarget(), handleSed(e));
             }
         }
 
     }
 
-    private void handleSed(PrivMsgEvent e, Matcher matcher) {
+    protected String handleSed(PrivMsgEvent e) {
+        Matcher matcher = SED_PATTERN.matcher(e.getMessage());
+
+        if (!matcher.find()) {
+            return null;
+        }
+
         String separator = matcher.group(1);
         String replacement = matcher.group(3);
         String flags = matcher.group(4);
-
+        boolean replaceAll = false;
+        String occurrence = "";
         Pattern regex = null;
 
         try {
-            regex = Pattern.compile(matcher.group(2));
+            int patternFlags = 0;
+            String ignoreCaseFlag = "";
+            for (char flag : flags.toCharArray()) {
+                switch (flag) {
+                    case 'i':
+                        // Need to use inline flags because this regex will be used in String.replaceAll()
+                        ignoreCaseFlag = "(?i)";
+                        break;
+                    case 'g':
+                        replaceAll = true;
+                        break;
+                    default:
+                        occurrence += flag;
+                }
+            }
+            regex = Pattern.compile(ignoreCaseFlag + matcher.group(2));
         } catch (PatternSyntaxException pse) {
             String[] error = pse.getMessage().split("\n");
             for (String part : error) {
@@ -102,19 +136,48 @@ public class RegexPlugin implements PluginWithDependencies {
         }
 
         if (regex == null) {
-            wand.sendMessageToTarget(e.getNetwork(), e.getTarget(), "[sed] The Regular Expression pattern could not be compiled.");
+            return "[sed] The Regular Expression pattern could not be compiled.";
         }
         else {
             String lastMatchingMessage = getLastMatchingLineFromHistory(e, regex);
 
             if (lastMatchingMessage.isEmpty()) {
-                wand.sendMessageToTarget(e.getNetwork(), e.getTarget(), "[sed] Found no match to your search.");
+                return "[sed] Found no match to your search.";
             }
             else {
+                String fixedMessage;
                 // Doing the actual replacement.
-                String fixedMessage = lastMatchingMessage.replaceAll(matcher.group(2), replacement);
+                if (!occurrence.isEmpty()) {
+                    Matcher searches = regex.matcher(lastMatchingMessage);
+                    StringBuffer sb = new StringBuffer();
+                    int runs = 0;
+                    int occurrences = Integer.parseInt(occurrence);
 
-                wand.sendMessageToTarget(e.getNetwork(), e.getTarget(), String.format("[sed] <%s> %s", e.getSender(), fixedMessage));
+                    while (searches.find()) {
+                        runs++;
+                        if (runs >= occurrences) {
+                            searches.appendReplacement(sb, replacement);
+                            if (!replaceAll) {
+                                break;
+                            }
+                        }
+                    }
+                    searches.appendTail(sb);
+                    fixedMessage = sb.toString();
+                }
+                else if (replaceAll) {
+                    fixedMessage = lastMatchingMessage.replaceAll(regex.pattern(), replacement);
+                }
+                else {
+                    fixedMessage = lastMatchingMessage.replaceFirst(regex.pattern(), replacement);
+                }
+
+                if (fixedMessage.length() > 400) {
+                    return "[sed] ERROR: Replaced pattern was longer than 400 characters.";
+                }
+                else {
+                    return String.format("[sed] <%s> %s", e.getSender(), fixedMessage);
+                }
             }
         }
     }
