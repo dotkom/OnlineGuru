@@ -218,6 +218,13 @@
             <version>1.8.4</version>
         </dependency>
 
+        <!-- Excellent HTML parser library -->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.7.2</version>
+        </dependency>
+
     </dependencies>
     <repositories>
         <repository>
