@@ -1,102 +1,83 @@
 package no.ntnu.online.onlineguru.plugin.plugins.middag;
 
-import no.fictive.irclib.event.container.command.PrivMsgEvent;
-import no.ntnu.online.onlineguru.exceptions.IncompliantCallerException;
-import no.ntnu.online.onlineguru.utils.urlreader.impl.HTMLRetriever;
-
-import no.ntnu.online.onlineguru.utils.urlreader.model.Retriever;
-import no.ntnu.online.onlineguru.utils.urlreader.model.URLReader;
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
-import javax.xml.xpath.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.URL;
+import java.net.URLConnection;
 
-public class UpdateMenu implements URLReader {
+/**
+ * @author Håvard Slettvold
+ */
+
+public class UpdateMenu implements Runnable {
 
     static Logger logger = Logger.getLogger(UpdateMenu.class);
     private Middag middag;
     private String kantine;
-    private String day;
-    private PrivMsgEvent event;
-    private Document pageDocument;
 
-    public UpdateMenu(Middag middag, String url, String day, String kantine) {
+    private final String URLTEXT = "https://www.sit.no/ajaxdinner/get";
+
+    public UpdateMenu(Middag middag, String kantine) {
         this.middag = middag;
-        this.day = day;
         this.kantine = kantine;
 
-        try {
-            new HTMLRetriever(this, url);
-        } catch (IncompliantCallerException e) {
-            logger.error(e.getMessage(), e.getCause());
-        }
+        new Thread(this).start();
     }
 
-    public void setEvent(PrivMsgEvent e) {
-        this.event = e;
-    }
-
-    public void urlReaderCallback(Retriever urlr) {
-        HTMLRetriever hr = (HTMLRetriever)urlr;
-        pageDocument = hr.getDOMDocument();
-
-        parseDomDocument();
-    }
-
-    public void parseDomDocument() {
+    public void run() {
+        StringBuilder sb = new StringBuilder();
 
         try {
-            XPathFactory factory = XPathFactory.newInstance();
-            XPath xpath = factory.newXPath();
-            XPathExpression expr = xpath.compile("//table[@id='menytable']/tbody/tr[td='"+WordUtils.capitalize(day.toLowerCase())+"']/td/table/tr/td/text()");
+            // Prepare post data
+            String postData = "diner="+ kantine.toLowerCase() +"&trigger=single";
 
-            Object result = expr.evaluate(pageDocument, XPathConstants.NODESET);
-            NodeList nl = (NodeList)result;
+            // Open connection
+            java.net.URL url = new URL(URLTEXT);
+            URLConnection conn = url.openConnection();
 
-            if (nl.getLength() > 0) {
-                String menu = "";
-                String nodeContent;
+            // Write the post data
+            conn.setDoOutput(true);
+            OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+            wr.write(postData);
+            wr.flush();
 
-                for (int i=0; i<nl.getLength();i++) {
-                    nodeContent = nl.item(i).getNodeValue();
-
-                    // if this is dividible by 2, it's a food
-                    if (i%2 == 0) {
-                        // append separator if there's already content in menu
-                        if (!menu.isEmpty()) {
-                            menu += ", ";
-                        }
-                        menu += nodeContent;
-                    }
-                    // else it's a price
-                    else {
-                        menu += " - " + nodeContent.replaceAll(",-", "") + " kr";
-                    }
-                }
-
-                setMenu(kantine, menu);
-            }
-            else {
-                setMenu(kantine, "No menu set.");
+            // Get the response
+            BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String line;
+            while ((line = rd.readLine()) != null) {
+                sb.append(line);
             }
 
-            // Tell the plugin this kantine is updated.
-            middag.finishedUpdates();
-
-            // If event is not null, the update was asked for by a user, and we need to
-            // relaunch the event to Middag can process it now that it is updated.
-            // This will result in a display of the menues when all menues are updated.
-            if (event != null) {
-                middag.incomingEvent(event);
-            }
-
-        } catch (XPathExpressionException xpee) {
-            logger.error(xpee.getMessage(), xpee.getCause());
+            wr.close();
+            rd.close();
+        } catch (IOException e) {
+            logger.error("Failed to get JSON data from "+URLTEXT, e.getCause());
         }
 
+        // Get the html content into a clean string
+        String json = new String(sb);
+        json = StringEscapeUtils.unescapeJava(json);
+        String cleaned = json.split(":")[1].replaceAll("^\"|\"}$", "");
+
+        // Traverse html with Jsoup
+        Document doc = Jsoup.parse(cleaned);
+        String menu = "";
+
+        Element ul = doc.select("ul").first();
+
+        for (Element li : ul.children()) {
+            menu += li.select(".food").text() + " " + li.select(".price").text() + " ";
+        }
+
+        setMenu(kantine, menu);
     }
 
     public void setMenu(String kantine, String menu) {
@@ -111,11 +92,5 @@ public class UpdateMenu implements URLReader {
             }
         }
     }
-
-    public void urlReaderCallback(Retriever Retriever,
-                                  Object[] callbackParameters) {
-        throw new NotImplementedException();
-    }
-
 
 }
