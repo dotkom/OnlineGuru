@@ -9,6 +9,7 @@ import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
 import no.ntnu.online.onlineguru.plugin.plugins.help.Help;
+import no.ntnu.online.onlineguru.plugin.plugins.manuallogin.ManualLoginPlugin;
 import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
 
@@ -113,6 +114,28 @@ public class NickServ implements PluginWithDependencies {
 
             //logger.debug("Added '"+e.getParamaters().get(1)+ "' with auth; "+e.getParamaters().get(2));
         }
+    }
+
+    /**
+     * This method is only used and usable by {@link no.ntnu.online.onlineguru.plugin.plugins.manuallogin.ManualLoginPlugin}.
+     * It fakes IRC services authentication, allowing users to register with the bot on
+     * networks without such services.
+     *
+     * @param network Network to fake on
+     * @param nickname Nickname to fake
+     * @param username Username to fake
+     */
+    public final void fakeNickServAuthentication(Network network, String nickname, String username) {
+
+        Throwable t = new Throwable();
+        String classname = t.getStackTrace()[1].getClassName();
+
+        if(!classname.equals(ManualLoginPlugin.class.getName())) {
+            logger.warn(String.format("Class %s is NOT allowed to use this method!", classname));
+            throw new IllegalAccessError();
+        }
+
+        authHandlers.get(network).addNick(nickname, username);
     }
 
     /**

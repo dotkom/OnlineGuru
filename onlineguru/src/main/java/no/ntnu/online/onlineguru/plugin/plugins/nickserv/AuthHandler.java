@@ -34,6 +34,7 @@ public class AuthHandler {
 
     /**
      * Checks if nick is authed with a service.
+     * If the username is "1", it means the bot itself has authenticated the user
      *
      * @param nick Nickname to be checked.
      * @return boolean True is authed with a service.

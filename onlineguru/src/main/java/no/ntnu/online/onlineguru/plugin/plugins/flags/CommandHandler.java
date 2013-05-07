@@ -5,7 +5,6 @@ import no.fictive.irclib.model.network.Network;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
 import no.ntnu.online.onlineguru.utils.Wand;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -165,5 +164,4 @@ public class CommandHandler {
             }
         }
     }
-
 }
