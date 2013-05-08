@@ -53,9 +53,9 @@ public class RegexTest {
         history.appendChannelHistory(channel, event2);
         history.appendChannelHistory(channel, event3);
 
-        assertEquals("[sed] Found no match to your search.", plugin.handleSed(createPrivMsgEvent("freenode", "fictive", "#test", "s/superhelt/idiot/")));
-        assertEquals(String.format("[sed] <%s> %s", event2.getSender(), "Du er en idiot"), plugin.handleSed(createPrivMsgEvent("freenode", "Rockj", "#test", "s/superhelt/idiot/")));
-        assertEquals(String.format("[sed] <%s> %s", event1.getSender(), ":-)"), plugin.handleSed(createPrivMsgEvent("freenode", "Rockj", "#test", "s/o_O/:-)/")));
+        assertEquals("Found no match to your search.", plugin.handleSed(createPrivMsgEvent("freenode", "fictive", "#test", "s/superhelt/idiot/")));
+        assertEquals(String.format("<%s> %s", event2.getSender(), "Du er en idiot"), plugin.handleSed(createPrivMsgEvent("freenode", "Rockj", "#test", "s/superhelt/idiot/")));
+        assertEquals(String.format("<%s> %s", event1.getSender(), ":-)"), plugin.handleSed(createPrivMsgEvent("freenode", "Rockj", "#test", "s/o_O/:-)/")));
     }
 
     @Test
@@ -68,23 +68,25 @@ public class RegexTest {
         // 16:33:29   @onlineguru | <Fl0bB> gawd så meta/fungerer/lawl/
 
         assertNull(plugin.handleSed(createPrivMsgEvent("freenode", "Fl0bB", "#test", "troll/fungerer/lawl/")));
-        assertEquals("[sed] <Fl0bB> gawd så meta/fungerer/lawl/", plugin.handleSed(createPrivMsgEvent("freenode", "Fl0bB", "#test", "s/troll/gawd så meta/")));
-        assertEquals("[sed] Found no match to your search.", plugin.handleSed(createPrivMsgEvent("freenode", "Fl0bB", "#test", "s/gawd/troll/")));
+        assertEquals("<Fl0bB> gawd så meta/fungerer/lawl/", plugin.handleSed(createPrivMsgEvent("freenode", "Fl0bB", "#test", "s/troll/gawd så meta/")));
+        assertEquals("Found no match to your search.", plugin.handleSed(createPrivMsgEvent("freenode", "Fl0bB", "#test", "s/gawd/troll/")));
     }
 
     @Test
     public void testEscapedSeparator() {
         assertEquals(0, history.getLastChannelEvents(channel).size());
-        PrivMsgEvent event1= createPrivMsgEvent("freenode", "melwil", "#test", "Dette Er eN Te/st fo/r ignore case flag.");
+        PrivMsgEvent event1= createPrivMsgEvent("freenode", "melwil", "#test", "Dette Er eN Te/st fo/r escaped# separator.");
+        PrivMsgEvent event2= createPrivMsgEvent("freenode", "melwil", "#test", "Nå bare tes\\ter vi.");
 
         history.appendChannelHistory(channel, event1);
+        history.appendChannelHistory(channel, event2);
 
         assertEquals(
-                "[sed] <melwil> Dette Er eN <omg>r ignore case flag.",
+                "<melwil> Dette Er eN <omg>r escaped# separator.",
                 plugin.handleSed(createPrivMsgEvent("freenode", "melwil", "#test", "s/Te\\/st fo\\//<omg>/"))
         );
         assertEquals(
-                "[sed] <melwil> Dette Er eN Test fo/r ignore case flag.",
+                "<melwil> Dette Er eN Test fo/r escaped# separator.",
                 plugin.handleSed(createPrivMsgEvent("freenode", "melwil", "#test", "s/\\///"))
         );
     }
@@ -97,19 +99,19 @@ public class RegexTest {
         history.appendChannelHistory(channel, event1);
 
         assertEquals(
-                "[sed] <melwil> Det der var eN Test for ignore case flag.",
+                "<melwil> Det der var eN Test for ignore case flag.",
                 plugin.handleSed(createPrivMsgEvent("freenode", "melwil", "#test", "s/Dette Er/Det der var/"))
         );
         assertEquals(
-                "[sed] <melwil> Det der var eN Test for ignore case flag.",
+                "<melwil> Det der var eN Test for ignore case flag.",
                 plugin.handleSed(createPrivMsgEvent("freenode", "melwil", "#test", "s/Dette Er/Det der var/"))
         );
         assertEquals(
-                "[sed] Found no match to your search.",
+                "Found no match to your search.",
                 plugin.handleSed(createPrivMsgEvent("freenode", "melwil", "#test", "s/dette er/Det der var/"))
         );
         assertEquals(
-                "[sed] <melwil> Det der var eN Test for ignore case flag.",
+                "<melwil> Det der var eN Test for ignore case flag.",
                 plugin.handleSed(createPrivMsgEvent("freenode", "melwil", "#test", "s/dette er/Det der var/i"))
         );
     }
@@ -122,11 +124,11 @@ public class RegexTest {
         history.appendChannelHistory(channel, event1);
 
         assertEquals(
-                "[sed] <melwil> virker tester tester replace all.",
+                "<melwil> virker tester tester replace all.",
                 plugin.handleSed(createPrivMsgEvent("freenode", "melwil", "#test", "s/tester/virker/"))
         );
         assertEquals(
-                "[sed] <melwil> virker virker virker replace all.",
+                "<melwil> virker virker virker replace all.",
                 plugin.handleSed(createPrivMsgEvent("freenode", "melwil", "#test", "s/tester/virker/g"))
         );
     }
@@ -139,11 +141,11 @@ public class RegexTest {
         history.appendChannelHistory(channel, event1);
 
         assertEquals(
-                "[sed] <melwil> tekst foran 1dog 2virker 3dog 4dog 5dog 6dog noe text blabla",
+                "<melwil> tekst foran 1dog 2virker 3dog 4dog 5dog 6dog noe text blabla",
                 plugin.handleSed(createPrivMsgEvent("freenode", "melwil", "#test", "s/dog/virker/2"))
         );
         assertEquals(
-                "[sed] <melwil> tekst foran 1dog 2dog 3virker 4virker 5virker 6virker noe text blabla",
+                "<melwil> tekst foran 1dog 2dog 3virker 4virker 5virker 6virker noe text blabla",
                 plugin.handleSed(createPrivMsgEvent("freenode", "melwil", "#test", "s/dog/virker/3g"))
         );
     }
@@ -158,7 +160,7 @@ public class RegexTest {
 
         // Should return a string of length 400
         assertEquals(
-                "[sed] <melwil> 12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890" +
+                "<melwil> 12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890" +
                         "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890" +
                         "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890" +
                         "12345678901234567890123456789012345678901234567890",
@@ -168,10 +170,37 @@ public class RegexTest {
         history.appendChannelHistory(channel, event2);
         // Should not return a string of length > 400
         assertEquals(
-                "[sed] ERROR: Replaced pattern was longer than 400 characters.",
+                "ERROR: Replaced pattern was longer than 400 characters.",
                 plugin.handleSed(createPrivMsgEvent("freenode", "melwil", "#test", "s/./1234567890123456789012345678901234567890/g"))
         );
 
     }
+
+    @Test
+    public void testMatchingGroupsReplace() {
+        assertEquals(0, history.getLastChannelEvents(channel).size());
+        PrivMsgEvent event1= createPrivMsgEvent("freenode", "melwil", "#test", "her er en enkel to test");
+
+        history.appendChannelHistory(channel, event1);
+
+        assertEquals(
+                "No group 1. Define the matching group.",
+                plugin.handleSed(createPrivMsgEvent("freenode", "melwil", "#test", "s/en/'$1'/"))
+        );
+        assertEquals(
+                "<melwil> her er 'en' enkel to test",
+                plugin.handleSed(createPrivMsgEvent("freenode", "melwil", "#test", "s/(en)/'$1'/"))
+        );
+        assertEquals(
+                "<melwil> her er 'en'' enkel to test",
+                plugin.handleSed(createPrivMsgEvent("freenode", "melwil", "#test", "s/(en)|(to)/'$1'$2'/"))
+        );
+        assertEquals(
+                "<melwil> her er 'en'' 'en''kel ''to' test",
+                plugin.handleSed(createPrivMsgEvent("freenode", "melwil", "#test", "s/(en)|(to)/'$1'$2'/g"))
+        );
+
+    }
+
 
 }

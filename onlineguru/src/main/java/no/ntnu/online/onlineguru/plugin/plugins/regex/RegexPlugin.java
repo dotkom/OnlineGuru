@@ -31,9 +31,9 @@ public class RegexPlugin implements PluginWithDependencies {
 
     private final Pattern SED_PATTERN = Pattern.compile(
             "^s(.)" +                       // First group contains a single character, which is the separator.
-            "((?:(?!\\1).|\\\\\\1)+?)" +    // Matches any character that isn't group 1, or an escaped group 1, needs to me 1 or more occurrences.
+            "((?:(?!\\1).|(?<=\\\\)\\1)+?)" +    // Matches any character that isn't group 1, or an escaped group 1, needs to me 1 or more occurrences.
             "\\1" +                         // Separator.
-            "((?:(?!\\1).|\\\\\\1)*?)" +    // Matches any character that isn't group 1, or an escaped group 1, can be empty.
+            "((?:(?!\\1).|(?<=\\\\)\\1)*?)" +    // Matches any character that isn't group 1, or an escaped group 1, can be empty.
             "\\1" +                         // Separator.
             "(" +                           // Flags, group 4
             "(?:[ig]" +                     // Matches ignore case (i) or replace all (g)
@@ -93,7 +93,7 @@ public class RegexPlugin implements PluginWithDependencies {
             if (e.getMessage().startsWith("s")) {
                 String reply = handleSed(e);
                 if (reply != null) {
-                    wand.sendMessageToTarget(e.getNetwork(), e.getTarget(), reply);
+                    wand.sendMessageToTarget(e.getNetwork(), e.getTarget(), "[sed] "+reply);
                 }
             }
         }
@@ -139,47 +139,52 @@ public class RegexPlugin implements PluginWithDependencies {
         }
 
         if (regex == null) {
-            return "[sed] The Regular Expression pattern could not be compiled.";
+            return "The Regular Expression pattern could not be compiled.";
         }
         else {
             String lastMatchingMessage = getLastMatchingLineFromHistory(e, regex);
 
             if (lastMatchingMessage.isEmpty()) {
-                return "[sed] Found no match to your search.";
+                return "Found no match to your search.";
             }
             else {
                 String fixedMessage;
-                // Doing the actual replacement.
-                if (!occurrence.isEmpty()) {
-                    Matcher searches = regex.matcher(lastMatchingMessage);
-                    StringBuffer sb = new StringBuffer();
-                    int runs = 0;
-                    int occurrences = Integer.parseInt(occurrence);
+                try {
+                    // Doing the actual replacement.
+                    if (!occurrence.isEmpty()) {
+                        Matcher searches = regex.matcher(lastMatchingMessage);
+                        StringBuffer sb = new StringBuffer();
+                        int runs = 0;
+                        int occurrences = Integer.parseInt(occurrence);
 
-                    while (searches.find()) {
-                        runs++;
-                        if (runs >= occurrences) {
-                            searches.appendReplacement(sb, replacement);
-                            if (!replaceAll) {
-                                break;
+                        while (searches.find()) {
+                            runs++;
+                            if (runs >= occurrences) {
+                                searches.appendReplacement(sb, replacement);
+                                if (!replaceAll) {
+                                    break;
+                                }
                             }
                         }
+                        searches.appendTail(sb);
+                        fixedMessage = sb.toString();
                     }
-                    searches.appendTail(sb);
-                    fixedMessage = sb.toString();
-                }
-                else if (replaceAll) {
-                    fixedMessage = lastMatchingMessage.replaceAll(regex.pattern(), replacement);
-                }
-                else {
-                    fixedMessage = lastMatchingMessage.replaceFirst(regex.pattern(), replacement);
+                    else if (replaceAll) {
+                        fixedMessage = lastMatchingMessage.replaceAll(regex.pattern(), replacement);
+                    }
+                    else {
+                        fixedMessage = lastMatchingMessage.replaceFirst(regex.pattern(), replacement);
+                    }
+                } catch (IndexOutOfBoundsException ex) {
+                    logger.error("Supplied a replacement group without defining the approriate amount of groups.", ex.getCause());
+                    return ex.getMessage() + ". Define the matching group.";
                 }
 
                 if (fixedMessage.length() > 400) {
-                    return "[sed] ERROR: Replaced pattern was longer than 400 characters.";
+                    return "ERROR: Replaced pattern was longer than 400 characters.";
                 }
                 else {
-                    return String.format("[sed] <%s> %s", e.getSender(), fixedMessage);
+                    return String.format("<%s> %s", e.getSender(), fixedMessage);
                 }
             }
         }
