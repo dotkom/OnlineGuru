@@ -82,7 +82,7 @@ public class RegexPlugin implements PluginWithDependencies {
     public void incomingEvent(Event e) {
         switch (e.getEventType()) {
             case PRIVMSG: {
-                handlePrivMsgEvent((PrivMsgEvent)e);
+                handlePrivMsgEvent((PrivMsgEvent) e);
             }
         }
     }
@@ -91,7 +91,10 @@ public class RegexPlugin implements PluginWithDependencies {
         if (e.isChannelMessage()) {
             // At least filter out some unnecessary checking.
             if (e.getMessage().startsWith("s")) {
-                    wand.sendMessageToTarget(e.getNetwork(), e.getTarget(), handleSed(e));
+                String reply = handleSed(e);
+                if (reply != null) {
+                    wand.sendMessageToTarget(e.getNetwork(), e.getTarget(), reply);
+                }
             }
         }
 
