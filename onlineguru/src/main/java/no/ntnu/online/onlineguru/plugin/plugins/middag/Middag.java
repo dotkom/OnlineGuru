@@ -92,7 +92,7 @@ public class Middag implements PluginWithDependencies {
                     "!middag",
                     Flag.ANYONE,
                     "!middag [update] - Display dinner menu for the canteens Hangaren and Realfag.",
-                    "Optional argument [update] tried to update the cached menu."
+                    "Optional argument [update] tries to update the cached menu."
             );
         }
     }
