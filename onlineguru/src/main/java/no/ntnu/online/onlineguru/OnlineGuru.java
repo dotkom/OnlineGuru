@@ -112,20 +112,8 @@ public class OnlineGuru implements IRCEventListener, Runnable {
         }
     }
 
-    private void sendWho(String channelname, Network network) {
-        network.sendToServer("WHO " + channelname);
-    }
-
-    private void sendWhoX(String channelname, Network network) {
-        network.sendToServer("WHOX " + channelname);
-    }
-
-    public void sendMessageToServer(Network network, String message) {
-        network.sendToServer(message);
-    }
-
     public void receiveEvent(Event event) {
-        logger.info(String.format("%s: %s", event.getNetwork().getServerAlias(), event.getRawData()));
+        logger.info(String.format("<- %s: %s", event.getNetwork().getServerAlias(), event.getRawData()));
         switch (event.getEventType()) {
             case JOIN:
                 handleJoin(event);
@@ -143,7 +131,8 @@ public class OnlineGuru implements IRCEventListener, Runnable {
         if (network.getProfile().equals(joinEvent.getNick())) {
             if (!network.getNetworkSettings().isNAMESX() && network.getNetworkSettings().isWHOX()) {
                 sendWhoX(joinEvent.getChannel(), network);
-            } else {
+            }
+            else {
                 sendWho(joinEvent.getChannel(), network);
             }
         }
@@ -153,17 +142,34 @@ public class OnlineGuru implements IRCEventListener, Runnable {
         Network network = event.getNetwork();
         Vector<String> channels = channelsOnConnect.get(network);
         for (String channel : channels) {
-            network.sendToServer("JOIN " + channel);
+            sendToServer(network, "JOIN " + channel);
         }
+    }
+
+    private void sendWho(String channelname, Network network) {
+        sendToServer(network, "WHO " + channelname);
+    }
+
+    private void sendWhoX(String channelname, Network network) {
+        sendToServer(network, "WHOX " + channelname);
+    }
+
+    public void sendMessageToServer(Network network, String message) {
+        sendToServer(network, message);
+    }
+
+    private void sendToServer(Network network, String text) {
+        logger.info(String.format("-> %s: %s", network.getServerAlias(), text));
+        network.sendToServer(text);
     }
 
     public void receiveText(Network network, String text) {
 //		System.out.println(network.getServerAlias() + ": " + text);
     }
 
-	public Network getNetworkByAlias(String networkAlias) {
-		return networks.get(networkAlias);
-	}
+    public Network getNetworkByAlias(String networkAlias) {
+        return networks.get(networkAlias);
+    }
 
     public Enumeration<Network> getNetworks() {
         return networks.elements();
