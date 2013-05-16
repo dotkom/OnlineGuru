@@ -7,6 +7,8 @@ import no.fictive.irclib.model.channel.Channel;
 import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
+import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
+import no.ntnu.online.onlineguru.plugin.plugins.help.Help;
 import no.ntnu.online.onlineguru.plugin.plugins.history.HistoryPlugin;
 import no.ntnu.online.onlineguru.utils.Wand;
 import no.ntnu.online.onlineguru.utils.history.History;
@@ -59,12 +61,22 @@ public class RegexPlugin implements PluginWithDependencies {
      */
 
     public String[] getDependencies() {
-        return new String[]{"HistoryPlugin"};
+        return new String[]{"HistoryPlugin", "Help"};
     }
 
     public void loadDependency(Plugin plugin) {
-        if (plugin instanceof HistoryPlugin)
+        if (plugin instanceof HistoryPlugin) {
             history = ((HistoryPlugin) plugin).getHistory();
+        }
+        if (plugin instanceof Help) {
+            Help help = (Help) plugin;
+            help.addHelp(
+                    "sed",
+                    Flag.ANYONE,
+                    "s/<regex>/<replace text>/igv\\d+ - This trigger closely resembles sed from unix operating systems.",
+                    "Flags: [i: ignore case] [g: global search, replace all matches] [v: verbose] [\\d+: a positive integer. Replace only Nth word, or with 'g' flag, replace from N and out.]"
+            );
+        }
     }
 
     public String getDescription() {
