@@ -45,7 +45,7 @@ public class RegexTest {
     @Test
     public void testSimpleRegexReplacement() {
         assertEquals(0, history.getLastChannelEvents(channel).size());
-        PrivMsgEvent event1= createPrivMsgEvent("freenode", "Rockj", "#test", "o_O");
+        PrivMsgEvent event1 = createPrivMsgEvent("freenode", "Rockj", "#test", "o_O");
         PrivMsgEvent event2 = createPrivMsgEvent("freenode", "Rockj", "#test", "Du er en superhelt");
         PrivMsgEvent event3 = createPrivMsgEvent("freenode", "Rockj", "#test", "s/superhelt/idiot/");
 
@@ -53,14 +53,14 @@ public class RegexTest {
         history.appendChannelHistory(channel, event2);
         history.appendChannelHistory(channel, event3);
 
-        assertEquals("Found no match to your search.", plugin.handleSed(createPrivMsgEvent("freenode", "fictive", "#test", "s/superhelt/idiot/")));
+        assertEquals(null, plugin.handleSed(createPrivMsgEvent("freenode", "fictive", "#test", "s/superhelt/idiot/")));
         assertEquals(String.format("<%s> %s", event2.getSender(), "Du er en idiot"), plugin.handleSed(createPrivMsgEvent("freenode", "Rockj", "#test", "s/superhelt/idiot/")));
         assertEquals(String.format("<%s> %s", event1.getSender(), ":-)"), plugin.handleSed(createPrivMsgEvent("freenode", "Rockj", "#test", "s/o_O/:-)/")));
     }
 
     @Test
     public void testAgainstMetaReplacementTrolling() {
-        history.appendChannelHistory(channel, createPrivMsgEvent("freenode", "KinkyPinkie", "#test", "Rockj: det funker ikke" ));
+        history.appendChannelHistory(channel, createPrivMsgEvent("freenode", "KinkyPinkie", "#test", "Rockj: det funker ikke"));
         history.appendChannelHistory(channel, createPrivMsgEvent("freenode", "Rockj", "#test", "troll/funker ikke/fungerer jo utmerket som faen jo!/"));
         history.appendChannelHistory(channel, createPrivMsgEvent("freenode", "Fl0bB", "#test", "troll/fungerer/lawl/"));
         // 16:33:00   @onlineguru | <Rockj> troll/funker ikke/lawl jo utmerket som faen jo!/
@@ -69,14 +69,14 @@ public class RegexTest {
 
         assertNull(plugin.handleSed(createPrivMsgEvent("freenode", "Fl0bB", "#test", "troll/fungerer/lawl/")));
         assertEquals("<Fl0bB> gawd så meta/fungerer/lawl/", plugin.handleSed(createPrivMsgEvent("freenode", "Fl0bB", "#test", "s/troll/gawd så meta/")));
-        assertEquals("Found no match to your search.", plugin.handleSed(createPrivMsgEvent("freenode", "Fl0bB", "#test", "s/gawd/troll/")));
+        assertEquals(null, plugin.handleSed(createPrivMsgEvent("freenode", "Fl0bB", "#test", "s/gawd/troll/")));
     }
 
     @Test
     public void testEscapedSeparator() {
         assertEquals(0, history.getLastChannelEvents(channel).size());
-        PrivMsgEvent event1= createPrivMsgEvent("freenode", "melwil", "#test", "Dette Er eN Te/st fo/r escaped# separator.");
-        PrivMsgEvent event2= createPrivMsgEvent("freenode", "melwil", "#test", "Nå bare tes\\ter vi.");
+        PrivMsgEvent event1 = createPrivMsgEvent("freenode", "melwil", "#test", "Dette Er eN Te/st fo/r escaped# separator.");
+        PrivMsgEvent event2 = createPrivMsgEvent("freenode", "melwil", "#test", "Nå bare tes\\ter vi.");
 
         history.appendChannelHistory(channel, event1);
         history.appendChannelHistory(channel, event2);
@@ -94,7 +94,7 @@ public class RegexTest {
     @Test
     public void testIgnoreCaseFlag() {
         assertEquals(0, history.getLastChannelEvents(channel).size());
-        PrivMsgEvent event1= createPrivMsgEvent("freenode", "melwil", "#test", "Dette Er eN Test for ignore case flag.");
+        PrivMsgEvent event1 = createPrivMsgEvent("freenode", "melwil", "#test", "Dette Er eN Test for ignore case flag.");
 
         history.appendChannelHistory(channel, event1);
 
@@ -107,7 +107,7 @@ public class RegexTest {
                 plugin.handleSed(createPrivMsgEvent("freenode", "melwil", "#test", "s/Dette Er/Det der var/"))
         );
         assertEquals(
-                "Found no match to your search.",
+                null,
                 plugin.handleSed(createPrivMsgEvent("freenode", "melwil", "#test", "s/dette er/Det der var/"))
         );
         assertEquals(
@@ -119,7 +119,7 @@ public class RegexTest {
     @Test
     public void testReplaceAllFlag() {
         assertEquals(0, history.getLastChannelEvents(channel).size());
-        PrivMsgEvent event1= createPrivMsgEvent("freenode", "melwil", "#test", "tester tester tester replace all.");
+        PrivMsgEvent event1 = createPrivMsgEvent("freenode", "melwil", "#test", "tester tester tester replace all.");
 
         history.appendChannelHistory(channel, event1);
 
@@ -136,7 +136,7 @@ public class RegexTest {
     @Test
     public void testNthReplace() {
         assertEquals(0, history.getLastChannelEvents(channel).size());
-        PrivMsgEvent event1= createPrivMsgEvent("freenode", "melwil", "#test", "tekst foran 1dog 2dog 3dog 4dog 5dog 6dog noe text blabla");
+        PrivMsgEvent event1 = createPrivMsgEvent("freenode", "melwil", "#test", "tekst foran 1dog 2dog 3dog 4dog 5dog 6dog noe text blabla");
 
         history.appendChannelHistory(channel, event1);
 
@@ -153,8 +153,8 @@ public class RegexTest {
     @Test
     public void testTooLongReplacement() {
         assertEquals(0, history.getLastChannelEvents(channel).size());
-        PrivMsgEvent event1= createPrivMsgEvent("freenode", "melwil", "#test", "1234567890");
-        PrivMsgEvent event2= createPrivMsgEvent("freenode", "melwil", "#test", "12345678901");
+        PrivMsgEvent event1 = createPrivMsgEvent("freenode", "melwil", "#test", "1234567890");
+        PrivMsgEvent event2 = createPrivMsgEvent("freenode", "melwil", "#test", "12345678901");
 
         history.appendChannelHistory(channel, event1);
 
@@ -164,13 +164,13 @@ public class RegexTest {
                         "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890" +
                         "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890" +
                         "12345678901234567890123456789012345678901234567890",
-                        plugin.handleSed(createPrivMsgEvent("freenode", "melwil", "#test", "s/./1234567890123456789012345678901234567890/g"))
+                plugin.handleSed(createPrivMsgEvent("freenode", "melwil", "#test", "s/./1234567890123456789012345678901234567890/g"))
         );
 
         history.appendChannelHistory(channel, event2);
         // Should not return a string of length > 400
         assertEquals(
-                "ERROR: Replaced pattern was longer than 400 characters.",
+                null,
                 plugin.handleSed(createPrivMsgEvent("freenode", "melwil", "#test", "s/./1234567890123456789012345678901234567890/g"))
         );
 
@@ -179,12 +179,12 @@ public class RegexTest {
     @Test
     public void testMatchingGroupsReplace() {
         assertEquals(0, history.getLastChannelEvents(channel).size());
-        PrivMsgEvent event1= createPrivMsgEvent("freenode", "melwil", "#test", "her er en enkel to test");
+        PrivMsgEvent event1 = createPrivMsgEvent("freenode", "melwil", "#test", "her er en enkel to test");
 
         history.appendChannelHistory(channel, event1);
 
         assertEquals(
-                "No group 1. Define the matching group.",
+                null,
                 plugin.handleSed(createPrivMsgEvent("freenode", "melwil", "#test", "s/en/'$1'/"))
         );
         assertEquals(
@@ -202,5 +202,56 @@ public class RegexTest {
 
     }
 
+    @Test
+    public void testVerboseFlag() {
+        assertEquals(0, history.getLastChannelEvents(channel).size());
+        PrivMsgEvent event1 = createPrivMsgEvent("freenode", "melwil", "#test", "her er en enkel to test");
+        PrivMsgEvent event2 = createPrivMsgEvent("freenode", "melwil", "#test", "12345678901");
+
+        history.appendChannelHistory(channel, event1);
+
+        // Testing incompliable regex
+        assertEquals(
+                null,
+                plugin.handleSed(createPrivMsgEvent("freenode", "hurr", "#test", "s/+//"))
+        );
+        assertEquals(
+                "The Regular Expression pattern could not be compiled.",
+                plugin.handleSed(createPrivMsgEvent("freenode", "hurr", "#test", "s/+//v"))
+        );
+
+        // Testing no matches found
+        assertEquals(
+                null,
+                plugin.handleSed(createPrivMsgEvent("freenode", "hurr", "#test", "s/doesn't/exist/"))
+        );
+        assertEquals(
+                "Found no match to your search.",
+                plugin.handleSed(createPrivMsgEvent("freenode", "hurr", "#test", "s/doesn't/exist/v"))
+        );
+
+        // Testing illegal groups
+        assertEquals(
+                null,
+                plugin.handleSed(createPrivMsgEvent("freenode", "melwil", "#test", "s/en/'$1'/"))
+        );
+        assertEquals(
+                "No group 1. Define the matching group.",
+                plugin.handleSed(createPrivMsgEvent("freenode", "melwil", "#test", "s/en/'$1'/v"))
+        );
+
+        history.appendChannelHistory(channel, event2);
+
+        // Should not return a string of length > 400, but with verbose should provide feedback.
+        assertEquals(
+                null,
+                plugin.handleSed(createPrivMsgEvent("freenode", "melwil", "#test", "s/./1234567890123456789012345678901234567890/g"))
+        );
+        assertEquals(
+                "ERROR: Replaced pattern was longer than 400 characters.",
+                plugin.handleSed(createPrivMsgEvent("freenode", "melwil", "#test", "s/./1234567890123456789012345678901234567890/gv"))
+        );
+
+    }
 
 }

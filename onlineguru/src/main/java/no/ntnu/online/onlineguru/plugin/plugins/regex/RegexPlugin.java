@@ -31,19 +31,19 @@ public class RegexPlugin implements PluginWithDependencies {
 
     private final Pattern SED_PATTERN = Pattern.compile(
             "^s(.)" +                       // First group contains a single character, which is the separator.
-            "((?:(?!\\1).|(?<=\\\\)\\1)+?)" +    // Matches any character that isn't group 1, or an escaped group 1, needs to me 1 or more occurrences.
+            "((?:(?!\\1).|\\\\\\1)+?)" +    // Matches any character that isn't group 1, or an escaped group 1, needs to me 1 or more occurrences.
             "\\1" +                         // Separator.
-            "((?:(?!\\1).|(?<=\\\\)\\1)*?)" +    // Matches any character that isn't group 1, or an escaped group 1, can be empty.
+            "((?:(?!\\1).|\\\\\\1)*?)" +    // Matches any character that isn't group 1, or an escaped group 1, can be empty.
             "\\1" +                         // Separator.
             "(" +                           // Flags, group 4
-            "(?:[ig]" +                     // Matches ignore case (i) or replace all (g)
+            "(?:[igv]" +                     // Matches ignore case (i) or replace all (g)
             "|" +                           // Or
             "(?:(?!\\d\\D+?\\d)\\d)+" +     // One or more digits that aren't followed by one or more nondigits and then another digit.
             ")*" +                          // Can be empty
             ")$"
     );
     // The whole pattern with no comments or java escapes:
-    // ^s(.)((?:(?!\1).|\\\1)+?)\1((?:(?!\1).|\\\1)*?)\1((?:[ig]|(?:(?!\d\D+?\d)\d)+)*)$
+    // ^s(.)((?:(?!\1).|\\\1)+?)\1((?:(?!\1).|\\\1)*?)\1((?:[igv]|(?:(?!\d\D+?\d)\d)+)*)$
 
     public RegexPlugin() {
         // Need empty constructor.
@@ -111,6 +111,7 @@ public class RegexPlugin implements PluginWithDependencies {
         String replacement = matcher.group(3);
         String flags = matcher.group(4);
         boolean replaceAll = false;
+        boolean verbose = false;
         String occurrence = "";
         Pattern regex = null;
 
@@ -126,6 +127,9 @@ public class RegexPlugin implements PluginWithDependencies {
                     case 'g':
                         replaceAll = true;
                         break;
+                    case 'v':
+                        verbose = true;
+                        break;
                     default:
                         occurrence += flag;
                 }
@@ -139,13 +143,13 @@ public class RegexPlugin implements PluginWithDependencies {
         }
 
         if (regex == null) {
-            return "The Regular Expression pattern could not be compiled.";
+            return verbose ? "The Regular Expression pattern could not be compiled." : null;
         }
         else {
             String lastMatchingMessage = getLastMatchingLineFromHistory(e, regex);
 
             if (lastMatchingMessage.isEmpty()) {
-                return "Found no match to your search.";
+                return verbose ? "Found no match to your search." : null;
             }
             else {
                 String fixedMessage;
@@ -177,11 +181,11 @@ public class RegexPlugin implements PluginWithDependencies {
                     }
                 } catch (IndexOutOfBoundsException ex) {
                     logger.error("Supplied a replacement group without defining the approriate amount of groups.", ex.getCause());
-                    return ex.getMessage() + ". Define the matching group.";
+                    return verbose ? ex.getMessage() + ". Define the matching group." : null;
                 }
 
                 if (fixedMessage.length() > 400) {
-                    return "ERROR: Replaced pattern was longer than 400 characters.";
+                    return verbose ? "ERROR: Replaced pattern was longer than 400 characters." : null;
                 }
                 else {
                     return String.format("<%s> %s", e.getSender(), fixedMessage);
