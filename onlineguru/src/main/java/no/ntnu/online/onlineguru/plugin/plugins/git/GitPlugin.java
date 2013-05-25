@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class GitPlugin implements PluginWithDependencies {
     static Logger logger = Logger.getLogger(GitPlugin.class);
-    private final String DESCRIPTION = "Announces Redmine-GitPlugin changeset url";
+    private final String DESCRIPTION = "Announces Redmine-Git changeset url";
     protected static final String DB_FOLDER = "database/";
     private static final String TRIGGER = "git";
     private final String[] dependencies = new String[]{"ChanServ"};

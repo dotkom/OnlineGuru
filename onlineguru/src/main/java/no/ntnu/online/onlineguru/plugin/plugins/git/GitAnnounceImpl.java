@@ -26,7 +26,7 @@ public class GitAnnounceImpl implements GitAnnounce, WebserverCallback {
 
     static Logger logger = Logger.getLogger(GitAnnounceImpl.class);
     public static final String announceGitHubCommit = "[scm][%s/%s] %s (%s) [%sA/%sM/%sD]";
-    private final String DEFAULT_DB_FILE_ANNOUNCES = Git.DB_FOLDER + "git-announces.db";
+    private final String DEFAULT_DB_FILE_ANNOUNCES = GitPlugin.DB_FOLDER + "git-announces.db";
     private HashMap<String, IRCAnnounce> announceHashMap;
     private GitAnnouncementRepository announcementRepository;
     private Wand wand;
