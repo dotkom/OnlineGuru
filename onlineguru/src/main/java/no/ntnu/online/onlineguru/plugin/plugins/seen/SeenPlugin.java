@@ -9,7 +9,7 @@ import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
 import no.ntnu.online.onlineguru.plugin.plugins.history.HistoryPlugin;
 import no.ntnu.online.onlineguru.utils.Wand;
-import no.ntnu.online.onlineguru.utils.history.History;
+import no.ntnu.online.onlineguru.service.services.history.History;
 import org.apache.log4j.Logger;
 
 import java.util.Arrays;

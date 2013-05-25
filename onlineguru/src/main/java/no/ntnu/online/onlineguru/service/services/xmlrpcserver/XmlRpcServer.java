@@ -1,4 +1,4 @@
-package no.ntnu.online.onlineguru.utils.xmlrpcserver;
+package no.ntnu.online.onlineguru.service.services.xmlrpcserver;
 
 /**
  * User: Dag Olav Prestegarden <dagolav@prestegarden.com>

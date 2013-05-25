@@ -11,7 +11,7 @@ import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
 import no.ntnu.online.onlineguru.plugin.plugins.help.Help;
 import no.ntnu.online.onlineguru.plugin.plugins.history.HistoryPlugin;
 import no.ntnu.online.onlineguru.utils.Wand;
-import no.ntnu.online.onlineguru.utils.history.History;
+import no.ntnu.online.onlineguru.service.services.history.History;
 import org.apache.log4j.Logger;
 
 import java.util.List;

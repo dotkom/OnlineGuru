@@ -4,13 +4,11 @@ import no.fictive.irclib.event.container.command.PrivMsgEvent;
 import no.fictive.irclib.model.channel.Channel;
 import no.fictive.irclib.model.network.Network;
 import no.ntnu.online.onlineguru.plugin.plugins.nickserv.FakeWand;
-import no.ntnu.online.onlineguru.utils.history.History;
+import no.ntnu.online.onlineguru.service.services.history.History;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static no.fictive.irclib.HelperFactory.createPrivMsgEvent;
 import static org.junit.Assert.*;

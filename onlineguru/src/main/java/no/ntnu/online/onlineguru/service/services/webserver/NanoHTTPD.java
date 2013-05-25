@@ -1,4 +1,4 @@
-package no.ntnu.online.onlineguru.utils.webserver;
+package no.ntnu.online.onlineguru.service.services.webserver;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;

@@ -1,4 +1,4 @@
-package no.ntnu.online.onlineguru.utils.xmlrpcserver;
+package no.ntnu.online.onlineguru.service.services.xmlrpcserver;
 
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.XmlRpcRequest;

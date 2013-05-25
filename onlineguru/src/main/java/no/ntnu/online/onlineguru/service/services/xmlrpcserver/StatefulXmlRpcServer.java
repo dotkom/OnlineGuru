@@ -1,4 +1,4 @@
-package no.ntnu.online.onlineguru.utils.xmlrpcserver;
+package no.ntnu.online.onlineguru.service.services.xmlrpcserver;
 
 import org.apache.xmlrpc.server.PropertyHandlerMapping;
 import org.apache.xmlrpc.server.XmlRpcServerConfigImpl;
