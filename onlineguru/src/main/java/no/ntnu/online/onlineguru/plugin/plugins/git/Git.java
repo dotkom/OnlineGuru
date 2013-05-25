@@ -10,8 +10,8 @@ import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
 import no.ntnu.online.onlineguru.plugin.plugins.chanserv.control.ChanServ;
 import no.ntnu.online.onlineguru.plugin.plugins.git.github.jsonmodel.GitHubPayload;
 import no.ntnu.online.onlineguru.utils.Wand;
-import no.ntnu.online.onlineguru.utils.webserver.Webserver;
-import no.ntnu.online.onlineguru.utils.xmlrpcserver.XmlRpcServer;
+import no.ntnu.online.onlineguru.service.services.webserver.Webserver;
+import no.ntnu.online.onlineguru.service.services.xmlrpcserver.XmlRpcServer;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;

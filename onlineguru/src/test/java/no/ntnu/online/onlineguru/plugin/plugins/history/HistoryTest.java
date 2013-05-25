@@ -6,7 +6,7 @@ import no.fictive.irclib.event.container.command.PartEvent;
 import no.fictive.irclib.event.container.command.PrivMsgEvent;
 import no.fictive.irclib.model.channel.Channel;
 import no.fictive.irclib.model.nick.Nick;
-import no.ntnu.online.onlineguru.utils.history.History;
+import no.ntnu.online.onlineguru.service.services.history.History;
 import org.junit.Before;
 import org.junit.Test;
 

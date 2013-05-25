@@ -9,10 +9,8 @@ import no.ntnu.online.onlineguru.OnlineGuru;
 import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.utils.Wand;
-import no.ntnu.online.onlineguru.utils.history.History;
+import no.ntnu.online.onlineguru.service.services.history.History;
 import org.apache.log4j.Logger;
-
-import java.util.List;
 
 
 public class HistoryPlugin implements Plugin {

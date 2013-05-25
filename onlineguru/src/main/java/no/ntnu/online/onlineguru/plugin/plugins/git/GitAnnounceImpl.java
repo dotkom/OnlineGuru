@@ -6,15 +6,15 @@ import no.fictive.irclib.model.network.Network;
 import no.ntnu.online.onlineguru.plugin.plugins.git.github.jsonmodel.Commit;
 import no.ntnu.online.onlineguru.plugin.plugins.git.github.jsonmodel.GitHubPayload;
 import no.ntnu.online.onlineguru.utils.Wand;
-import no.ntnu.online.onlineguru.utils.webserver.NanoHTTPD;
-import no.ntnu.online.onlineguru.utils.webserver.Response;
-import no.ntnu.online.onlineguru.utils.webserver.WebserverCallback;
+import no.ntnu.online.onlineguru.service.services.webserver.NanoHTTPD;
+import no.ntnu.online.onlineguru.service.services.webserver.Response;
+import no.ntnu.online.onlineguru.service.services.webserver.WebserverCallback;
 import org.apache.log4j.Logger;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static no.ntnu.online.onlineguru.utils.webserver.NanoHTTPD.MIME_PLAINTEXT;
+import static no.ntnu.online.onlineguru.service.services.webserver.NanoHTTPD.MIME_PLAINTEXT;
 
 
 /**

@@ -9,7 +9,7 @@ import no.fictive.irclib.model.network.Network;
 import no.ntnu.online.onlineguru.exceptions.MissingSettingsException;
 import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.control.PluginManager;
-import no.ntnu.online.onlineguru.utils.OnlineGuruDependencyModule;
+import no.ntnu.online.onlineguru.service.OnlineGuruServices;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -83,7 +83,7 @@ public class OnlineGuru implements IRCEventListener, Runnable {
     }
 
     private void configureServiceLocator() {
-        serviceLocator = Guice.createInjector(new OnlineGuruDependencyModule());
+        serviceLocator = Guice.createInjector(new OnlineGuruServices());
     }
 
     protected void stopThread() {
