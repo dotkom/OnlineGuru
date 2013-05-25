@@ -7,7 +7,7 @@ import no.fictive.irclib.model.network.Network;
 import no.fictive.irclib.model.nick.Nick;
 import no.ntnu.online.onlineguru.plugin.plugins.nickserv.FakeWand;
 import no.ntnu.online.onlineguru.utils.Wand;
-import no.ntnu.online.onlineguru.utils.history.History;
+import no.ntnu.online.onlineguru.service.services.history.History;
 import org.junit.Before;
 import org.junit.Test;
 

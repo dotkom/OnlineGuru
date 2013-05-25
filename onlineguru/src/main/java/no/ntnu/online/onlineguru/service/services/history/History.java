@@ -1,4 +1,4 @@
-package no.ntnu.online.onlineguru.utils.history;
+package no.ntnu.online.onlineguru.service.services.history;
 
 import no.fictive.irclib.event.container.Event;
 import no.fictive.irclib.event.container.command.NickEvent;

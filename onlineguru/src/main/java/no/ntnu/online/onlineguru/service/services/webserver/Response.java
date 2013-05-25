@@ -1,4 +1,4 @@
-package no.ntnu.online.onlineguru.utils.webserver;
+package no.ntnu.online.onlineguru.service.services.webserver;
 
 /**
  "Copyright (C) 2001,2005-2011 by Jarno Elonen <elonen@iki.fi>\n" +
