@@ -1,5 +1,7 @@
-package no.ntnu.online.onlineguru.plugin.plugins.git;
+package no.ntnu.online.onlineguru.plugin.plugins.git.storage;
 
+import no.ntnu.online.onlineguru.plugin.plugins.git.GitAnnouncementRepository;
+import no.ntnu.online.onlineguru.plugin.plugins.git.IRCAnnounce;
 import no.ntnu.online.onlineguru.utils.SimpleIO;
 import org.apache.log4j.Logger;
 
