@@ -1,5 +1,7 @@
 package no.ntnu.online.onlineguru.plugin.plugins.github.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 
 /**
@@ -7,6 +9,8 @@ import java.io.Serializable;
  */
 public class Repository implements Serializable {
     private String url;
+    @SerializedName("html_url")
+    private String htmlUrl;
     private String name;
     private String description;
     private int watchers;
@@ -26,6 +30,14 @@ public class Repository implements Serializable {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getHtmlUrl() {
+        return htmlUrl;
+    }
+
+    public void setHtmlUrl(String htmlUrl) {
+        this.htmlUrl = htmlUrl;
     }
 
     public String getName() {

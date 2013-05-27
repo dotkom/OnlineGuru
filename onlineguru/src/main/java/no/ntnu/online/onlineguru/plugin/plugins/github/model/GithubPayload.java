@@ -2,7 +2,6 @@ package no.ntnu.online.onlineguru.plugin.plugins.github.model;
 
 
 import com.google.gson.annotations.SerializedName;
-import no.ntnu.online.onlineguru.plugin.plugins.git.GitPayload;
 
 import java.io.Serializable;
 import java.util.List;
@@ -10,7 +9,7 @@ import java.util.List;
 /**
  * @author Roy Sindre Norangshol
  */
-public class GithubPayload extends GitPayload implements Serializable{
+public class GithubPayload implements Serializable{
     private String action;
     @SerializedName("pull_request")
     private PullRequest pullRequest;
@@ -23,6 +22,13 @@ public class GithubPayload extends GitPayload implements Serializable{
     private String ref;
     private String compare;
     private User pusher;
+    private User sender;
+    private boolean deleted;
+    private boolean created;
+
+    public static final int WANTS_COMMITS = 1;
+    public static final int WANTS_ISSUES = 2;
+    public static final int WANTS_PULL_REQUESTS = 4;
 
     public GithubPayload() {}
 
@@ -110,6 +116,30 @@ public class GithubPayload extends GitPayload implements Serializable{
         this.pusher = pusher;
     }
 
+    public User getSender() {
+        return sender;
+    }
+
+    public void setSender(User sender) {
+        this.sender = sender;
+    }
+
+    public boolean isCreated() {
+        return created;
+    }
+
+    public void setCreated(boolean created) {
+        this.created = created;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
     @Override
     public String toString() {
         return "GitHubPayload{" +
@@ -126,8 +156,10 @@ public class GithubPayload extends GitPayload implements Serializable{
                 '}';
     }
 
-    @Override
     public String getIdentifier() {
+        if (issue != null || pullRequest != null) {
+            return repository.getHtmlUrl();
+        }
         return repository.getUrl();
     }
 }
