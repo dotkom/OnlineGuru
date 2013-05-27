@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * @author Roy Sindre Norangshol
  */
-public class GithubJSONPayload extends GitPayload implements Serializable{
+public class GithubPayload extends GitPayload implements Serializable{
     private String action;
     @SerializedName("pull_request")
     private PullRequest pullRequest;
@@ -24,9 +24,9 @@ public class GithubJSONPayload extends GitPayload implements Serializable{
     private String compare;
     private User pusher;
 
-    public GithubJSONPayload() {}
+    public GithubPayload() {}
 
-    public GithubJSONPayload(String repositoryUrlWhichIsIdentifier) {
+    public GithubPayload(String repositoryUrlWhichIsIdentifier) {
         setRepository(new Repository(repositoryUrlWhichIsIdentifier));
     }
 
