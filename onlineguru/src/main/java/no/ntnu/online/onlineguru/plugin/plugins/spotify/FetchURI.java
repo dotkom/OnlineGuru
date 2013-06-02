@@ -71,10 +71,8 @@ public class FetchURI implements URLReader {
 		wand.sendMessageToTarget(network, target, "[spotify] "+o.toString());
 	}
 
-	public void urlReaderCallback(Retriever HTMLRetriever,
-			Object[] callbackParameters) {
-		// TODO Auto-generated method stub
-		
+    public void urlReaderCallback(Retriever HTMLRetriever, Object[] callbackParameters) {
+        // Unused callback.
     }
 
 }

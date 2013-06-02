@@ -143,12 +143,12 @@
 //	}
 //	
 //	public String[] getDependencies() {
-//		// TODO Auto-generated method stub
+//		// Auto-generated method stub
 //		return null;
 //	}
 //
 //	public void loadDependency(Plugin plugin) {
-//		// TODO Auto-generated method stub
+//		// Auto-generated method stub
 //	}
 //	
 //	public void kickUser(String nickname, String channel, String reason) {
