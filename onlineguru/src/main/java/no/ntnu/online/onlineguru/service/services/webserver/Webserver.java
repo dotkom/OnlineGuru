@@ -20,8 +20,9 @@ public class Webserver extends NanoHTTPD {
         services = new HashMap<String, WebserverCallback>();
     }
 
+    @Override
     public Response serve(String uri, String method, Properties header, Properties parms, Properties files) {
-        logger.info(String.format("uri: %s, method: %s, header: %s, parms: %s, files: %s", uri, method, header, parms, files));
+        logger.debug(String.format("uri: %s, method: %s, header: %s, parms: %s, files: %s", uri, method, header, parms, files));
         if (services.containsKey(uri)) {
             return services.get(uri).serve(uri, method, header, parms, files);
         }
