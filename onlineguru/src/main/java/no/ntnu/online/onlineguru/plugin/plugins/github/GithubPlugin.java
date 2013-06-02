@@ -75,7 +75,7 @@ public class GithubPlugin implements PluginWithDependencies {
         githubCallback = new GithubCallback(wand, listeners);
 
         // Running the registering with the web server async, it may take time.
-        new Runnable() {
+        new Thread() {
             @Override
             public void run() {
                 // Fetch the webserver instance.
@@ -83,7 +83,7 @@ public class GithubPlugin implements PluginWithDependencies {
                 // Register this plugins uri.
                 webServer.registerWebserverCallback("/plugins/git", githubCallback);
             }
-        }.run();
+        }.start();
 
         return new String[]{"FlagsPlugin", "Help",};
     }
