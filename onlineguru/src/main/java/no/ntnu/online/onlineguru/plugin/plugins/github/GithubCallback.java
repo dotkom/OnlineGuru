@@ -3,7 +3,6 @@ package no.ntnu.online.onlineguru.plugin.plugins.github;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
-import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.CallbackListener;
 import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.Listeners;
 import no.ntnu.online.onlineguru.plugin.plugins.github.model.GithubPayload;
 import no.ntnu.online.onlineguru.service.services.webserver.NanoHTTPD;
@@ -53,8 +52,9 @@ public class GithubCallback implements WebserverCallback {
         }
 
         if (payload != null) {
-            if (listeners.containsKey(payload.getIdentifier().toLowerCase())) {
-                listeners.get(payload.getIdentifier().toLowerCase()).incomingPayload(this, payload);
+            String repository = payload.getIdentifier().toLowerCase();
+            if (listeners.containsKey(repository)) {
+                listeners.get(repository).incomingPayload(this, payload);
             }
             else {
                 logger.debug(String.format("No listener for repository %s", payload.getIdentifier()));

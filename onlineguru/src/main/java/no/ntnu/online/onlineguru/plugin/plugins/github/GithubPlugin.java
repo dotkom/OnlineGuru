@@ -70,6 +70,9 @@ public class GithubPlugin implements PluginWithDependencies {
         }
 
         listeners = storageManager.loadListeners();
+        if (listeners == null) {
+            listeners = new Listeners();
+        }
         githubCallback = new GithubCallback(wand, listeners);
 
         // Running the registering with the web server async, it may take time.
@@ -111,7 +114,7 @@ public class GithubPlugin implements PluginWithDependencies {
             // Legal characters are A-Z a-z 0-9 . -
             // Any other character will be converted to a dash -
             if (matcher.find()) {
-                String repo = matcher.group(1);
+                String repo = matcher.group(1).toLowerCase();
                 String setting = matcher.group(8);
 
                 String channel = matcher.group(2);
@@ -123,9 +126,6 @@ public class GithubPlugin implements PluginWithDependencies {
                         return "You must specify a channel when using this command in private messages.";
                     }
                 }
-
-                // This identifier is used to sort the subscriptions in the callback listener.
-                String identifier = channel + "@" + e.getNetwork().getServerAlias();
 
                 // Get the callback listener for the specified repo.
                 CallbackListener cl = listeners.get("https://github.com/" + repo);
