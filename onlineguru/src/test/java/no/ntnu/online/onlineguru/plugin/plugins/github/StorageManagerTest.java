@@ -5,7 +5,6 @@ import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.Listeners;
 import org.junit.Test;
 
 import java.io.File;
-import java.util.Map;
 
 import static org.junit.Assert.*;
 
