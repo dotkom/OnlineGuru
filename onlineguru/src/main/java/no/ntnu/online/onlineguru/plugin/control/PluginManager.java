@@ -86,34 +86,6 @@ public class PluginManager {
                 System.exit(2);
             }
         }
-        // @todo remove this in the future..
-        /*initiatePlugin(new HistoryPlugin());
-        initiatePlugin(new Auth());
-        initiatePlugin(new AutoOp());
-        initiatePlugin(new Bus());
-		initiatePlugin(new ChanServ());
-		initiatePlugin(new ChannelJoiner());
-		initiatePlugin(new Die());
-		initiatePlugin(new Help());
-        initiatePlugin(new LastFM());
-        initiatePlugin(new Middag());
-        initiatePlugin(new NickServ());
-        initiatePlugin(new Peak());
-        initiatePlugin(new SimpleTrigger());
-        initiatePlugin(new Spotify());
-        initiatePlugin(new TwitterPlugin());
-        initiatePlugin(new URLHandler());
-        initiatePlugin(new Version());
-        initiatePlugin(new LmgtfyPlugin());
-        initiatePlugin(new SeenPlugin());
-        initiatePlugin(new RegexPlugin());
-        //initiatePlugin(new ShellPlugin()); // not really a safe plugin ;-)
-
-        // These take a long time to load, before they are threaded, they need to be last on the list.
-        initiatePlugin(new CalendarPlugin());
-        initiatePlugin(new Git());
-        initiatePlugin(new MailAnnouncer());*/
-
     }
 
     private void initiatePlugin(Plugin plugin) {
