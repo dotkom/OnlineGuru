@@ -1,12 +1,12 @@
 package no.ntnu.online.onlineguru.plugin.plugins.github.listeners;
 
+import no.ntnu.online.onlineguru.plugin.plugins.github.GithubCallback;
 import no.ntnu.online.onlineguru.plugin.plugins.github.model.GithubPayload;
 import no.ntnu.online.onlineguru.utils.URLShortener;
-import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * @author Håvard Slettvold
@@ -15,47 +15,75 @@ public class CallbackListener {
 
     static Logger logger = Logger.getLogger(CallbackListener.class);
 
-    private final String channel;
-    private Wand wand;
+    private List<AnnounceSubscription> announceSubscriptions = new ArrayList<AnnounceSubscription>();
 
-    private List<AnnounceSubscription> subscribers = new Vector<AnnounceSubscription>();
-
-
-    public CallbackListener(Wand wand) {
-        this.wand = wand;
-        this.channel = "moo";
-    }
-
-    public void incomingPayload(GithubPayload githubPayload) {
-        System.out.println("received");
+    public void incomingPayload(GithubCallback gc, GithubPayload githubPayload) {
+        String network = "";
+        String channel = "";
+        String output = "";
 
         // Branch deleted
         if (githubPayload.isDeleted()) {
-            announceDelete(githubPayload);
+            output = announceDelete(githubPayload);
+            for (AnnounceSubscription as : announceSubscriptions) {
+                if (as.wants_branches()) {
+                    network = as.getNetwork();
+                    channel = as.getChannel();
+                }
+            }
         }
         // Branch created
         else if (githubPayload.isCreated()) {
-            announceCreate(githubPayload);
+            output = announceCreate(githubPayload);
+            for (AnnounceSubscription as : announceSubscriptions) {
+                if (as.wants_branches()) {
+                    network = as.getNetwork();
+                    channel = as.getChannel();
+                }
+            }
         }
         // New commits (push)
-        else if (!githubPayload.getCommits().isEmpty()) {
-            announceCommit(githubPayload);
+        else if (githubPayload.getCommits() != null && !githubPayload.getCommits().isEmpty()) {
+            output = announceCommit(githubPayload);
+            for (AnnounceSubscription as : announceSubscriptions) {
+                if (as.wants_commits()) {
+                    network = as.getNetwork();
+                    channel = as.getChannel();
+                }
+            }
         }
         // New issue / issue activity?
         else if (githubPayload.getIssue() != null) {
-            announceIssue(githubPayload);
+            output = announceIssue(githubPayload);
+            for (AnnounceSubscription as : announceSubscriptions) {
+                if (as.wants_issues()) {
+                    network = as.getNetwork();
+                    channel = as.getChannel();
+                }
+            }
         }
         // New pull request / pull request activity?
         else if (githubPayload.getPullRequest() != null) {
-            announcePullRequest(githubPayload);
+            output = announcePullRequest(githubPayload);
+            for (AnnounceSubscription as : announceSubscriptions) {
+                if (as.wants_pull_requests()) {
+                    network = as.getNetwork();
+                    channel = as.getChannel();
+                }
+            }
         }
         // Used for debugging in case.
         else {
             logger.debug("Github payload matched none of the criteria.");
+            logger.debug(githubPayload.toString());
+        }
+
+        if (!network.isEmpty() && !channel.isEmpty()) {
+            gc.announceToIRC(network, channel, output);
         }
     }
 
-    public void announceDelete(GithubPayload githubPayload) {
+    protected String announceDelete(GithubPayload githubPayload) {
         // Get the active branch.
         String activeBranch = githubPayload.getRef().split("/")[2];
         String message = String.format("[github][%s] Deleted branch '%s' (%s)",
@@ -64,14 +92,22 @@ public class CallbackListener {
                 githubPayload.getPusher().getName()
         );
 
-        System.out.println(message);
+        return message;
     }
 
-    public void announceCreate(GithubPayload githubPayload) {
-        System.out.println("was created");
+    protected String announceCreate(GithubPayload githubPayload) {
+        // Get the active branch.
+        String activeBranch = githubPayload.getRef().split("/")[2];
+        String message = String.format("[github][%s] Created branch '%s' (%s)",
+                githubPayload.getRepository().getName(),
+                activeBranch,
+                githubPayload.getPusher().getName()
+        );
+
+        return message;
     }
 
-    public void announceCommit(GithubPayload githubPayload) {
+    protected String announceCommit(GithubPayload githubPayload) {
         // Get the active branch.
         String activeBranch = githubPayload.getRef().split("/")[2];
 
@@ -79,31 +115,64 @@ public class CallbackListener {
         String shortenedURL = URLShortener.bitlyfyLink(githubPayload.getCompare());
         String compareURL = shortenedURL.isEmpty() ? githubPayload.getCompare() : shortenedURL;
 
-        String message = String.format("[scm][%s] %s new commits pushed to %s: %s (%s)",
+        String message = String.format("[github][%s/%s] %s new commits - %s (%s)",
                 githubPayload.getRepository().getName(),
-                githubPayload.getCommits().size(),
                 activeBranch,
+                githubPayload.getCommits().size(),
                 compareURL,
                 githubPayload.getPusher().getName()
         );
 
-        System.out.println(message);
+        return message;
     }
 
-    public void announceIssue(GithubPayload githubPayload) {
-        String message = String.format("[github][%s/%s] %s - %s. %s",
+    protected String announceIssue(GithubPayload githubPayload) {
+        // Attempt to shorten compare URL.
+        String shortenedURL = URLShortener.bitlyfyLink(githubPayload.getIssue().getHtmlUrl());
+        String issueURL = shortenedURL.isEmpty() ? githubPayload.getIssue().getHtmlUrl() : shortenedURL;
+
+        String message = String.format("[github][%s][issue/%s] %s - %s (%s)",
                 githubPayload.getRepository().getName(),
                 githubPayload.getAction(),
                 githubPayload.getIssue().getTitle(),
-                githubPayload.getIssue().getUser().getLogin(),
-                githubPayload.getIssue().getHtmlUrl()
+                issueURL,
+                githubPayload.getIssue().getUser().getLogin()
         );
 
-        System.out.println(message);
+        return message;
     }
 
-    public void announcePullRequest(GithubPayload githubPayload) {
-        System.out.println("was pull request");
+    protected String announcePullRequest(GithubPayload githubPayload) {
+        // Attempt to shorten compare URL.
+        String shortenedURL = URLShortener.bitlyfyLink(githubPayload.getPullRequest().getHtmlUrl());
+        String issueURL = shortenedURL.isEmpty() ? githubPayload.getPullRequest().getHtmlUrl() : shortenedURL;
+
+        String message = String.format("[github][%s][pull request/%s] %s - %s (%s)",
+                githubPayload.getRepository().getName(),
+                githubPayload.getAction(),
+                githubPayload.getPullRequest().getTitle(),
+                issueURL,
+                githubPayload.getPullRequest().getUser().getLogin()
+        );
+
+        return message;
+    }
+
+    public AnnounceSubscription getOrCreateSubscription(String network, String channel) {
+        AnnounceSubscription announceSubscription = null;
+        for (AnnounceSubscription as : announceSubscriptions) {
+            if (as.getNetwork().equals(network) && as.getChannel().equals(channel)) {
+                announceSubscription = as;
+                break;
+            }
+        }
+
+        if (announceSubscription == null) {
+            announceSubscription = new AnnounceSubscription(network, channel);
+            announceSubscriptions.add(announceSubscription);
+        }
+
+        return announceSubscription;
     }
 
 }
