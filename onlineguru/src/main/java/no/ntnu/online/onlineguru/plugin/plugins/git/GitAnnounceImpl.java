@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import no.fictive.irclib.model.network.Network;
 import no.ntnu.online.onlineguru.plugin.plugins.git.github.jsonmodel.Commit;
 import no.ntnu.online.onlineguru.plugin.plugins.git.github.jsonmodel.GitHubPayload;
+import no.ntnu.online.onlineguru.plugin.plugins.git.storage.SqliteGitAnnouncementPersister;
 import no.ntnu.online.onlineguru.utils.Wand;
 import no.ntnu.online.onlineguru.service.services.webserver.NanoHTTPD;
 import no.ntnu.online.onlineguru.service.services.webserver.Response;
