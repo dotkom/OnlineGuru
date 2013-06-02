@@ -8,6 +8,7 @@ import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.FlagsPlugin;
+import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
 import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.AnnounceSubscription;
 import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.CallbackListener;
 import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.Listeners;
@@ -15,6 +16,7 @@ import no.ntnu.online.onlineguru.service.services.webserver.Webserver;
 import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
 
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,6 +34,9 @@ public class GithubPlugin implements PluginWithDependencies {
 
     private final String database_folder = "database/";
     private final String database_file = database_folder + "github.db";
+
+    private final Flag editorFlag = Flag.A;
+    private final Flag peekingFlag = Flag.a;
 
     private GithubCallback githubCallback;
     private StorageManager storageManager;
@@ -114,9 +119,7 @@ public class GithubPlugin implements PluginWithDependencies {
             // Legal characters are A-Z a-z 0-9 . -
             // Any other character will be converted to a dash -
             if (matcher.find()) {
-                String repo = matcher.group(1).toLowerCase();
-                String setting = matcher.group(8);
-
+                // Find a channel, or return an error
                 String channel = matcher.group(2);
                 if (channel == null) {
                     if (e.isChannelMessage()) {
@@ -126,6 +129,15 @@ public class GithubPlugin implements PluginWithDependencies {
                         return "You must specify a channel when using this command in private messages.";
                     }
                 }
+
+                // Check if the user has permissions to access.
+                Set<Flag> flags = flagsPlugin.getFlags(e.getNetwork(), channel, e.getSender());
+                if (!flags.contains(Flag.a) && !flags.contains(Flag.A)) {
+                    return "You do not have access to use this command. It requires +a for info and +A to edit.";
+                }
+
+                String repo = matcher.group(1).toLowerCase();
+                String setting = matcher.group(8);
 
                 // Get the callback listener for the specified repo.
                 CallbackListener cl = listeners.get("https://github.com/" + repo);
@@ -138,23 +150,32 @@ public class GithubPlugin implements PluginWithDependencies {
                 AnnounceSubscription as = cl.getOrCreateSubscription(e.getNetwork().getServerAlias(), channel);
 
                 if (matcher.group(3) != null) {
-                    // Matched b(ranches)
-                    if (matcher.group(4) != null) {
-                        if (as.setWants_branches(setting.equals("on"))) return "Announcing of branch creating and deletion for "+repo+" in "+channel+" turned "+setting+".";
+                    if (flags.contains(Flag.A)) {
+                        // Matched b(ranches)
+                        if (matcher.group(4) != null) {
+                            if (as.setWants_branches(setting.equals("on")))
+                                return "Announcing of branch creating and deletion for " + repo + " in " + channel + " turned " + setting + ".";
+                        }
+                        // Matched c(ommits)
+                        else if (matcher.group(5) != null) {
+                            if (as.setWants_commits(setting.equals("on")))
+                                return "Announcing of commits for " + repo + " in " + channel + " turned " + setting + ".";
+                        }
+                        // Matched i(ssues)
+                        else if (matcher.group(6) != null) {
+                            if (as.setWants_issues(setting.equals("on")))
+                                return "Announcing of issue activity for " + repo + " in " + channel + " turned " + setting + ".";
+                        }
+                        // Matched p(ull)r(equests)
+                        else if (matcher.group(7) != null) {
+                            if (as.setWants_pull_requests(setting.equals("on")))
+                                return "Announcing of pull request activity for " + repo + " in " + channel + " turned " + setting + ".";
+                        }
+                        return "No subscriptions updated.";
                     }
-                    // Matched c(ommits)
-                    else if (matcher.group(5) != null) {
-                        if (as.setWants_commits(setting.equals("on"))) return "Announcing of commits for "+repo+" in "+channel+" turned "+setting+".";
+                    else {
+                        return "You do not have access to this feature. It requires +A.";
                     }
-                    // Matched i(ssues)
-                    else if (matcher.group(6) != null) {
-                        if (as.setWants_issues(setting.equals("on"))) return "Announcing of issue activity for "+repo+" in "+channel+" turned "+setting+".";
-                    }
-                    // Matched p(ull)r(equests)
-                    else if (matcher.group(7) != null) {
-                        if (as.setWants_pull_requests(setting.equals("on"))) return "Announcing of pull request activity for "+repo+" in "+channel+" turned "+setting+".";
-                    }
-                    return "No subscriptions updated.";
                 }
                 else if (e.getMessage().split(" ").length > 2 && matcher.group(2) == null) {
                     return "Invalid operation '" + e.getMessage().split(" ")[2] + "'.";
