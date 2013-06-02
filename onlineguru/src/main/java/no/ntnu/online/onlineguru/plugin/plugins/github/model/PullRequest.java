@@ -1,7 +1,6 @@
 package no.ntnu.online.onlineguru.plugin.plugins.github.model;
 
 import com.google.gson.annotations.SerializedName;
-import no.ntnu.online.onlineguru.plugin.plugins.git.github.jsonmodel.Storage;
 
 import java.io.Serializable;
 
