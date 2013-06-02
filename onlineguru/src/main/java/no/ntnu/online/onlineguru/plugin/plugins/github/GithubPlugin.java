@@ -12,6 +12,7 @@ import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
 import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.AnnounceSubscription;
 import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.CallbackListener;
 import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.Listeners;
+import no.ntnu.online.onlineguru.plugin.plugins.help.Help;
 import no.ntnu.online.onlineguru.service.services.webserver.Webserver;
 import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
@@ -65,13 +66,23 @@ public class GithubPlugin implements PluginWithDependencies {
 
     @Override
     public String[] getDependencies() {
-        return new String[]{"FlagsPlugin", };
+        return new String[]{"FlagsPlugin", "Help",};
     }
 
     @Override
     public void loadDependency(Plugin plugin) {
         if (plugin instanceof FlagsPlugin) {
             this.flagsPlugin = (FlagsPlugin) plugin;
+        }
+        if (plugin instanceof Help) {
+            Help help = (Help) plugin;
+            help.addHelp(
+                    "!github",
+                    Flag.a,
+                    "!github <repository> [channel] [branches|commits|issues|pullrequests on|off] - Manage github repository subscription for channels.",
+                    "The operations can be shortened to b|c|i|pr. Channel is optional. Picks current channel if not specified, but mandatory in private.",
+                    "If only a repository i specified, it will show the subscriptions for current channel or [channel] if specified."
+            );
         }
 
         listeners = storageManager.loadListeners();
