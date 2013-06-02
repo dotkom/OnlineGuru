@@ -2,14 +2,17 @@ package no.ntnu.online.onlineguru.plugin.plugins.github;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import no.ntnu.online.onlineguru.plugin.plugins.git.IRCAnnounce;
-import no.ntnu.online.onlineguru.plugin.plugins.github.model.GithubJSONPayload;
+import com.google.gson.JsonParseException;
+import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.CallbackListener;
+import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.Listeners;
+import no.ntnu.online.onlineguru.plugin.plugins.github.model.GithubPayload;
 import no.ntnu.online.onlineguru.service.services.webserver.NanoHTTPD;
 import no.ntnu.online.onlineguru.service.services.webserver.Response;
 import no.ntnu.online.onlineguru.service.services.webserver.WebserverCallback;
 import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
 
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -22,8 +25,11 @@ public class GithubCallback implements WebserverCallback {
     private Wand wand;
     private Gson gson;
 
-    public GithubCallback(Wand wand) {
+    private Listeners listeners;
+
+    public GithubCallback(Wand wand, Listeners listeners) {
         this.wand = wand;
+        this.listeners = listeners;
 
         GsonBuilder gsonBuilder = new GsonBuilder();
         gson = gsonBuilder
@@ -36,20 +42,23 @@ public class GithubCallback implements WebserverCallback {
         // make payload to get IRCAnnounce
         logger.debug("Request received from webserver.");
 
-        GithubJSONPayload payload = null;
+        GithubPayload payload = null;
         if (method.equalsIgnoreCase("POST") && parms.containsKey("payload")) {
-            payload = gson.fromJson(parms.getProperty("payload"), GithubJSONPayload.class);
+            try {
+                payload = gson.fromJson(parms.getProperty("payload"), GithubPayload.class);
+            } catch (JsonParseException e) {
+                logger.error("Failed to parse JSON from "+uri, e.getCause());
+                logger.error(parms.getProperty("payload"));
+            }
         }
 
         if (payload != null) {
-            System.out.println(payload);
-//            if (announceHashMap.containsKey(payload.getIdentifier())) {
-//                IRCAnnounce announce = announceHashMap.get(payload.getIdentifier());
-//                IRCAnnounce toAnnounce = new IRCAnnounce(payload, announce.getAnnounceToChannels());
-//                announceToIRC(toAnnounce);
-//            } else {
-//                logger.error(String.format("Missing announce settings for %s with payload %s", payload.getIdentifier(), payload.toString()));
-//            }
+            if (listeners.containsKey(payload.getIdentifier().toLowerCase())) {
+                listeners.get(payload.getIdentifier().toLowerCase()).incomingPayload(this, payload);
+            }
+            else {
+                logger.debug(String.format("No listener for repository %s", payload.getIdentifier()));
+            }
         }
 
         return new Response(NanoHTTPD.HTTP_OK, NanoHTTPD.MIME_PLAINTEXT, "OK");
@@ -57,6 +66,11 @@ public class GithubCallback implements WebserverCallback {
 
     @Override
     public void httpdServerShutdown(String message) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        logger.error(message);
     }
+
+    public void announceToIRC(String network, String channel, String output) {
+        wand.sendMessageToTarget(wand.getNetworkByAlias(network), channel, output);
+    }
+
 }

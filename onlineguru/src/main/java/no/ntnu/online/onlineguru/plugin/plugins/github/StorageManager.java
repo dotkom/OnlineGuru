@@ -1,14 +1,12 @@
 package no.ntnu.online.onlineguru.plugin.plugins.github;
 
 import com.google.gson.Gson;
-import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.CallbackListener;
 import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.Listeners;
 import no.ntnu.online.onlineguru.utils.SimpleIO;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author Håvard Slettvold
