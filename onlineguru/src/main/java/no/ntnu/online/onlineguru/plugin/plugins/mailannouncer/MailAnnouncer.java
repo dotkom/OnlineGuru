@@ -64,13 +64,20 @@ public class MailAnnouncer implements PluginWithDependencies {
 
     private void registerWithXmlRpcServer() {
         emailReceiver = new EmailImpl(wand);
-        XmlRpcServer xmlRpcServer = OnlineGuru.serviceLocator.getInstance(XmlRpcServer.class);
-        try {
-            xmlRpcServer.addHandler(Email.class.getName(), emailReceiver);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        }
-        // TODO: Allow chosen clients only.
+
+        new Thread() {
+
+            @Override
+            public void run() {
+                XmlRpcServer xmlRpcServer = OnlineGuru.serviceLocator.getInstance(XmlRpcServer.class);
+                try {
+                    xmlRpcServer.addHandler(Email.class.getName(), emailReceiver);
+                } catch (Exception e) {
+                    logger.error(e.getMessage());
+                }
+            }
+            // TODO: Allow chosen clients only.
+        }.start();
     }
 
 
