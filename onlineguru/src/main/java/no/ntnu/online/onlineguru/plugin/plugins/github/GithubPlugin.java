@@ -66,6 +66,25 @@ public class GithubPlugin implements PluginWithDependencies {
 
     @Override
     public String[] getDependencies() {
+        // Doing this setup in a method that is solely called by the PluginManager once.
+        // The reason is we do not want to execute these actions during tests.
+        listeners = storageManager.loadListeners();
+        if (listeners == null) {
+            listeners = new Listeners();
+        }
+        githubCallback = new GithubCallback(wand, listeners);
+
+        // Running the registering with the web server async, it may take time.
+        new Runnable() {
+            @Override
+            public void run() {
+                // Fetch the webserver instance.
+                Webserver webServer = OnlineGuru.serviceLocator.getInstance(Webserver.class);
+                // Register this plugins uri.
+                webServer.registerWebserverCallback("/plugins/git", githubCallback);
+            }
+        }.run();
+
         return new String[]{"FlagsPlugin", "Help",};
     }
 
@@ -84,23 +103,6 @@ public class GithubPlugin implements PluginWithDependencies {
                     "If only a repository i specified, it will show the subscriptions for current channel or [channel] if specified."
             );
         }
-
-        listeners = storageManager.loadListeners();
-        if (listeners == null) {
-            listeners = new Listeners();
-        }
-        githubCallback = new GithubCallback(wand, listeners);
-
-        // Running the registering with the web server async, it may take time.
-        new Runnable() {
-            @Override
-            public void run() {
-                // Fetch the webserver instance.
-                Webserver webServer = OnlineGuru.serviceLocator.getInstance(Webserver.class);
-                // Register this plugins uri.
-                webServer.registerWebserverCallback("/plugins/git", githubCallback);
-            }
-        }.run();
     }
 
 

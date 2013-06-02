@@ -11,7 +11,6 @@ import no.ntnu.online.onlineguru.service.services.webserver.WebserverCallback;
 import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
 
-import java.util.Map;
 import java.util.Properties;
 
 /**

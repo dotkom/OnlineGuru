@@ -2,9 +2,14 @@ package no.ntnu.online.onlineguru.plugin.plugins.github;
 
 import no.fictive.irclib.model.network.Network;
 import no.ntnu.online.onlineguru.helpers.EventFactory;
+import no.ntnu.online.onlineguru.plugin.plugins.flags.FlagsPlugin;
+import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
 import no.ntnu.online.onlineguru.utils.Wand;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -17,14 +22,17 @@ public class GithubPluginTest {
     private GithubPlugin githubPlugin;
     private Network network = new Network();
     private Wand wand = mock(Wand.class);
+    private FlagsPlugin flagsPlugin = mock(FlagsPlugin.class);
 
     @Before
     public void setup() {
         githubPlugin = new GithubPlugin();
+        githubPlugin.loadDependency(flagsPlugin);
 
         network.setServerAlias("testNetwork");
         githubPlugin.addWand(wand);
 
+        when(flagsPlugin.getFlags(network, "#channel", "melwil")).thenReturn(new HashSet<Flag>(){{ add(Flag.a); add(Flag.A); }});
         when(wand.getNetworkByAlias("testNetwork")).thenReturn(network);
     }
 
@@ -44,8 +52,8 @@ public class GithubPluginTest {
 
     @Test
     public void testInPrivateWithChanenl() {
-        assertEquals("Announcing of branch creating and deletion for test/test in #onlinetest turned on.", githubPlugin.handleCommand(EventFactory.createPrivMsgEvent(network, "melwil", "notinachannel", "!github https://github.com/test/test #onlinetest branches on")));
-        assertEquals("Subscriptions for #onlinetest: branches", githubPlugin.handleCommand(EventFactory.createPrivMsgEvent(network, "melwil", "notinachannel", "!github https://github.com/test/test #onlinetest")));
+        assertEquals("Announcing of branch creating and deletion for test/test in #channel turned on.", githubPlugin.handleCommand(EventFactory.createPrivMsgEvent(network, "melwil", "notinachannel", "!github https://github.com/test/test #channel branches on")));
+        assertEquals("Subscriptions for #channel: branches", githubPlugin.handleCommand(EventFactory.createPrivMsgEvent(network, "melwil", "notinachannel", "!github https://github.com/test/test #channel")));
     }
 
     @Test
