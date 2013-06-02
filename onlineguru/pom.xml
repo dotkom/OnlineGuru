@@ -122,6 +122,8 @@
             <type>jar</type>
             <scope>test</scope>
         </dependency>
+
+        <!-- Testing framework -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
@@ -176,9 +178,10 @@
         <dependency>
             <groupId>org.twitter4j</groupId>
             <artifactId>twitter4j-core</artifactId>
-            <version>2.1.12-SNAPSHOT</version>
+            <version>3.0.3</version>
         </dependency>
 
+        <!-- Used with services in OnlineGuruServices -->
         <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
@@ -206,16 +209,9 @@
 
         <!-- XML (de)serializer similar to JAXB, just more awesome -->
         <dependency>
-            <groupId>xstream</groupId>
+            <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>
-            <version>1.2.2</version>
-        </dependency>
-
-        <!-- Testing framework -->
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.8.4</version>
+            <version>1.4.4</version>
         </dependency>
 
         <!-- Excellent HTML parser library -->
@@ -227,11 +223,6 @@
 
     </dependencies>
     <repositories>
-        <repository>
-            <id>dandiep.apache</id>
-            <name>Temporary repo for couchdb4j until it ends up on central.</name>
-            <url>http://people.apache.org/~dandiep/repo/</url>
-        </repository>
         <repository>
             <id>gson</id>
             <url>http://google-gson.googlecode.com/svn/mavenrepo</url>
