@@ -35,6 +35,7 @@ public class UpdateMenu implements Runnable {
     public void run() {
         StringBuilder sb = new StringBuilder();
 
+        // This posts the required fields to the sit.no RESTful menu api.
         try {
             // Prepare post data
             String postData = "diner="+ kantine.toLowerCase() +"&trigger=single";

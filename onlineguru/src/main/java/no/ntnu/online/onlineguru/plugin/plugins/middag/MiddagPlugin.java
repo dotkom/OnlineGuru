@@ -32,6 +32,7 @@ public class MiddagPlugin implements PluginWithDependencies {
     private String[] strDays = {"", "mandag", "tirsdag", "onsdag", "torsdag", "fredag", "lørdag", "søndag",};
 
     private DateTime cache;
+    private PrivMsgEvent eventRunAfterUpdate;
     private DateTime lastPublicTrigger = new DateTime().withYear(2012);
 
     private String hangaren = "";
@@ -50,11 +51,17 @@ public class MiddagPlugin implements PluginWithDependencies {
     public void setRealfag(String realfag) {
         this.realfag = realfag;
         finishedUpdating++;
+        if (finishedUpdating == totalMenues) {
+            incomingEvent(eventRunAfterUpdate);
+        }
     }
 
     public void setHangaren(String hangaren) {
         this.hangaren = hangaren;
         finishedUpdating++;
+        if (finishedUpdating == totalMenues) {
+            incomingEvent(eventRunAfterUpdate);
+        }
     }
 
     /*
@@ -118,24 +125,22 @@ public class MiddagPlugin implements PluginWithDependencies {
                             updateMenu();
                         }
                     }
-                    else {
-                        sendPrivateMessage(pme, "Invalid 'middag' subcommand.");
-                    }
                 }
                 else {
                     // Update automatically if cache is 1 hour old.
                     if (duration > 3600) {
+                        eventRunAfterUpdate = pme;
                         updateMenu();
                     }
                     else {
                         // If they are empty or equal, that means there's no menu,
                         // or at least the message can be displayed once, instead of twice.
                         if (!hangaren.isEmpty() && !realfag.equals(hangaren)) {
-                            sendMessage(pme, "Hangaren: " + hangaren);
-                            sendMessage(pme, "Realfag: " + realfag);
+                            sendChannelMessage(pme, "Hangaren: " + hangaren);
+                            sendChannelMessage(pme, "Realfag: " + realfag);
                         }
                         else {
-                            sendMessage(pme, "Hangaren & Realfag: " + realfag);
+                            sendChannelMessage(pme, "Hangaren & Realfag: " + realfag);
                         }
                     }
                 }
@@ -147,7 +152,7 @@ public class MiddagPlugin implements PluginWithDependencies {
         wand.sendMessageToTarget(pme.getNetwork(), pme.getSender(), "[middag] " + message);
     }
 
-    private void sendMessage(PrivMsgEvent pme, String message) {
+    private void sendChannelMessage(PrivMsgEvent pme, String message) {
         Network network = pme.getNetwork();
         String target = pme.getTarget();
         String sender = pme.getSender();
