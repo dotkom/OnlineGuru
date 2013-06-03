@@ -32,7 +32,7 @@ public class MiddagPlugin implements PluginWithDependencies {
     private String[] strDays = {"", "mandag", "tirsdag", "onsdag", "torsdag", "fredag", "lørdag", "søndag",};
 
     private DateTime cache;
-    private PrivMsgEvent eventRunAfterUpdate;
+    private PrivMsgEvent eventRunAfterUpdate = null;
     private DateTime lastPublicTrigger = new DateTime().withYear(2012);
 
     private String hangaren = "";
@@ -175,6 +175,9 @@ public class MiddagPlugin implements PluginWithDependencies {
     }
 
     private void updateMenu() {
+        if (eventRunAfterUpdate != null) {
+            eventRunAfterUpdate = null;
+        }
         cache = new DateTime();
         finishedUpdating = 0;
 
