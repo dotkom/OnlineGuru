@@ -8,6 +8,7 @@ import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.FlagsPlugin;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
+import no.ntnu.online.onlineguru.plugin.plugins.help.HelpPlugin;
 import no.ntnu.online.onlineguru.utils.Wand;
 
 /**
@@ -18,7 +19,7 @@ public class ChannelJoinerPlugin implements PluginWithDependencies {
     private Wand wand;
     private FlagsPlugin flagsPlugin;
     private Flag controlFlag = Flag.a;
-    private String[] dependencies = new String[]{"FlagsPlugin",};
+    private String[] dependencies = new String[]{"FlagsPlugin", "Help"};
 
     public String getDescription() {
         return "Joins channels on command.";
@@ -66,6 +67,10 @@ public class ChannelJoinerPlugin implements PluginWithDependencies {
     public void loadDependency(Plugin plugin) {
         if (plugin instanceof FlagsPlugin) {
             flagsPlugin = (FlagsPlugin) plugin;
+        }
+        if (plugin instanceof HelpPlugin) {
+            HelpPlugin helpPlugin = (HelpPlugin) plugin;
+            helpPlugin.addHelp("join|part", controlFlag, "<join|part> <channel> - Tells the bot to join or part a channel. Only work in private messages.");
         }
     }
 }
