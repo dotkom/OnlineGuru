@@ -6,35 +6,34 @@ import no.fictive.irclib.event.model.EventType;
 import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
-import no.ntnu.online.onlineguru.plugin.plugins.chanserv.control.ChanServ;
+import no.ntnu.online.onlineguru.plugin.plugins.flags.FlagsPlugin;
 import no.ntnu.online.onlineguru.utils.Wand;
 
 
-public class DiePlugin implements Plugin, PluginWithDependencies {
+public class DiePlugin implements PluginWithDependencies {
 
-	private ChanServ chanserv;
-	private String[] dependencies = new String[] { "ChanServ" };
-	private Wand wand;
-	
-	public String getDescription() {
-		return "Dies.";
-	}
+	private FlagsPlugin flagsPlugin;
+	private String[] dependencies = new String[]{"FlagsPlugin",};
+    private Wand wand;
 
-	public void incomingEvent(Event e) {
-		switch(e.getEventType()) {
-			case PRIVMSG:
-				PrivMsgEvent pme = (PrivMsgEvent)e;
-				if(pme.isPrivateMessage()) {
-					if(pme.getMessage().equalsIgnoreCase("die")) {
-						if(chanserv.isNickLoggedIn(pme.getSender())) {
-							wand.quit(pme.getNetwork());
-						} else {
-							wand.sendMessageToTarget(pme.getNetwork(), pme.getSender(), "You are not logged in.");
-						}
-					} 
-				}
-				break;
-		}
+    public String getDescription() {
+		return "Kill the bot from irc.";
+    }
+
+    public void incomingEvent(Event e) {
+        if (e.getEventType() == EventType.PRIVMSG) {
+            PrivMsgEvent pme = (PrivMsgEvent) e;
+            if (pme.isPrivateMessage()) {
+                if (pme.getMessage().equalsIgnoreCase("die")) {
+                    if (flagsPlugin.isSuperuser(pme.getNetwork(), pme.getSender())) {
+                        wand.quit(pme.getNetwork());
+                    }
+                    else {
+                        wand.sendMessageToTarget(pme.getNetwork(), pme.getSender(), "This feature requires superuser status.");
+                    }
+                }
+            }
+        }
 	}
 
 	public void addEventDistributor(EventDistributor eventDistributor) {
@@ -50,8 +49,8 @@ public class DiePlugin implements Plugin, PluginWithDependencies {
 	}
 
 	public void loadDependency(Plugin plugin) {
-		if(plugin instanceof ChanServ) {
-			chanserv = (ChanServ)plugin;
+		if(plugin instanceof FlagsPlugin) {
+			flagsPlugin = (FlagsPlugin)plugin;
 		}
 	}
 }
