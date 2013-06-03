@@ -8,7 +8,7 @@ import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
-import no.ntnu.online.onlineguru.plugin.plugins.help.Help;
+import no.ntnu.online.onlineguru.plugin.plugins.help.HelpPlugin;
 import no.ntnu.online.onlineguru.plugin.plugins.history.HistoryPlugin;
 import no.ntnu.online.onlineguru.utils.Wand;
 import no.ntnu.online.onlineguru.service.services.history.History;
@@ -61,15 +61,15 @@ public class RegexPlugin implements PluginWithDependencies {
      */
 
     public String[] getDependencies() {
-        return new String[]{"HistoryPlugin", "Help"};
+        return new String[]{"HistoryPlugin", "HelpPlugin"};
     }
 
     public void loadDependency(Plugin plugin) {
         if (plugin instanceof HistoryPlugin) {
             history = ((HistoryPlugin) plugin).getHistory();
         }
-        if (plugin instanceof Help) {
-            Help help = (Help) plugin;
+        if (plugin instanceof HelpPlugin) {
+            HelpPlugin help = (HelpPlugin) plugin;
             help.addHelp(
                     "sed",
                     Flag.ANYONE,

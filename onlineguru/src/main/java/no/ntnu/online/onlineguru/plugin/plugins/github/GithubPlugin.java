@@ -12,7 +12,7 @@ import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
 import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.AnnounceSubscription;
 import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.CallbackListener;
 import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.Listeners;
-import no.ntnu.online.onlineguru.plugin.plugins.help.Help;
+import no.ntnu.online.onlineguru.plugin.plugins.help.HelpPlugin;
 import no.ntnu.online.onlineguru.service.services.webserver.Webserver;
 import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
@@ -85,7 +85,7 @@ public class GithubPlugin implements PluginWithDependencies {
             }
         }.start();
 
-        return new String[]{"FlagsPlugin", "Help",};
+        return new String[]{"FlagsPlugin", "HelpPlugin",};
     }
 
     @Override
@@ -93,8 +93,8 @@ public class GithubPlugin implements PluginWithDependencies {
         if (plugin instanceof FlagsPlugin) {
             this.flagsPlugin = (FlagsPlugin) plugin;
         }
-        if (plugin instanceof Help) {
-            Help help = (Help) plugin;
+        if (plugin instanceof HelpPlugin) {
+            HelpPlugin help = (HelpPlugin) plugin;
             help.addHelp(
                     "!github",
                     Flag.a,

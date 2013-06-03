@@ -53,13 +53,13 @@ public class PluginManager {
         logger.warn("Loading minimal and essential plugins for the bot to run, please edit plugins.conf to add more plugins");
         return new HashSet<String>(
                 Arrays.asList(
-                        "no.ntnu.online.onlineguru.plugin.plugins.auth.Auth",
+                        "no.ntnu.online.onlineguru.plugin.plugins.auth.AuthPlugin",
                         "no.ntnu.online.onlineguru.plugin.plugins.chanserv.control.ChanServ",
-                        "no.ntnu.online.onlineguru.plugin.plugins.channeljoiner.ChannelJoiner",
-                        "no.ntnu.online.onlineguru.plugin.plugins.die.Die",
-                        "no.ntnu.online.onlineguru.plugin.plugins.help.Help",
-                        "no.ntnu.online.onlineguru.plugin.plugins.nickserv.NickServ",
-                        "no.ntnu.online.onlineguru.plugin.plugins.version.Version"
+                        "no.ntnu.online.onlineguru.plugin.plugins.channeljoiner.ChannelJoinerPlugin",
+                        "no.ntnu.online.onlineguru.plugin.plugins.die.DiePlugin",
+                        "no.ntnu.online.onlineguru.plugin.plugins.help.HelpPlugin",
+                        "no.ntnu.online.onlineguru.plugin.plugins.nickserv.NickServPlugin",
+                        "no.ntnu.online.onlineguru.plugin.plugins.version.VersionPlugin"
                 )
         );
 

@@ -17,14 +17,14 @@ import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
-import no.ntnu.online.onlineguru.plugin.plugins.help.Help;
+import no.ntnu.online.onlineguru.plugin.plugins.help.HelpPlugin;
 import no.ntnu.online.onlineguru.utils.SimpleIO;
 import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
 
 
-public class LastFM implements PluginWithDependencies {
-    static Logger logger = Logger.getLogger(LastFM.class);
+public class LastFMPlugin implements PluginWithDependencies {
+    static Logger logger = Logger.getLogger(LastFMPlugin.class);
 
     private String apikey = null;
     private final String settings_folder = "settings/";
@@ -35,7 +35,7 @@ public class LastFM implements PluginWithDependencies {
     private Map<String, String> usernameMapping = new HashMap<String, String>();
     private Wand wand;
 
-    public LastFM() {
+    public LastFMPlugin() {
         initiate();
         Caller.getInstance().setUserAgent("onlineguru");
     }
@@ -186,12 +186,12 @@ public class LastFM implements PluginWithDependencies {
     }
 
     public String[] getDependencies() {
-        return new String[]{"Help",};
+        return new String[]{"HelpPlugin",};
     }
 
     public void loadDependency(Plugin plugin) {
-        if (plugin instanceof Help) {
-            Help help = (Help) plugin;
+        if (plugin instanceof HelpPlugin) {
+            HelpPlugin help = (HelpPlugin) plugin;
             help.addHelp(
                     "!np",
                     Flag.ANYONE,

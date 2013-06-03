@@ -14,8 +14,8 @@ import static org.junit.Assert.assertTrue;
  */
 public class SpotifyPluginTest{
 
-    Spotify spotifyPlugin = new Spotify();
-    Pattern linkPAttern = spotifyPlugin.getLinkPattern();
+    SpotifyPlugin spotifyPluginPlugin = new SpotifyPlugin();
+    Pattern linkPAttern = spotifyPluginPlugin.getLinkPattern();
     Matcher matcher;
 
     @Test

@@ -19,11 +19,11 @@ import static org.junit.Assert.*;
  */
 
 
-public class NickServTest {
+public class NickServPluginTest {
 
     String myNick = "OnlineGuru";
 
-    NickServ ns;
+    NickServPlugin ns;
     Network network;
     IRCEventPacket testPackage;
 
@@ -51,8 +51,8 @@ public class NickServTest {
 
         Wand fakeWand = new FakeWand(networks, channels);
 
-        // Make NickServ and a Network instance
-        ns = new NickServ();
+        // Make NickServPlugin and a Network instance
+        ns = new NickServPlugin();
         ns.addWand(fakeWand);
 
         // Simulate a connect to a server. This will make an AuthHandler.

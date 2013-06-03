@@ -16,14 +16,14 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * The scope of these tests are limited to actions that are manually executed.
- * Updating the peak based on users joining the channel can only ever be tested if
+ * Updating the peakPlugin based on users joining the channel can only ever be tested if
  * the bot is running since I can't/won't mock the entire connection etc.
  *
  * @author Håvard Slettvold
  */
 public class PeakPluginTest {
 
-    Peak peak;
+    PeakPlugin peakPlugin;
     FakeWand fakeWand;
     Network network;
 
@@ -37,7 +37,7 @@ public class PeakPluginTest {
 
     @Before
     public void setup() {
-        peak = new Peak();
+        peakPlugin = new PeakPlugin();
 
         // Make the network
         network = new Network();
@@ -53,29 +53,29 @@ public class PeakPluginTest {
         fakeWand = new FakeWand(networks, channels);
         fakeWand.setNick("jabba");
 
-        peak.addWand(fakeWand);
+        peakPlugin.addWand(fakeWand);
 
         // Simulate a nick joining the channel
         testChannel.addNick(me);
         JoinEvent je = EventFactory.createJoinEvent(network, testChannel.getChannelname(), "jabba");
-        peak.incomingEvent(je);
+        peakPlugin.incomingEvent(je);
     }
 
     @Test
     public void testNewChannelCount() {
         // Channel was joined by 1 nick, that nick was me. Count should be 1 and no update occurs.
-        assertFalse(peak.updatePeakForChannel(network, testChannel));
-        assertEquals(1, peak.getCount(network, testChannel));
+        assertFalse(peakPlugin.updatePeakForChannel(network, testChannel));
+        assertEquals(1, peakPlugin.getCount(network, testChannel));
     }
 
     @Test
     public void testAfterAddingNicksManually() {
         testChannel.addNick(testNick1);
-        assertTrue(peak.updatePeakForChannel(network, testChannel));
-        assertFalse(peak.updatePeakForChannel(network, testChannel));
+        assertTrue(peakPlugin.updatePeakForChannel(network, testChannel));
+        assertFalse(peakPlugin.updatePeakForChannel(network, testChannel));
 
         testChannel.addNick(testNick2);
-        assertTrue(peak.updatePeakForChannel(network, testChannel));
-        assertFalse(peak.updatePeakForChannel(network, testChannel));
+        assertTrue(peakPlugin.updatePeakForChannel(network, testChannel));
+        assertFalse(peakPlugin.updatePeakForChannel(network, testChannel));
     }
 }

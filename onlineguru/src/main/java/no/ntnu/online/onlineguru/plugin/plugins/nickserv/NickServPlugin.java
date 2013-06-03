@@ -8,7 +8,7 @@ import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
-import no.ntnu.online.onlineguru.plugin.plugins.help.Help;
+import no.ntnu.online.onlineguru.plugin.plugins.help.HelpPlugin;
 import no.ntnu.online.onlineguru.plugin.plugins.manuallogin.ManualLoginPlugin;
 import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
@@ -21,15 +21,15 @@ import java.util.Map;
  *
  * @author Håvard Slettvold
  */
-public class NickServ implements PluginWithDependencies {
+public class NickServPlugin implements PluginWithDependencies {
 
     private Wand wand;
 
     private Map<Network, AuthHandler> authHandlers;
 
-    static Logger logger = Logger.getLogger(NickServ.class);
+    static Logger logger = Logger.getLogger(NickServPlugin.class);
 
-    public NickServ() {
+    public NickServPlugin() {
         authHandlers = new HashMap<Network, AuthHandler>();
     }
 
@@ -222,7 +222,7 @@ public class NickServ implements PluginWithDependencies {
     }
 
     /*
-     * Public methods for NickServ.
+     * Public methods for NickServPlugin.
      */
 
     /**
@@ -250,12 +250,12 @@ public class NickServ implements PluginWithDependencies {
     }
 
     public String[] getDependencies() {
-        return new String[] {"Help", };
+        return new String[] {"HelpPlugin", };
     }
 
     public void loadDependency(Plugin plugin) {
-        if (plugin instanceof Help) {
-            Help help = (Help)plugin;
+        if (plugin instanceof HelpPlugin) {
+            HelpPlugin help = (HelpPlugin)plugin;
             help.addHelp("!whois", Flag.ANYONE,  "!whois [nick] - Show the username that you or a nick is authenticated with.");
             help.addHelp("!refreshauth", Flag.ANYONE, "!refreshauth [nick] - Update the information about your nick or another [nick] authentication username.");
         }

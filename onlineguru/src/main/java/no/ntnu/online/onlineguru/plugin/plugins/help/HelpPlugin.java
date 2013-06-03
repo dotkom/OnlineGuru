@@ -15,13 +15,13 @@ import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
 
 /**
- * This plugin manages help for the bot. Help is compiled on bot compile time.
+ * This plugin manages help for the bot. HelpPlugin is compiled on bot compile time.
  *
  * @author Håvard Slettvold
  */
 
-public class Help implements PluginWithDependencies {
-    static Logger logger = Logger.getLogger(Help.class);
+public class HelpPlugin implements PluginWithDependencies {
+    static Logger logger = Logger.getLogger(HelpPlugin.class);
 
     private Wand wand;
     private FlagsPlugin flagsPlugin;
@@ -147,7 +147,7 @@ public class Help implements PluginWithDependencies {
     }
 
 	/*
-     * Public methods for Help
+     * Public methods for HelpPlugin
 	 */
 
     /**
@@ -162,13 +162,13 @@ public class Help implements PluginWithDependencies {
         int maxHelpTextLength = 200;
 
         if (helpText.length > 5) {
-            logger.error("Help does not accept more than 5 lines of text per trigger. '" + helpTrigger + "'");
+            logger.error("HelpPlugin does not accept more than 5 lines of text per trigger. '" + helpTrigger + "'");
         }
         else {
             boolean approved = true;
             for (String text : helpText) {
                 if (text.length() > maxHelpTextLength) {
-                    logger.error("Help does not accept more than " + maxHelpTextLength + " characters per line of help text. '" + helpTrigger + "'");
+                    logger.error("HelpPlugin does not accept more than " + maxHelpTextLength + " characters per line of help text. '" + helpTrigger + "'");
                     approved = false;
                 }
             }

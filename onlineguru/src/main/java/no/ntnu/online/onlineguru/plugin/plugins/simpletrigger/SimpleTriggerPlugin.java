@@ -13,7 +13,7 @@ import no.ntnu.online.onlineguru.plugin.plugins.flags.FlagsPlugin;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
 import no.ntnu.online.onlineguru.utils.Wand;
 
-public class SimpleTrigger implements PluginWithDependencies {
+public class SimpleTriggerPlugin implements PluginWithDependencies {
 
     private Map<String, String> triggers = new HashMap<String, String>();
     private SimpleTriggerSettings simpleTriggerSettings;
@@ -25,7 +25,7 @@ public class SimpleTrigger implements PluginWithDependencies {
     private final static String DELETE_KEYWORD = "delete trigger";
     private final Flag CONTROL_FLAG = Flag.a;
 
-    public SimpleTrigger() {
+    public SimpleTriggerPlugin() {
         simpleTriggerSettings = new SimpleTriggerSettings(this);
         simpleTriggerSettings.initiate();
     }

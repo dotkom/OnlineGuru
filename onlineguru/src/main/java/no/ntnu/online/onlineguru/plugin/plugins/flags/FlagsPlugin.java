@@ -11,8 +11,8 @@ import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.storage.NetworkFlags;
-import no.ntnu.online.onlineguru.plugin.plugins.help.Help;
-import no.ntnu.online.onlineguru.plugin.plugins.nickserv.NickServ;
+import no.ntnu.online.onlineguru.plugin.plugins.help.HelpPlugin;
+import no.ntnu.online.onlineguru.plugin.plugins.nickserv.NickServPlugin;
 import no.ntnu.online.onlineguru.utils.SimpleIO;
 import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
@@ -29,7 +29,7 @@ public class FlagsPlugin implements PluginWithDependencies {
     static Logger logger = Logger.getLogger(FlagsPlugin.class);
 
     private Wand wand;
-    private NickServ nickserv;
+    private NickServPlugin nickserv;
 
     private Map<Network, NetworkFlags> networks;
     private CommandHandler commandHandler;
@@ -75,15 +75,15 @@ public class FlagsPlugin implements PluginWithDependencies {
      */
 
     public String[] getDependencies() {
-        return new String[]{"NickServ","Help",};
+        return new String[]{"NickServPlugin","HelpPlugin",};
     }
 
     public void loadDependency(Plugin plugin) {
-        if (plugin instanceof NickServ) {
-            this.nickserv = (NickServ) plugin;
+        if (plugin instanceof NickServPlugin) {
+            this.nickserv = (NickServPlugin) plugin;
         }
-        if (plugin instanceof Help) {
-            Help help = (Help) plugin;
+        if (plugin instanceof HelpPlugin) {
+            HelpPlugin help = (HelpPlugin) plugin;
             help.addHelp(
                     "flags",
                     Flag.f,

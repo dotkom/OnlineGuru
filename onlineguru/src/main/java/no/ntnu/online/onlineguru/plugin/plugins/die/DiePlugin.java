@@ -10,7 +10,7 @@ import no.ntnu.online.onlineguru.plugin.plugins.chanserv.control.ChanServ;
 import no.ntnu.online.onlineguru.utils.Wand;
 
 
-public class Die implements Plugin, PluginWithDependencies {
+public class DiePlugin implements Plugin, PluginWithDependencies {
 
 	private ChanServ chanserv;
 	private String[] dependencies = new String[] { "ChanServ" };

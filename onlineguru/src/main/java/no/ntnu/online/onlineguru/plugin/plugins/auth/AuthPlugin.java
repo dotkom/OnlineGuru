@@ -21,21 +21,21 @@ import no.ntnu.online.onlineguru.utils.settingsreader.Settings;
 import no.ntnu.online.onlineguru.utils.settingsreader.SettingsReader;
 
 /**
- * This plugin will authenticate onlineguru with Auth on connect.
+ * This plugin will authenticate onlineguru with AuthPlugin on connect.
  * 
  * @author melwil
  */
 
-public class Auth implements Plugin {
+public class AuthPlugin implements Plugin {
 	
 	private Wand wand;
-	static Logger logger = Logger.getLogger(Auth.class);
+	static Logger logger = Logger.getLogger(AuthPlugin.class);
 	
 	private final String settings_folder = "settings/";
 	private final String settings_file = settings_folder + "auth.conf";
 	private HashMap<String, AuthEntry> networks = new HashMap<String, AuthEntry>();
 
-	public Auth() {
+	public AuthPlugin() {
         try {
 		    initiate();
         } catch (MissingSettingsException mse) {

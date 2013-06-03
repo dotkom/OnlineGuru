@@ -10,7 +10,7 @@ import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.utils.Wand;
 
-public class Spotify implements Plugin {
+public class SpotifyPlugin implements Plugin {
 	
 	private Wand wand;
 	private Pattern linkPattern = Pattern.compile("((http://)?open.spotify.com/(album|artist|track)/([^\\s]+))|(spotify:(album|artist|track):[^\\s]+)");
@@ -18,7 +18,7 @@ public class Spotify implements Plugin {
 	private Types linkCase;
 	
 	public String getDescription() {
-		return "Returns information about a track, artist or album from the Spotify lookup API.";
+		return "Returns information about a track, artist or album from the SpotifyPlugin lookup API.";
 	}
     /*
         http://open.spotify.com/track/1x6ACsKV4UdWS2FMuPFUiT

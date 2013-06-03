@@ -9,14 +9,14 @@ import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.utils.Wand;
 
-public class URLHandler implements Plugin {
+public class URLHandlerPlugin implements Plugin {
 
     private final int shorteningThreshhold = 42;
 
 
 	private Wand wand;
 	
-	public URLHandler() {
+	public URLHandlerPlugin() {
 		
 	}
 

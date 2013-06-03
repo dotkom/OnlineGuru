@@ -5,7 +5,7 @@ import java.util.Map;
 
 /**
  * This holds the authentication usernames for nicks on a network.
- * It is used with {@link NickServ}, which links a Network with an AuthHandler
+ * It is used with {@link NickServPlugin}, which links a Network with an AuthHandler
  *
  * @author Håvard Slettvold
  */

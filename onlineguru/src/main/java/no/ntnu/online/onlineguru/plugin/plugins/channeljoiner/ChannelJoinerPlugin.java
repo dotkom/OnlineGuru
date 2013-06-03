@@ -9,7 +9,7 @@ import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
 import no.ntnu.online.onlineguru.plugin.plugins.chanserv.control.ChanServ;
 import no.ntnu.online.onlineguru.utils.Wand;
 
-public class ChannelJoiner implements Plugin, PluginWithDependencies{
+public class ChannelJoinerPlugin implements Plugin, PluginWithDependencies{
 
 	private EventDistributor eventDistributor;
 	private Wand wand;

@@ -4,6 +4,7 @@ import java.util.regex.*;
 
 import no.fictive.irclib.model.network.Network;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
+import no.ntnu.online.onlineguru.plugin.plugins.help.HelpPlugin;
 import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
@@ -17,13 +18,12 @@ import no.fictive.irclib.event.model.EventType;
 import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
-import no.ntnu.online.onlineguru.plugin.plugins.help.Help;
 
 /**
  * @author Håvard Slettvold
  */
 
-public class Middag implements PluginWithDependencies {
+public class MiddagPlugin implements PluginWithDependencies {
 
     private Wand wand;
 
@@ -39,11 +39,11 @@ public class Middag implements PluginWithDependencies {
     private int finishedUpdating = 0;
     private final int totalMenues = 2;
 
-    static Logger logger = Logger.getLogger(Middag.class);
+    static Logger logger = Logger.getLogger(MiddagPlugin.class);
 
     private final Pattern triggerPattern = Pattern.compile("^!middag ?(update)?$", Pattern.CASE_INSENSITIVE);
 
-    public Middag() {
+    public MiddagPlugin() {
         updateMenu();
     }
 
@@ -82,12 +82,12 @@ public class Middag implements PluginWithDependencies {
     }
 
     public String[] getDependencies() {
-        return new String[]{"Help",};
+        return new String[]{"HelpPlugin",};
     }
 
     public void loadDependency(Plugin plugin) {
-        if (plugin instanceof Help) {
-            Help help = (Help) plugin;
+        if (plugin instanceof HelpPlugin) {
+            HelpPlugin help = (HelpPlugin) plugin;
             help.addHelp(
                     "!middag",
                     Flag.ANYONE,
@@ -144,7 +144,7 @@ public class Middag implements PluginWithDependencies {
     }
 
     private void sendPrivateMessage(PrivMsgEvent pme, String message) {
-        wand.sendMessageToTarget(pme.getNetwork(), pme.getSender(), "[Middag] " + message);
+        wand.sendMessageToTarget(pme.getNetwork(), pme.getSender(), "[middag] " + message);
     }
 
     private void sendMessage(PrivMsgEvent pme, String message) {
@@ -157,10 +157,10 @@ public class Middag implements PluginWithDependencies {
         int duration = new Duration(lastPublicTrigger, new DateTime()).toStandardSeconds().getSeconds();
 
         if (duration > 0 && duration < 300) {
-            wand.sendMessageToTarget(network, sender, "[Middag] " + message);
+            wand.sendMessageToTarget(network, sender, "[middag] " + message);
         }
         else {
-            wand.sendMessageToTarget(network, target, "[Middag] " + message);
+            wand.sendMessageToTarget(network, target, "[middag] " + message);
             lastPublicTrigger = new DateTime();
         }
     }

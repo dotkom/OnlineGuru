@@ -10,8 +10,8 @@ import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.FlagsPlugin;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
-import no.ntnu.online.onlineguru.plugin.plugins.help.Help;
-import no.ntnu.online.onlineguru.plugin.plugins.nickserv.NickServ;
+import no.ntnu.online.onlineguru.plugin.plugins.help.HelpPlugin;
+import no.ntnu.online.onlineguru.plugin.plugins.nickserv.NickServPlugin;
 import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
 
@@ -23,7 +23,7 @@ public class ManualLoginPlugin implements PluginWithDependencies {
 
     private static Logger logger;
     private Map<Network, Map<String, String>> networkLogins;
-    private NickServ nickServ;
+    private NickServPlugin nickServPlugin;
     private FlagsPlugin flagsPlugin;
     private Wand wand;
 
@@ -58,14 +58,14 @@ public class ManualLoginPlugin implements PluginWithDependencies {
 
     public String[] getDependencies() {
 
-        return new String[] { "NickServ", "Help" , "FlagsPlugin" };
+        return new String[] { "NickServPlugin", "HelpPlugin" , "FlagsPlugin" };
     }
 
     public void loadDependency(Plugin plugin) {
-        if (plugin instanceof NickServ)
-            nickServ = (NickServ)plugin;
-        if (plugin instanceof Help)
-            injectHelp((Help)plugin);
+        if (plugin instanceof NickServPlugin)
+            nickServPlugin = (NickServPlugin)plugin;
+        if (plugin instanceof HelpPlugin)
+            injectHelp((HelpPlugin)plugin);
         if (plugin instanceof FlagsPlugin)
             flagsPlugin = (FlagsPlugin)plugin;
     }
@@ -74,7 +74,7 @@ public class ManualLoginPlugin implements PluginWithDependencies {
         networkLogins.put(e.getNetwork(), Storage.loadNetworkLoginDatabase(e.getNetwork()));
     }
 
-    private void injectHelp(Help help) {
+    private void injectHelp(HelpPlugin help) {
 
         help.addHelp("register", Flag.A, "register [nick] [password] - Register a user with the bot.");
         help.addHelp("reloadlogin", Flag.A, "reloadlogin - Reload the login database.");
@@ -109,14 +109,14 @@ public class ManualLoginPlugin implements PluginWithDependencies {
 
 
         //If the syntax is not correct and the user is authenticated and superuser, send a message to help the user out
-        if (tokens.length != 2 && nickServ.isAuthed(network, sender) && flagsPlugin.isSuperuser(network, sender)) {
+        if (tokens.length != 2 && nickServPlugin.isAuthed(network, sender) && flagsPlugin.isSuperuser(network, sender)) {
             wand.sendMessageToTarget(network, sender, "Wrong syntax. See !help register.");
             return;
         }
 
 
         //A user must be authed and be superuser in order to register users
-        if (nickServ.isAuthed(network, sender) && flagsPlugin.isSuperuser(network, sender)) {
+        if (nickServPlugin.isAuthed(network, sender) && flagsPlugin.isSuperuser(network, sender)) {
             String username = tokens[0];
             String password = tokens[1];
 
@@ -157,7 +157,7 @@ public class ManualLoginPlugin implements PluginWithDependencies {
         }
 
         if(networkLogins.get(network).containsKey(username) && networkLogins.get(network).get(username).equals(password)) {
-            nickServ.fakeNickServAuthentication(network, sender, sender);
+            nickServPlugin.fakeNickServAuthentication(network, sender, sender);
             wand.sendMessageToTarget(network, sender, "Login successful.");
         }
         else
@@ -169,7 +169,7 @@ public class ManualLoginPlugin implements PluginWithDependencies {
         Network network = e.getNetwork();
         String sender = e.getSender();
 
-        if(nickServ.isAuthed(network, sender) && flagsPlugin.isSuperuser(network, sender)) {
+        if(nickServPlugin.isAuthed(network, sender) && flagsPlugin.isSuperuser(network, sender)) {
             networkLogins.put(network, Storage.loadNetworkLoginDatabase(network));
             wand.sendMessageToTarget(network, sender, String.format("Database successfully reloaded for network %s",
                                                                     network.getServerAlias()));

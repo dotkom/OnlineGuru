@@ -17,14 +17,14 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * MailAnnouncer is a {@link no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies} in {@link no.ntnu.online.onlineguru.OnlineGuru}
+ * MailAnnouncerPlugin is a {@link no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies} in {@link no.ntnu.online.onlineguru.OnlineGuru}
  * @todo fixme refactor this shitty plugin
  *
  * @author Roy Sindre Norangshol <roy.sindre@norangshol.no>
  */
-public class MailAnnouncer implements PluginWithDependencies {
-    static Logger logger = Logger.getLogger(MailAnnouncer.class);
-    private static final String DESCRIPTION = "MailAnnouncer announces incoming messages thru our XML RPC Server as Email messages to defined IRC channels";
+public class MailAnnouncerPlugin implements PluginWithDependencies {
+    static Logger logger = Logger.getLogger(MailAnnouncerPlugin.class);
+    private static final String DESCRIPTION = "MailAnnouncerPlugin announces incoming messages thru our XML RPC Server as Email messages to defined IRC channels";
     private static final String TRIGGER = "mail";
     private final String[] dependencies = new String[]{"ChanServ"};
     protected static final String DB_FOLDER = "database/";
@@ -35,7 +35,7 @@ public class MailAnnouncer implements PluginWithDependencies {
     private ChanServ chanServ;
 
 
-    public MailAnnouncer() {
+    public MailAnnouncerPlugin() {
         super();
     }
 

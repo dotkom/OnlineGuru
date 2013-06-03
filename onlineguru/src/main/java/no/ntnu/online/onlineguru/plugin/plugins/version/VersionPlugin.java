@@ -7,7 +7,7 @@ import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.utils.Wand;
 
-public class Version implements Plugin {
+public class VersionPlugin implements Plugin {
 	
 	private Wand wand;
 

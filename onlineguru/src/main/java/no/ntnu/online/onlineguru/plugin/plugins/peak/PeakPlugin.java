@@ -11,7 +11,7 @@ import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
-import no.ntnu.online.onlineguru.plugin.plugins.help.Help;
+import no.ntnu.online.onlineguru.plugin.plugins.help.HelpPlugin;
 import no.ntnu.online.onlineguru.utils.SimpleIO;
 import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
@@ -24,11 +24,11 @@ import java.util.Map;
  * @author Håvard Slettvold
  */
 
-public class Peak implements PluginWithDependencies {
+public class PeakPlugin implements PluginWithDependencies {
 
     private Wand wand;
 
-    static Logger logger = Logger.getLogger(Peak.class);
+    static Logger logger = Logger.getLogger(PeakPlugin.class);
 
     private final String database_folder = "database/";
 	private final String database_file = database_folder + "peak.db";
@@ -36,7 +36,7 @@ public class Peak implements PluginWithDependencies {
     private Map<String, String> peaks = new HashMap<String, String>();
     private boolean enabled;
 
-    public Peak() {
+    public PeakPlugin() {
         initiate();
     }
 
@@ -74,12 +74,12 @@ public class Peak implements PluginWithDependencies {
      * Metoder som arves fra PluginWithDependencies
      */
     public String[] getDependencies() {
-        return new String[] {"Help", };
+        return new String[] {"HelpPlugin", };
     }
 
     public void loadDependency(Plugin plugin) {
-		if (plugin instanceof Help) {
-			Help help = (Help)plugin;
+		if (plugin instanceof HelpPlugin) {
+			HelpPlugin help = (HelpPlugin)plugin;
 			help.addHelp("!peak", Flag.ANYONE, "!peak [channel] - Display the peak user count for the current channel, or specify a [channel].");
 		}
 	}

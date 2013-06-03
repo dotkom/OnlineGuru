@@ -10,7 +10,7 @@ import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * FakeWand suited for the Peak plugin. We only need myNick()
+ * FakeWand suited for the PeakPlugin plugin. We only need myNick()
  *
  * @author Håvard Slettvold
  */

@@ -20,12 +20,12 @@ import java.net.URLConnection;
 public class UpdateMenu implements Runnable {
 
     static Logger logger = Logger.getLogger(UpdateMenu.class);
-    private Middag middag;
+    private MiddagPlugin middag;
     private String kantine;
 
     private final String URLTEXT = "https://www.sit.no/ajaxdinner/get";
 
-    public UpdateMenu(Middag middag, String kantine) {
+    public UpdateMenu(MiddagPlugin middag, String kantine) {
         this.middag = middag;
         this.kantine = kantine;
 

@@ -18,7 +18,7 @@ import static no.ntnu.online.onlineguru.plugin.plugins.mailannouncer.LookupAnnou
  */
 public class EmailImpl implements Email {
     static Logger logger = Logger.getLogger(EmailImpl.class);
-    private final String DEFAULT_DB_FILE_ANNOUNCES = MailAnnouncer.DB_FOLDER + "mailannouncer-announces.db";
+    private final String DEFAULT_DB_FILE_ANNOUNCES = MailAnnouncerPlugin.DB_FOLDER + "mailannouncer-announces.db";
     private HashMap<String, Announce> announceHashMap;
     private AnnouncementRepository announcementRepository;
     private Wand wand;
