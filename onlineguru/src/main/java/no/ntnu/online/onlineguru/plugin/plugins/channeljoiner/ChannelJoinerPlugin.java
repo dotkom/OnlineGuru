@@ -6,64 +6,66 @@ import no.fictive.irclib.event.model.EventType;
 import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
-import no.ntnu.online.onlineguru.plugin.plugins.chanserv.control.ChanServ;
+import no.ntnu.online.onlineguru.plugin.plugins.flags.FlagsPlugin;
+import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
 import no.ntnu.online.onlineguru.utils.Wand;
 
-public class ChannelJoinerPlugin implements Plugin, PluginWithDependencies{
+/**
+ * @author Håvard Slettvold
+ */
+public class ChannelJoinerPlugin implements PluginWithDependencies {
 
-	private EventDistributor eventDistributor;
-	private Wand wand;
-	private ChanServ chanServ;
-	private String[] dependencies = new String[] { "ChanServ" };
-	
-	public String getDescription() {
-		return "Joins a channel.";
-	}
+    private Wand wand;
+    private FlagsPlugin flagsPlugin;
+    private Flag controlFlag = Flag.a;
+    private String[] dependencies = new String[]{"FlagsPlugin",};
 
-	public void incomingEvent(Event e) {
-		if(e.getEventType() == EventType.PRIVMSG) {
-			PrivMsgEvent privmsg = (PrivMsgEvent)e;
-			
-			if(privmsg.isPrivateMessage()) {
-			
-				String[] parts = privmsg.getMessage().split("\\s");
-				if(parts.length == 2 && parts[0].equalsIgnoreCase("join")) {
-					if(this.chanServ.isNickLoggedIn(privmsg.getSender())) {
-						String channel = parts[1];
-						wand.join(e.getNetwork(), channel);
-					} else {
-						wand.sendMessageToTarget(e.getNetwork(), privmsg.getSender(), "You are not logged in.");
-					}
-				}
-				if(parts.length == 2 && parts[0].equalsIgnoreCase("part")) {
-					if(this.chanServ.isNickLoggedIn(privmsg.getSender())) {
-						String channel = parts[1];
-						wand.part(e.getNetwork(), channel);
-					} else {
-						wand.sendMessageToTarget(e.getNetwork(), privmsg.getSender(), "You are not logged in.");
-					}
-				}
-			}
-		}
-	}
+    public String getDescription() {
+        return "Joins channels on command.";
+    }
 
-	public void addEventDistributor(EventDistributor eventDistributor) {
-		this.eventDistributor = eventDistributor;
-		this.eventDistributor.addListener(this, EventType.PRIVMSG);
-		this.eventDistributor.addListener(this, EventType.NUMERIC);
-	}
+    public void incomingEvent(Event e) {
+        if (e.getEventType() == EventType.PRIVMSG) {
+            PrivMsgEvent pme = (PrivMsgEvent) e;
+            if (pme.isPrivateMessage()) {
+                String[] parts = pme.getMessage().split("\\s");
+                if (parts.length == 2 && parts[0].equalsIgnoreCase("join")) {
+                    String channel = parts[1];
+                    if (flagsPlugin.getFlags(pme.getNetwork(), channel, pme.getSender()).contains(controlFlag)) {
+                        wand.join(e.getNetwork(), channel);
+                    }
+                    else {
+                        wand.sendMessageToTarget(e.getNetwork(), pme.getSender(), "You have insufficient access to use this command. +a required.");
+                    }
+                }
+                if (parts.length == 2 && parts[0].equalsIgnoreCase("part")) {
+                    String channel = parts[1];
+                    if (flagsPlugin.getFlags(pme.getNetwork(), channel, pme.getSender()).contains(controlFlag)) {
+                        wand.part(e.getNetwork(), channel);
+                    }
+                    else {
+                        wand.sendMessageToTarget(e.getNetwork(), pme.getSender(), "You have insufficient access to use this command. +a required.");
+                    }
+                }
+            }
+        }
+    }
 
-	public void addWand(Wand wand) {
-		this.wand = wand;
-	}
-	
-	public String[] getDependencies() {
-		return dependencies;
-	}
+    public void addEventDistributor(EventDistributor eventDistributor) {
+        eventDistributor.addListener(this, EventType.PRIVMSG);
+    }
 
-	public void loadDependency(Plugin plugin) {
-		if(plugin instanceof ChanServ) {
-			chanServ = (ChanServ) plugin;
-		}
-	}
+    public void addWand(Wand wand) {
+        this.wand = wand;
+    }
+
+    public String[] getDependencies() {
+        return dependencies;
+    }
+
+    public void loadDependency(Plugin plugin) {
+        if (plugin instanceof FlagsPlugin) {
+            flagsPlugin = (FlagsPlugin) plugin;
+        }
+    }
 }
