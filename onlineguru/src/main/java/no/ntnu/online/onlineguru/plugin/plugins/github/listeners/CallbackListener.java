@@ -161,7 +161,7 @@ public class CallbackListener {
     public AnnounceSubscription getOrCreateSubscription(String network, String channel) {
         AnnounceSubscription announceSubscription = null;
         for (AnnounceSubscription as : announceSubscriptions) {
-            if (as.getNetwork().equals(network) && as.getChannel().equals(channel)) {
+            if (as.getNetwork().equals(network) && as.getChannel().equalsIgnoreCase(channel)) {
                 announceSubscription = as;
                 break;
             }
