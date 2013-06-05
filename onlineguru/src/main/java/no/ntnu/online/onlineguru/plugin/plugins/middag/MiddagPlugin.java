@@ -51,7 +51,7 @@ public class MiddagPlugin implements PluginWithDependencies {
     public void setRealfag(String realfag) {
         this.realfag = realfag;
         finishedUpdating++;
-        if (finishedUpdating == totalMenues) {
+        if (finishedUpdating == totalMenues && eventRunAfterUpdate != null) {
             incomingEvent(eventRunAfterUpdate);
         }
     }
@@ -59,7 +59,7 @@ public class MiddagPlugin implements PluginWithDependencies {
     public void setHangaren(String hangaren) {
         this.hangaren = hangaren;
         finishedUpdating++;
-        if (finishedUpdating == totalMenues) {
+        if (finishedUpdating == totalMenues && eventRunAfterUpdate != null) {
             incomingEvent(eventRunAfterUpdate);
         }
     }

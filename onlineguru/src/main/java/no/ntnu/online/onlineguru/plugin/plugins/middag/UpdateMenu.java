@@ -20,13 +20,13 @@ import java.net.URLConnection;
 public class UpdateMenu implements Runnable {
 
     static Logger logger = Logger.getLogger(UpdateMenu.class);
-    private MiddagPlugin middag;
+    private MiddagPlugin middagPlugin;
     private String kantine;
 
     private final String URLTEXT = "https://www.sit.no/ajaxdinner/get";
 
-    public UpdateMenu(MiddagPlugin middag, String kantine) {
-        this.middag = middag;
+    public UpdateMenu(MiddagPlugin middagPlugin, String kantine) {
+        this.middagPlugin = middagPlugin;
         this.kantine = kantine;
 
         new Thread(this).start();
@@ -84,11 +84,11 @@ public class UpdateMenu implements Runnable {
     public void setMenu(String kantine, String menu) {
         switch (Kantiner.valueOf(kantine)) {
             case HANGAREN: {
-                middag.setHangaren(menu);
+                middagPlugin.setHangaren(menu);
                 break;
             }
             case REALFAG: {
-                middag.setRealfag(menu);
+                middagPlugin.setRealfag(menu);
                 break;
             }
         }
