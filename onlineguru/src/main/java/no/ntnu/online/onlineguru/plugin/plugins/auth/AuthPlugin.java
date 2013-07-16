@@ -100,12 +100,7 @@ public class AuthPlugin implements Plugin {
 
 	public void incomingEvent(Event e) {
 		if (e instanceof ConnectEvent) {
-			AuthEntry ae = networks.get(e.getNetwork().getServerAlias());
-			if (ae != null) {
-				if (ae.getUsername().equalsIgnoreCase(wand.getMyNick(e.getNetwork()))) {
-					wand.sendMessageToTarget(e.getNetwork(), "NickServ", "identify "+ae.getPassword());
-				}
-			}
+            auth(e.getNetwork());
 		}
 	}
 
