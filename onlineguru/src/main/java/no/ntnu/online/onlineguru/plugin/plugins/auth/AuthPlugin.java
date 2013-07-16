@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import no.fictive.irclib.event.container.Event;
 import no.fictive.irclib.event.container.command.ConnectEvent;
 import no.fictive.irclib.event.model.EventType;
+import no.fictive.irclib.model.network.Network;
 import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.utils.SimpleIO;
@@ -115,5 +116,22 @@ public class AuthPlugin implements Plugin {
 	public void addWand(Wand wand) {
 		this.wand = wand;
 	}
-	
+
+    private void auth(Network network) {
+        AuthEntry ae = networks.get(network.getServerAlias());
+        if (ae != null) {
+            if (ae.getUsername().equalsIgnoreCase(wand.getMyNick(network))) {
+                wand.sendMessageToTarget(network, "NickServ", "identify "+ae.getPassword());
+            }
+        }
+    }
+
+    /**
+     * Lets other plugins force an auth.
+     */
+    public void forceAuth(Network network) {
+        auth(network);
+    }
+
+
 }

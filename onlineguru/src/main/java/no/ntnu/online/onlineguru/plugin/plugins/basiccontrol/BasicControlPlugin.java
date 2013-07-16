@@ -6,6 +6,7 @@ import no.fictive.irclib.event.model.EventType;
 import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
 import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
+import no.ntnu.online.onlineguru.plugin.plugins.auth.AuthPlugin;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.FlagsPlugin;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
 import no.ntnu.online.onlineguru.utils.Wand;
@@ -21,12 +22,13 @@ public class BasicControlPlugin implements PluginWithDependencies {
     private Wand wand;
 
     private FlagsPlugin flagsPlugin;
+    private AuthPlugin authPlugin;
 
     private Pattern basicPattern;
 
     @Override
     public String[] getDependencies() {
-        return new String[]{"FlagsPlugin", };
+        return new String[]{"FlagsPlugin", "AuthPlugin", };
     }
 
     @Override
@@ -68,6 +70,10 @@ public class BasicControlPlugin implements PluginWithDependencies {
             if (message.startsWith("nick")) {
                 wand.sendServerMessage(e.getNetwork(), "NICK "+message.split(" ")[1]);
             }
+            else if (message.startsWith("auth")) {
+                authPlugin.forceAuth(e.getNetwork());
+            }
+
         }
     }
 
