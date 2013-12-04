@@ -172,11 +172,8 @@ public class GithubPlugin implements PluginWithDependencies {
                     if (flags.contains(Flag.A)) {
                         // Matched b(ranches)
                         if (matcher.group(4) != null) {
-                            as.setWantsBranches(setting.equals("on"));
-                            as.setWantsCommits(setting.equals("on"));
-                            as.setWantsIssues(setting.equals("on"));
-                            as.setWantsPullRequests(setting.equals("on"));
-                            return "All annoucement triggers have been turned " + setting + " for " + repo + " in " + channel + ".";
+                            if (as.setWantsAll(setting.equals("on")))
+                                return "All annoucement triggers have been turned " + setting + " for " + repo + " in " + channel + ".";
                         }
                         else if (matcher.group(5) != null) {
                             if (as.setWantsBranches(setting.equals("on")))
