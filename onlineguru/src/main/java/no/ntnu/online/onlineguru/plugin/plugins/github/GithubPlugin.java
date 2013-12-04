@@ -163,7 +163,7 @@ public class GithubPlugin implements PluginWithDependencies {
                 AnnounceSubscription as = cl.getOrCreateSubscription(e.getNetwork().getServerAlias(), channel);
 
                 if (matcher.group(3) != null) {
-                    if (setting == null) {
+                    if (setting == null || !setting.equalsIgnoreCase("on")) {
                         setting = "off";
                     }
                     else {
