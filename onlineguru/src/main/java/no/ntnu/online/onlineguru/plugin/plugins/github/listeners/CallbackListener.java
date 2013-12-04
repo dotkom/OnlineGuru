@@ -136,7 +136,7 @@ public class CallbackListener {
                 githubPayload.getAction(),
                 githubPayload.getIssue().getTitle(),
                 issueURL,
-                githubPayload.getIssue().getUser().getLogin()
+                githubPayload.getSender().getLogin()
         );
 
         return message;
