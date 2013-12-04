@@ -100,7 +100,7 @@ public class GithubPlugin implements PluginWithDependencies {
                     Flag.a,
                     "!github <repository> [channel] [branches|commits|issues|pullrequests on|off] - Manage github repository subscription for channels.",
                     "The operations can be shortened to b|c|i|pr. Channel is optional. Picks current channel if not specified, but mandatory in private.",
-                    "If only a repository i specified, it will show the subscriptions for current channel or [channel] if specified."
+                    "If only a repository is specified, it will show the subscriptions for current channel or [channel] if specified."
             );
         }
     }
