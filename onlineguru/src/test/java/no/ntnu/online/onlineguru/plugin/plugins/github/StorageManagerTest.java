@@ -33,7 +33,7 @@ public class StorageManagerTest {
         cl2.getOrCreateSubscription("testnetwork", "#testchannel3");
         cl2.getOrCreateSubscription("testnetwork", "#testchannel4");
 
-        String desiredResult = "{\"callbackListeners\":{\"https://github.com/moo/moo\":{\"announceSubscriptions\":[{\"network\":\"testnetwork\",\"channel\":\"#testchannel1\",\"wants_issues\":false,\"wants_commits\":false,\"wants_pull_requests\":false,\"wants_branches\":false},{\"network\":\"testnetwork\",\"channel\":\"#testchannel2\",\"wants_issues\":false,\"wants_commits\":false,\"wants_pull_requests\":false,\"wants_branches\":false}]},\"https://github.com/test/test\":{\"announceSubscriptions\":[{\"network\":\"testnetwork\",\"channel\":\"#testchannel3\",\"wants_issues\":false,\"wants_commits\":false,\"wants_pull_requests\":false,\"wants_branches\":false},{\"network\":\"testnetwork\",\"channel\":\"#testchannel4\",\"wants_issues\":false,\"wants_commits\":false,\"wants_pull_requests\":false,\"wants_branches\":false}]}}}";
+        String desiredResult = "{\"callbackListeners\":{\"https://github.com/moo/moo\":{\"announceSubscriptions\":[{\"network\":\"testnetwork\",\"channel\":\"#testchannel1\",\"wantsIssues\":false,\"wantsCommits\":false,\"wantsPullRequests\":false,\"wantsBranches\":false},{\"network\":\"testnetwork\",\"channel\":\"#testchannel2\",\"wantsIssues\":false,\"wantsCommits\":false,\"wantsPullRequests\":false,\"wantsBranches\":false}]},\"https://github.com/test/test\":{\"announceSubscriptions\":[{\"network\":\"testnetwork\",\"channel\":\"#testchannel3\",\"wantsIssues\":false,\"wantsCommits\":false,\"wantsPullRequests\":false,\"wantsBranches\":false},{\"network\":\"testnetwork\",\"channel\":\"#testchannel4\",\"wantsIssues\":false,\"wantsCommits\":false,\"wantsPullRequests\":false,\"wantsBranches\":false}]}}}";
 
         /* Better formatted;
             {
@@ -41,17 +41,17 @@ public class StorageManagerTest {
                     "subscribers": [{
                             "network": "testnetwork",
                             "channel": "#testchannel1",
-                            "wants_issues": false,
-                            "wants_commits": false,
-                            "wants_pull_requests": false,
-                            "wants_branches": false
+                            "wantsIssues": false,
+                            "wantsCommits": false,
+                            "wantsPullRequests": false,
+                            "wantsBranches": false
                         }, {
                             "network": "testnetwork",
                             "channel": "#testchannel2",
-                            "wants_issues": false,
-                            "wants_commits": false,
-                            "wants_pull_requests": false,
-                            "wants_branches": false
+                            "wantsIssues": false,
+                            "wantsCommits": false,
+                            "wantsPullRequests": false,
+                            "wantsBranches": false
                         }
                     ]
                 },
@@ -59,17 +59,17 @@ public class StorageManagerTest {
                     "subscribers": [{
                             "network": "testnetwork",
                             "channel": "#testchannel3",
-                            "wants_issues": false,
-                            "wants_commits": false,
-                            "wants_pull_requests": false,
-                            "wants_branches": false
+                            "wantsIssues": false,
+                            "wantsCommits": false,
+                            "wantsPullRequests": false,
+                            "wantsBranches": false
                         }, {
                             "network": "testnetwork",
                             "channel": "#testchannel4",
-                            "wants_issues": false,
-                            "wants_commits": false,
-                            "wants_pull_requests": false,
-                            "wants_branches": false
+                            "wantsIssues": false,
+                            "wantsCommits": false,
+                            "wantsPullRequests": false,
+                            "wantsBranches": false
                         }
                     ]
                 }

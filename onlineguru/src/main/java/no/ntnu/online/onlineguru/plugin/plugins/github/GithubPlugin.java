@@ -172,29 +172,29 @@ public class GithubPlugin implements PluginWithDependencies {
                     if (flags.contains(Flag.A)) {
                         // Matched b(ranches)
                         if (matcher.group(4) != null) {
-                            as.setWants_branches(setting.equals("on"));
-                            as.setWants_commits(setting.equals("on"));
-                            as.setWants_issues(setting.equals("on"));
-                            as.setWants_pull_requests(setting.equals("on"));
+                            as.setWantsBranches(setting.equals("on"));
+                            as.setWantsCommits(setting.equals("on"));
+                            as.setWantsIssues(setting.equals("on"));
+                            as.setWantsPullRequests(setting.equals("on"));
                             return "All annoucement triggers have been turned " + setting + " for " + repo + " in " + channel + ".";
                         }
                         else if (matcher.group(5) != null) {
-                            if (as.setWants_branches(setting.equals("on")))
+                            if (as.setWantsBranches(setting.equals("on")))
                                 return "Announcing of branch creating and deletion for " + repo + " in " + channel + " turned " + setting + ".";
                         }
                         // Matched c(ommits)
                         else if (matcher.group(6) != null) {
-                            if (as.setWants_commits(setting.equals("on")))
+                            if (as.setWantsCommits(setting.equals("on")))
                                 return "Announcing of commits for " + repo + " in " + channel + " turned " + setting + ".";
                         }
                         // Matched i(ssues)
                         else if (matcher.group(7) != null) {
-                            if (as.setWants_issues(setting.equals("on")))
+                            if (as.setWantsIssues(setting.equals("on")))
                                 return "Announcing of issue activity for " + repo + " in " + channel + " turned " + setting + ".";
                         }
                         // Matched p(ull)r(equests)
                         else if (matcher.group(8) != null) {
-                            if (as.setWants_pull_requests(setting.equals("on")))
+                            if (as.setWantsPullRequests(setting.equals("on")))
                                 return "Announcing of pull request activity for " + repo + " in " + channel + " turned " + setting + ".";
                         }
                         return "No subscriptions updated.";

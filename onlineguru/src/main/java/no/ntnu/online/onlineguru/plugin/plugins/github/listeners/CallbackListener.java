@@ -26,7 +26,7 @@ public class CallbackListener {
         if (githubPayload.isDeleted()) {
             output = announceDelete(githubPayload);
             for (AnnounceSubscription as : announceSubscriptions) {
-                if (as.wants_branches()) {
+                if (as.wantsBranches()) {
                     network = as.getNetwork();
                     channel = as.getChannel();
                 }
@@ -36,7 +36,7 @@ public class CallbackListener {
         else if (githubPayload.isCreated()) {
             output = announceCreate(githubPayload);
             for (AnnounceSubscription as : announceSubscriptions) {
-                if (as.wants_branches()) {
+                if (as.wantsBranches()) {
                     network = as.getNetwork();
                     channel = as.getChannel();
                 }
@@ -46,7 +46,7 @@ public class CallbackListener {
         else if (githubPayload.getCommits() != null && !githubPayload.getCommits().isEmpty()) {
             output = announceCommit(githubPayload);
             for (AnnounceSubscription as : announceSubscriptions) {
-                if (as.wants_commits()) {
+                if (as.wantsCommits()) {
                     network = as.getNetwork();
                     channel = as.getChannel();
                 }
@@ -56,7 +56,7 @@ public class CallbackListener {
         else if (githubPayload.getIssue() != null) {
             output = announceIssue(githubPayload);
             for (AnnounceSubscription as : announceSubscriptions) {
-                if (as.wants_issues()) {
+                if (as.wantsIssues()) {
                     network = as.getNetwork();
                     channel = as.getChannel();
                 }
@@ -66,7 +66,7 @@ public class CallbackListener {
         else if (githubPayload.getPullRequest() != null) {
             output = announcePullRequest(githubPayload);
             for (AnnounceSubscription as : announceSubscriptions) {
-                if (as.wants_pull_requests()) {
+                if (as.wantsPullRequests()) {
                     network = as.getNetwork();
                     channel = as.getChannel();
                 }

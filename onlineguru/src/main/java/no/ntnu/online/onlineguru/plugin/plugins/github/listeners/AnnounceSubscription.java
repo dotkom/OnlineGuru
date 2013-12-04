@@ -8,10 +8,10 @@ public class AnnounceSubscription {
     private String network;
     private String channel;
 
-    private boolean wants_issues = false;
-    private boolean wants_commits = false;
-    private boolean wants_pull_requests = false;
-    private boolean wants_branches = false;
+    private boolean wantsIssues = false;
+    private boolean wantsCommits = false;
+    private boolean wantsPullRequests = false;
+    private boolean wantsBranches = false;
 
     public AnnounceSubscription() {
     }
@@ -29,13 +29,13 @@ public class AnnounceSubscription {
         return channel;
     }
 
-    public boolean wants_branches() {
-        return wants_branches;
+    public boolean wantsBranches() {
+        return wantsBranches;
     }
 
-    public boolean setWants_branches(boolean wants_branches) {
-        if (this.wants_branches ^ wants_branches) {
-            this.wants_branches = wants_branches;
+    public boolean setWantsBranches(boolean wants_branches) {
+        if (this.wantsBranches ^ wants_branches) {
+            this.wantsBranches = wants_branches;
             return true;
         }
         else {
@@ -43,13 +43,13 @@ public class AnnounceSubscription {
         }
     }
 
-    public boolean wants_commits() {
-        return wants_commits;
+    public boolean wantsCommits() {
+        return wantsCommits;
     }
 
-    public boolean setWants_commits(boolean wants_commits) {
-        if (this.wants_commits ^ wants_commits) {
-            this.wants_commits = wants_commits;
+    public boolean setWantsCommits(boolean wants_commits) {
+        if (this.wantsCommits ^ wants_commits) {
+            this.wantsCommits = wants_commits;
             return true;
         }
         else {
@@ -57,13 +57,13 @@ public class AnnounceSubscription {
         }
     }
 
-    public boolean wants_issues() {
-        return wants_issues;
+    public boolean wantsIssues() {
+        return wantsIssues;
     }
 
-    public boolean setWants_issues(boolean wants_issues) {
-        if (this.wants_issues ^ wants_issues) {
-            this.wants_issues = wants_issues;
+    public boolean setWantsIssues(boolean wants_issues) {
+        if (this.wantsIssues ^ wants_issues) {
+            this.wantsIssues = wants_issues;
             return true;
         }
         else {
@@ -71,13 +71,13 @@ public class AnnounceSubscription {
         }
     }
 
-    public boolean wants_pull_requests() {
-        return wants_pull_requests;
+    public boolean wantsPullRequests() {
+        return wantsPullRequests;
     }
 
-    public boolean setWants_pull_requests(boolean wants_pull_requests) {
-        if (this.wants_pull_requests ^ wants_pull_requests) {
-            this.wants_pull_requests = wants_pull_requests;
+    public boolean setWantsPullRequests(boolean wants_pull_requests) {
+        if (this.wantsPullRequests ^ wants_pull_requests) {
+            this.wantsPullRequests = wants_pull_requests;
             return true;
         }
         else {
@@ -88,10 +88,10 @@ public class AnnounceSubscription {
     @Override
     public String toString() {
         String output = "";
-        if (wants_branches) output += "branches";
-        if (wants_commits) output += " commits";
-        if (wants_issues) output += " issues";
-        if (wants_pull_requests) output += " pull_requests";
+        if (wantsBranches) output += "branches";
+        if (wantsCommits) output += " commits";
+        if (wantsIssues) output += " issues";
+        if (wantsPullRequests) output += " pull_requests";
 
         if (output.isEmpty()) {
             output += "none";
