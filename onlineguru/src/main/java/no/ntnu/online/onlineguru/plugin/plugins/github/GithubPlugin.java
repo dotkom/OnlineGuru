@@ -48,8 +48,8 @@ public class GithubPlugin implements PluginWithDependencies {
             " (?:https://github\\.com/)?([\\w.-]+/[\\w.-]+)" +                                    // Repository, group 1
             "(?: (#\\S+))?" +                                                                     // channel, group 2
             "(" +                                                                                 // Operation group 3
-                " (?:(b(?:ranches)?)|(c(?:ommits)?)|(?:(i(?:ssues)?)|(p(?:ull)?r(?:equests)?)))" +   // Operation, groups: branches=3 commits=4 issues=5 pullrequest=6
-                " (on|off)" +                                                                     // Setting, group 7
+                " (?:(all)|(b(?:ranches)?)|(c(?:ommits)?)|(?:(i(?:ssues)?)|(p(?:ull)?r(?:equests)?)))" +   // Operation, groups: all=4 branches=5 commits=6 issues=7 pullrequest=8
+                " (on|off)" +                                                                     // Setting, group 9
             ")?",
             Pattern.CASE_INSENSITIVE
     );
@@ -150,7 +150,7 @@ public class GithubPlugin implements PluginWithDependencies {
                 }
 
                 String repo = matcher.group(1).toLowerCase();
-                String setting = matcher.group(8);
+                String setting = matcher.group(9);
 
                 // Get the callback listener for the specified repo.
                 CallbackListener cl = listeners.get("https://github.com/" + repo);
@@ -163,24 +163,37 @@ public class GithubPlugin implements PluginWithDependencies {
                 AnnounceSubscription as = cl.getOrCreateSubscription(e.getNetwork().getServerAlias(), channel);
 
                 if (matcher.group(3) != null) {
+                    if (setting == null) {
+                        setting = "off";
+                    }
+                    else {
+                        setting = setting.toLowerCase();
+                    }
                     if (flags.contains(Flag.A)) {
                         // Matched b(ranches)
                         if (matcher.group(4) != null) {
+                            as.setWants_branches(setting.equals("on"));
+                            as.setWants_commits(setting.equals("on"));
+                            as.setWants_issues(setting.equals("on"));
+                            as.setWants_pull_requests(setting.equals("on"));
+                            return "All annoucement triggers have been turned " + setting + " for " + repo + " in " + channel + ".";
+                        }
+                        else if (matcher.group(5) != null) {
                             if (as.setWants_branches(setting.equals("on")))
                                 return "Announcing of branch creating and deletion for " + repo + " in " + channel + " turned " + setting + ".";
                         }
                         // Matched c(ommits)
-                        else if (matcher.group(5) != null) {
+                        else if (matcher.group(6) != null) {
                             if (as.setWants_commits(setting.equals("on")))
                                 return "Announcing of commits for " + repo + " in " + channel + " turned " + setting + ".";
                         }
                         // Matched i(ssues)
-                        else if (matcher.group(6) != null) {
+                        else if (matcher.group(7) != null) {
                             if (as.setWants_issues(setting.equals("on")))
                                 return "Announcing of issue activity for " + repo + " in " + channel + " turned " + setting + ".";
                         }
                         // Matched p(ull)r(equests)
-                        else if (matcher.group(7) != null) {
+                        else if (matcher.group(8) != null) {
                             if (as.setWants_pull_requests(setting.equals("on")))
                                 return "Announcing of pull request activity for " + repo + " in " + channel + " turned " + setting + ".";
                         }

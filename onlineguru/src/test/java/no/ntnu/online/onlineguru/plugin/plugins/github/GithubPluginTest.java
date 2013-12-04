@@ -67,6 +67,32 @@ public class GithubPluginTest {
 
     @Test
     public void testOperations() {
+        // After turning all on, everything should return nothing updated
+        assertEquals(
+                "All annoucement triggers have been turned on for test/test in #channel.",
+                githubPlugin.handleCommand(EventFactory.createPrivMsgEvent(network, "melwil", "notinachannel", "!github test/test #channel all on"))
+        );
+        assertEquals(
+                "No subscriptions updated.",
+                githubPlugin.handleCommand(EventFactory.createPrivMsgEvent(network, "melwil", "notinachannel", "!github test/test #channel branches on"))
+        );
+        assertEquals(
+                "No subscriptions updated.",
+                githubPlugin.handleCommand(EventFactory.createPrivMsgEvent(network, "melwil", "notinachannel", "!github test/test #channel commits on"))
+        );
+        assertEquals(
+                "No subscriptions updated.",
+                githubPlugin.handleCommand(EventFactory.createPrivMsgEvent(network, "melwil", "notinachannel", "!github test/test #channel issues on"))
+        );
+        assertEquals(
+                "No subscriptions updated.",
+                githubPlugin.handleCommand(EventFactory.createPrivMsgEvent(network, "melwil", "notinachannel", "!github test/test #channel pullrequests on"))
+        );
+        // Turn all off an check that they all return turned on
+        assertEquals(
+                "All annoucement triggers have been turned off for test/test in #channel.",
+                githubPlugin.handleCommand(EventFactory.createPrivMsgEvent(network, "melwil", "notinachannel", "!github test/test #channel all off"))
+        );
         assertEquals(
                 "Announcing of branch creating and deletion for test/test in #channel turned on.",
                 githubPlugin.handleCommand(EventFactory.createPrivMsgEvent(network, "melwil", "notinachannel", "!github test/test #channel branches on"))
