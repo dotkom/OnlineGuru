@@ -27,8 +27,8 @@ public class CommandHandler {
     );
     Pattern superuserPattern = Pattern.compile(
             "(?:superuser|su)" +            // Command
-            "\\s+(\\w+)" +                  // Nick
-            "\\s+(?:(add)|(rem|remove))"    // Action
+            "\\s+(?:(add)|(rem|remove))" +  // Action
+            "\\s+(\\w+)"                    // Nick
     );
 
     public CommandHandler(FlagsPlugin flagsPlugin) {
