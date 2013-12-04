@@ -31,20 +31,16 @@ public class AnnounceSubscription {
 
     public boolean setWantsAll(boolean wants_all) {
         boolean updated = false;
-        if (this.wantsBranches ^ wants_all) {
-            wantsBranches = wants_all;
+        if (setWantsBranches(wants_all)) {
             updated = true;
         }
-        if (this.wantsCommits ^ wants_all) {
-            wantsCommits = wants_all;
+        if (setWantsCommits(wants_all)) {
             updated = true;
         }
-        if (this.wantsPullRequests ^ wants_all) {
-            wantsPullRequests = wants_all;
+        if (setWantsIssues(wants_all)) {
             updated = true;
         }
-        if (this.wantsIssues ^ wants_all) {
-            wantsIssues = wants_all;
+        if (setWantsPullRequests(wants_all)) {
             updated = true;
         }
         return updated;
