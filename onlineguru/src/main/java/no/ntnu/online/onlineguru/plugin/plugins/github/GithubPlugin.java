@@ -163,18 +163,24 @@ public class GithubPlugin implements PluginWithDependencies {
                 AnnounceSubscription as = cl.getOrCreateSubscription(e.getNetwork().getServerAlias(), channel);
 
                 if (matcher.group(3) != null) {
+                    // Make sure setting has a sensible content
                     if (setting == null || !setting.equalsIgnoreCase("on")) {
                         setting = "off";
                     }
                     else {
                         setting = setting.toLowerCase();
                     }
-                    if (flags.contains(Flag.A)) {
-                        // Matched b(ranches)
+
+                    if (!flags.contains(Flag.A)) {
+                        return "You do not have access to this feature. It requires +A.";
+                    }
+                    else {
+                        // Matched all
                         if (matcher.group(4) != null) {
                             if (as.setWantsAll(setting.equals("on")))
                                 return "All annoucement triggers have been turned " + setting + " for " + repo + " in " + channel + ".";
                         }
+                        // Matched b(ranches)
                         else if (matcher.group(5) != null) {
                             if (as.setWantsBranches(setting.equals("on")))
                                 return "Announcing of branch creating and deletion for " + repo + " in " + channel + " turned " + setting + ".";
@@ -194,10 +200,9 @@ public class GithubPlugin implements PluginWithDependencies {
                             if (as.setWantsPullRequests(setting.equals("on")))
                                 return "Announcing of pull request activity for " + repo + " in " + channel + " turned " + setting + ".";
                         }
+
+                        // If we get here, one of the operation matched but no updates were done.
                         return "No subscriptions updated.";
-                    }
-                    else {
-                        return "You do not have access to this feature. It requires +A.";
                     }
                 }
                 else if (e.getMessage().split(" ").length > 2 && matcher.group(2) == null) {

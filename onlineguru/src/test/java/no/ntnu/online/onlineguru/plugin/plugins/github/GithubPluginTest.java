@@ -116,6 +116,26 @@ public class GithubPluginTest {
     }
 
     @Test
+    public void testIllegalOperations() {
+        assertEquals(
+                "You do not have access to use this command. It requires +a for info and +A to edit.",
+                githubPlugin.handleCommand(EventFactory.createPrivMsgEvent(network, "melwil", "#channel", "!github test/test #somechannelbranches"))
+        );
+        assertEquals(
+                "You do not have access to use this command. It requires +a for info and +A to edit.",
+                githubPlugin.handleCommand(EventFactory.createPrivMsgEvent(network, "melwil", "notinachannel", "!github test/test #somechannelbranches"))
+        );
+        assertEquals(
+                "Invalid operation 'branches'.",
+                githubPlugin.handleCommand(EventFactory.createPrivMsgEvent(network, "melwil", "#channel", "!github test/test branches"))
+        );
+        assertEquals(
+                "Invalid operation 'branches'.",
+                githubPlugin.handleCommand(EventFactory.createPrivMsgEvent(network, "melwil", "notinachannell", "!github test/test #channel branches"))
+        );
+    }
+
+    @Test
     public void testInformation() {
         assertEquals(
                 "Subscriptions for #channel: none",
@@ -142,4 +162,5 @@ public class GithubPluginTest {
                 githubPlugin.handleCommand(EventFactory.createPrivMsgEvent(network, "melwil", "#channel", "!github test/test"))
         );
     }
+
 }
