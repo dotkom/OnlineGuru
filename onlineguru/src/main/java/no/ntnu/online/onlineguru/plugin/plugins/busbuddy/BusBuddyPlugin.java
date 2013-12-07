@@ -180,7 +180,7 @@ public class BusBuddyPlugin implements Plugin {
                     System.out.println(answer);
                     System.out.println(answer.getDestinationFrom());
                     if (answer.getDestinationFrom() != null) {
-                        announceRealtimeAd(privMsgEvent, answer.getDestinationFrom());
+                        //announceRealtimeAd(privMsgEvent, answer.getDestinationFrom());
                     }
                 } catch (IOException e1) {
                     logger.error(String.format("Error while asking busbuddy oracle: %s", e1));
