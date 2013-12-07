@@ -113,10 +113,10 @@ public class AuthPlugin implements Plugin {
 	}
 
     private void auth(Network network) {
-        AuthEntry ae = networks.get(network.getServerAlias());
-        if (ae != null) {
-            if (ae.getUsername().equalsIgnoreCase(wand.getMyNick(network))) {
-                wand.sendMessageToTarget(network, "NickServ", "identify "+ae.getPassword());
+        AuthEntry authEntry = networks.get(network.getServerAlias());
+        if (authEntry != null) {
+            if (authEntry.getUsername().equalsIgnoreCase(wand.getMyNick(network))) {
+                wand.sendMessageToTarget(network, "NickServ", "identify "+authEntry.getPassword());
             }
         }
     }

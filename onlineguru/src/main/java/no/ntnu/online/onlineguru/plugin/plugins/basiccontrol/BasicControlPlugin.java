@@ -51,6 +51,7 @@ public class BasicControlPlugin implements PluginWithDependencies {
         switch (e.getEventType()) {
             case PRIVMSG:
                 handlePrivMsgEvent((PrivMsgEvent) e);
+                break;
         }
     }
 
@@ -59,7 +60,7 @@ public class BasicControlPlugin implements PluginWithDependencies {
 
         // Check if this bot was the target for the command.
         if (e.isChannelMessage()) {
-            if (!message.startsWith(wand.getMyNick(e.getNetwork()))) {
+            if (!message.startsWith(wand.getMyNick(e.getNetwork()) + " ")) {
                 return;
             }
             else {
@@ -76,23 +77,27 @@ public class BasicControlPlugin implements PluginWithDependencies {
              return;
         }
         else {
-            if (message.startsWith("nick")) {
-                wand.sendServerMessage(e.getNetwork(), "NICK "+message.split(" ")[1]);
+            if (message.startsWith("nick ")) {
+                message = message.substring("nick ".length());
+                wand.sendServerMessage(e.getNetwork(), "NICK "+message);
             }
             else if (message.startsWith("auth")) {
                 authPlugin.forceAuth(e.getNetwork());
             }
-            else if (message.startsWith("say")) {
-                if (e.isChannelMessage()) {
-                    wand.sendMessageToTarget(e.getNetwork(), e.getTarget(), message.substring("say".length()+1));
-                }
-                else {
-                    String channel = message.split(" ")[1];
+            else if (message.startsWith("say ")) {
+                message = message.substring("say ".length());
+                if (!message.isEmpty()) {
+                    String channel = message.split(" ")[0];
                     if (channel.matches("#.*")) {
-                        wand.sendMessageToTarget(e.getNetwork(), channel, message.substring(("say " + channel).length()+1));
+                        wand.sendMessageToTarget(e.getNetwork(), channel, message.substring(channel.length()+1));
                     }
                     else {
-                        wand.sendMessageToTarget(e.getNetwork(), e.getSender(), "[say] Error: '" + channel + "' is not a valid target. Must be a #channel.");
+                        if (e.isChannelMessage()) {
+                            wand.sendMessageToTarget(e.getNetwork(), e.getTarget(), message);
+                        }
+                        else {
+                            wand.sendMessageToTarget(e.getNetwork(), e.getSender(), "[say] Error: '" + channel + "' is not a valid target. Must be a #channel.");
+                        }
                     }
                 }
             }
