@@ -24,8 +24,6 @@ public class BasicControlPlugin implements PluginWithDependencies {
     private FlagsPlugin flagsPlugin;
     private AuthPlugin authPlugin;
 
-    private Pattern basicPattern;
-
     @Override
     public String[] getDependencies() {
         return new String[]{"FlagsPlugin", "AuthPlugin", };
@@ -34,6 +32,7 @@ public class BasicControlPlugin implements PluginWithDependencies {
     @Override
     public void loadDependency(Plugin plugin) {
         if (plugin instanceof FlagsPlugin) this.flagsPlugin = (FlagsPlugin) plugin;
+        if (plugin instanceof AuthPlugin) this.authPlugin = (AuthPlugin) plugin;
     }
 
     @Override
@@ -66,14 +65,31 @@ public class BasicControlPlugin implements PluginWithDependencies {
         Set<Flag> flags = flagsPlugin.getFlags(e.getNetwork(), e.getSender());
 
         // Requires Flag.A
-        if (flags.contains(Flag.A)) {
+        if (!flags.contains(Flag.A)) {
+             wand.sendMessageToTarget(e.getNetwork(), e.getSender(), "You do not have access to this feature. It requires +A.");
+             return;
+        }
+        else {
             if (message.startsWith("nick")) {
                 wand.sendServerMessage(e.getNetwork(), "NICK "+message.split(" ")[1]);
             }
             else if (message.startsWith("auth")) {
                 authPlugin.forceAuth(e.getNetwork());
             }
-
+            else if (message.startsWith("say")) {
+                if (e.isChannelMessage()) {
+                    wand.sendMessageToTarget(e.getNetwork(), e.getTarget(), message.substring("say".length()+1));
+                }
+                else {
+                    String channel = message.split(" ")[1];
+                    if (channel.matches("#.*")) {
+                        wand.sendMessageToTarget(e.getNetwork(), channel, message.substring(("say " + channel).length()+1));
+                    }
+                    else {
+                        wand.sendMessageToTarget(e.getNetwork(), e.getSender(), "[say] Error: '" + channel + "' is not a valid target. Must be a #channel.");
+                    }
+                }
+            }
         }
     }
 
