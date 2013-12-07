@@ -9,6 +9,7 @@ import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
 import no.ntnu.online.onlineguru.plugin.plugins.auth.AuthPlugin;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.FlagsPlugin;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
+import no.ntnu.online.onlineguru.plugin.plugins.help.HelpPlugin;
 import no.ntnu.online.onlineguru.utils.Wand;
 
 import java.util.Set;
@@ -26,13 +27,18 @@ public class BasicControlPlugin implements PluginWithDependencies {
 
     @Override
     public String[] getDependencies() {
-        return new String[]{"FlagsPlugin", "AuthPlugin", };
+        return new String[]{"FlagsPlugin", "AuthPlugin", "Help", };
     }
 
     @Override
     public void loadDependency(Plugin plugin) {
         if (plugin instanceof FlagsPlugin) this.flagsPlugin = (FlagsPlugin) plugin;
         if (plugin instanceof AuthPlugin) this.authPlugin = (AuthPlugin) plugin;
+        if (plugin instanceof HelpPlugin) {
+            HelpPlugin help = (HelpPlugin) plugin;
+            help.addHelp("basics-A", Flag.A, "<botnick> [nick [nick]|say <channel> [message]|auth] - Changes nick, says a message or forces auth with services. <> is only required in private.");
+        }
+
     }
 
     @Override
