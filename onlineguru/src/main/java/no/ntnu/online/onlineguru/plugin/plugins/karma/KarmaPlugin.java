@@ -3,9 +3,15 @@ package no.ntnu.online.onlineguru.plugin.plugins.karma;
 import no.fictive.irclib.event.container.Event;
 import no.fictive.irclib.event.container.command.PrivMsgEvent;
 import no.fictive.irclib.event.model.EventType;
+import no.fictive.irclib.model.channel.Channel;
 import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
+import no.ntnu.online.onlineguru.plugin.plugins.karma.model.NetworkList;
+import no.ntnu.online.onlineguru.utils.JSONStorage;
 import no.ntnu.online.onlineguru.utils.Wand;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Håvard Slettvold
@@ -13,6 +19,21 @@ import no.ntnu.online.onlineguru.utils.Wand;
 public class KarmaPlugin implements Plugin {
 
     private Wand wand;
+
+    private final String database_folder = "database/";
+    private final String database_file = database_folder + "karma.json";
+
+    private final String karmaTrigger = "!karma";
+    private Pattern karmaPattern = Pattern.compile("(?:^|\\s)(\\S+)(\\+\\+|--)(?:\\s|$)");
+
+    private NetworkList networkList;
+
+    public KarmaPlugin() {
+        networkList = (NetworkList) JSONStorage.load(database_file, NetworkList.class);
+        if (networkList == null) {
+            networkList = new NetworkList();
+        }
+    }
 
     @Override
     public String getDescription() {
@@ -43,6 +64,44 @@ public class KarmaPlugin implements Plugin {
     }
 
     private String handlePrivmsg(PrivMsgEvent e) {
+        String message = e.getMessage();
+        if (message.startsWith(karmaTrigger)) {
+            message = message.substring(karmaTrigger.length()+1);
+            if (message.isEmpty()) {
+                int karma = networkList.getKarma(e.getNetwork(), e.getChannel(), e.getSender());
+                return "[karma] "+ e.getSender() +"'s karma is "+ karma +".";
+            }
+            else {
+                Channel chan = e.getNetwork().getChannel(e.getChannel());
+                if (chan.isOnChannel(message)) {
+                    int karma = networkList.getKarma(e.getNetwork(), e.getChannel(), message);
+                    return "[karma] "+ message +"'s karma is "+ karma +".";
+                }
+            }
+        }
+        else {
+            Matcher matcher = karmaPattern.matcher(message);
+
+            while (matcher.find()) {
+                String nick = matcher.group(1);
+                if (nick != null) {
+                    if (nick.equals(e.getSender())) {
+                        int karma = networkList.decreaseKarma(e.getNetwork(), e.getChannel(), e.getSender());
+                        return "[karma] "+ nick +"'s karma has been reduced to "+ karma +" for trying to cheat.";
+                    }
+                    Channel chan = e.getNetwork().getChannel(e.getChannel());
+                    if (chan.isOnChannel(nick)) {
+                        String karmaDirection = matcher.group(2);
+                        if (karmaDirection.equals("++")) {
+                            networkList.increaseKarma(e.getNetwork(), e.getChannel(), nick);
+                        }
+                        else if (karmaDirection.equals("--")) {
+                            networkList.decreaseKarma(e.getNetwork(), e.getChannel(), nick);
+                        }
+                    }
+                }
+            }
+        }
         return null;
     }
 }
