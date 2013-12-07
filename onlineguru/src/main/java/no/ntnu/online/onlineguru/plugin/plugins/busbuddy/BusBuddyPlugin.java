@@ -217,7 +217,7 @@ public class BusBuddyPlugin implements Plugin {
                 }
             }
         };
-        newAsyncSearchQuery.run();
+        new Thread(newAsyncSearchQuery).start();
     }
 
     public List<BusStop> removeDuplicateBusStops(List<BusStop> searchStops) {
