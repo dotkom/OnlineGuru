@@ -66,10 +66,18 @@ public class UpdateMenu implements Runnable {
         // Get the html content into a clean string
         String json = new String(sb);
         json = StringEscapeUtils.unescapeJava(json);
-        String cleaned = json.split(":")[1].replaceAll("^\"|\"}$", "");
+        String html = json.split(":")[1].replaceAll("^\"|\"}$", "");
+
+        System.out.println(html);
 
         // Traverse html with Jsoup
-        Document doc = Jsoup.parse(cleaned);
+        String menu = findMenuItems(html);
+
+        setMenu(kantine, menu);
+    }
+
+    protected static String findMenuItems(String html) {
+        Document doc = Jsoup.parse(html);
         String menu = "";
 
         Element ul = doc.select("ul").first();
@@ -78,10 +86,10 @@ public class UpdateMenu implements Runnable {
             menu += li.select(".food").text() + " " + li.select(".price").text() + " ";
         }
 
-        setMenu(kantine, menu);
+        return menu;
     }
 
-    public void setMenu(String kantine, String menu) {
+    private void setMenu(String kantine, String menu) {
         switch (Kantiner.valueOf(kantine)) {
             case HANGAREN: {
                 middagPlugin.setHangaren(menu);
