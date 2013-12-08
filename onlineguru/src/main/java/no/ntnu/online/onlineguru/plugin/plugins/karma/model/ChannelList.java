@@ -9,25 +9,14 @@ public class ChannelList {
 
     private HashMap<String, KarmaList> channels = new HashMap<String, KarmaList>();
 
-    protected int increaseKarma(String channel, String nick, int amount) {
+    protected int changeKarma(String channel, String nick, int amount) {
         if (channels.containsKey(channel)) {
-            return channels.get(channel).increaseKarma(nick, amount);
+            return channels.get(channel).changeKarma(nick, amount);
         }
         else {
             KarmaList kl = new KarmaList();
             channels.put(channel, kl);
-            return kl.increaseKarma(nick, amount);
-        }
-    }
-
-    protected int decreaseKarma(String channel, String nick, int amount) {
-        if (channels.containsKey(channel)) {
-            return channels.get(channel).decreaseKarma(nick, amount);
-        }
-        else {
-            KarmaList kl = new KarmaList();
-            channels.put(channel, kl);
-            return kl.decreaseKarma(nick, amount);
+            return kl.changeKarma(nick, amount);
         }
     }
 

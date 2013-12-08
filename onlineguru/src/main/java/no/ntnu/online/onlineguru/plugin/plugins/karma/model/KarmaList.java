@@ -9,7 +9,7 @@ public class KarmaList {
 
     private HashMap<String, Integer> karma = new HashMap<String, Integer>();
 
-    protected int increaseKarma(String nick, int amount) {
+    protected int changeKarma(String nick, int amount) {
         if (karma.containsKey(nick)) {
             int k = karma.get(nick);
             k += amount;
@@ -19,19 +19,6 @@ public class KarmaList {
         else {
             karma.put(nick, amount);
             return amount;
-        }
-    }
-
-    protected int decreaseKarma(String nick, int amount) {
-        if (karma.containsKey(nick)) {
-            int k = karma.get(nick);
-            k -= amount;
-            karma.put(nick, k);
-            return k;
-        }
-        else {
-            karma.put(nick, -amount);
-            return -amount;
         }
     }
 
