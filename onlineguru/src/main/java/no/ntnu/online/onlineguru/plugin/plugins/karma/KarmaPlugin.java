@@ -23,10 +23,10 @@ public class KarmaPlugin implements Plugin {
     private final String database_folder = "database/";
     private final String database_file = database_folder + "karma.json";
 
+    private NetworkList networkList;
+
     private final String karmaTrigger = "!karma";
     private Pattern karmaPattern = Pattern.compile("(?:^|\\s)(\\S+)(\\+\\+|--)(?:\\s|$)");
-
-    private NetworkList networkList;
 
     public KarmaPlugin() {
         networkList = (NetworkList) JSONStorage.load(database_file, NetworkList.class);
@@ -56,6 +56,9 @@ public class KarmaPlugin implements Plugin {
             case PRIVMSG:
                 PrivMsgEvent pme = (PrivMsgEvent) e;
                 String reply = handlePrivmsg(pme);
+                // Save
+                save_data();
+                // Send reply
                 if (reply != null) {
                     wand.sendMessageToTarget(pme.getNetwork(), pme.getTarget(), reply);
                 }
@@ -63,15 +66,20 @@ public class KarmaPlugin implements Plugin {
         }
     }
 
-    private String handlePrivmsg(PrivMsgEvent e) {
+    private boolean save_data() {
+        return JSONStorage.save(database_file, networkList);
+    }
+
+    protected String handlePrivmsg(PrivMsgEvent e) {
         String message = e.getMessage();
         if (message.startsWith(karmaTrigger)) {
-            message = message.substring(karmaTrigger.length()+1);
+            message = message.substring(karmaTrigger.length());
             if (message.isEmpty()) {
                 int karma = networkList.getKarma(e.getNetwork(), e.getChannel(), e.getSender());
                 return "[karma] "+ e.getSender() +"'s karma is "+ karma +".";
             }
             else {
+                message = message.trim();
                 Channel chan = e.getNetwork().getChannel(e.getChannel());
                 if (chan.isOnChannel(message)) {
                     int karma = networkList.getKarma(e.getNetwork(), e.getChannel(), message);
@@ -86,7 +94,7 @@ public class KarmaPlugin implements Plugin {
                 String nick = matcher.group(1);
                 if (nick != null) {
                     if (nick.equals(e.getSender())) {
-                        int karma = networkList.decreaseKarma(e.getNetwork(), e.getChannel(), e.getSender());
+                        int karma = networkList.decreaseKarma(e.getNetwork(), e.getChannel(), e.getSender(), 5);
                         return "[karma] "+ nick +"'s karma has been reduced to "+ karma +" for trying to cheat.";
                     }
                     Channel chan = e.getNetwork().getChannel(e.getChannel());
@@ -104,4 +112,5 @@ public class KarmaPlugin implements Plugin {
         }
         return null;
     }
+
 }

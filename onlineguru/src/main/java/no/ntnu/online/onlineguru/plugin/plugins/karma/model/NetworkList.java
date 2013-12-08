@@ -9,13 +9,17 @@ import java.util.HashMap;
  */
 public class NetworkList {
 
-    private HashMap<Network, ChannelList> networks = new HashMap<Network, ChannelList>();
+    private HashMap<String, ChannelList> networks = new HashMap<String, ChannelList>();
 
     public int increaseKarma(Network network, String channel, String nick) {
-        return increaseKarma(network, channel, nick, 1);
+        return increaseKarma(network.getServerAlias(), channel, nick, 1);
     }
 
     public int increaseKarma(Network network, String channel, String nick, int amount) {
+        return increaseKarma(network.getServerAlias(), channel, nick, amount);
+    }
+
+    private int increaseKarma(String network, String channel, String nick, int amount) {
         if (networks.containsKey(network)) {
             return networks.get(network).increaseKarma(channel, nick, amount);
         }
@@ -26,11 +30,16 @@ public class NetworkList {
         }
     }
 
+
     public int decreaseKarma(Network network, String channel, String nick) {
-        return decreaseKarma(network, channel, nick, 1);
+        return decreaseKarma(network.getServerAlias(), channel, nick, 1);
     }
 
     public int decreaseKarma(Network network, String channel, String nick, int amount) {
+        return decreaseKarma(network.getServerAlias(), channel, nick, amount);
+    }
+
+    protected int decreaseKarma(String network, String channel, String nick, int amount) {
         if (networks.containsKey(network)) {
             return networks.get(network).decreaseKarma(channel, nick, amount);
         }
@@ -42,8 +51,8 @@ public class NetworkList {
     }
 
     public int getKarma(Network network, String channel, String nick) {
-        if (networks.containsKey(network)) {
-            return networks.get(network).getKarma(channel, nick);
+        if (networks.containsKey(network.getServerAlias())) {
+            return networks.get(network.getServerAlias()).getKarma(channel, nick);
         }
         else {
             return 0;
