@@ -60,7 +60,7 @@ public class KarmaPlugin implements Plugin {
                 save_data();
                 // Send reply
                 if (reply != null) {
-                    wand.sendMessageToTarget(pme.getNetwork(), pme.getTarget(), reply);
+                    wand.sendMessageToTarget(pme.getNetwork(), pme.getTarget(), "[karma] "+reply);
                 }
                 break;
         }
@@ -76,14 +76,14 @@ public class KarmaPlugin implements Plugin {
             message = message.substring(karmaTrigger.length());
             if (message.isEmpty()) {
                 int karma = networkList.getKarma(e.getNetwork(), e.getChannel(), e.getSender());
-                return "[karma] "+ e.getSender() +"'s karma is "+ karma +".";
+                return e.getSender() +"'s karma is "+ karma +".";
             }
             else {
                 message = message.trim();
                 Channel chan = e.getNetwork().getChannel(e.getChannel());
                 if (chan.isOnChannel(message)) {
                     int karma = networkList.getKarma(e.getNetwork(), e.getChannel(), message);
-                    return "[karma] "+ message +"'s karma is "+ karma +".";
+                    return message +"'s karma is "+ karma +".";
                 }
             }
         }
@@ -95,7 +95,7 @@ public class KarmaPlugin implements Plugin {
                 if (nick != null) {
                     if (nick.equals(e.getSender())) {
                         int karma = networkList.decreaseKarma(e.getNetwork(), e.getChannel(), e.getSender(), 5);
-                        return "[karma] "+ nick +"'s karma has been reduced to "+ karma +" for trying to cheat.";
+                        return nick +"'s karma has been reduced to "+ karma +" for trying to cheat.";
                     }
                     Channel chan = e.getNetwork().getChannel(e.getChannel());
                     if (chan.isOnChannel(nick)) {
