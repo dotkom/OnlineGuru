@@ -64,7 +64,7 @@ public class BasicControlPlugin implements PluginWithDependencies {
                 return;
             }
             else {
-                // Remoce the bots nick from the string if it was there.
+                // Remove the bots nick from the string if it was there.
                 message = message.substring(wand.getMyNick(e.getNetwork()).length()+1);
             }
         }
@@ -86,18 +86,18 @@ public class BasicControlPlugin implements PluginWithDependencies {
             }
             else if (message.startsWith("say ")) {
                 message = message.substring("say ".length());
-                if (!message.isEmpty()) {
-                    String channel = message.split(" ")[0];
-                    if (channel.matches("#.*")) {
-                        wand.sendMessageToTarget(e.getNetwork(), channel, message.substring(channel.length()+1));
+                if (message.isEmpty()) return;
+
+                String channel = message.split(" ")[0];
+                if (channel.matches("#.*")) {
+                    wand.sendMessageToTarget(e.getNetwork(), channel, message.substring(channel.length()+1));
+                }
+                else {
+                    if (e.isChannelMessage()) {
+                        wand.sendMessageToTarget(e.getNetwork(), e.getTarget(), message);
                     }
                     else {
-                        if (e.isChannelMessage()) {
-                            wand.sendMessageToTarget(e.getNetwork(), e.getTarget(), message);
-                        }
-                        else {
-                            wand.sendMessageToTarget(e.getNetwork(), e.getSender(), "[say] Error: '" + channel + "' is not a valid target. Must be a #channel.");
-                        }
+                        wand.sendMessageToTarget(e.getNetwork(), e.getSender(), "[say] Error: '" + channel + "' is not a valid target. Must be a #channel.");
                     }
                 }
             }
