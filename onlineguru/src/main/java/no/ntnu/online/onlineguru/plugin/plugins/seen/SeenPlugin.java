@@ -25,11 +25,6 @@ public class SeenPlugin implements PluginWithDependencies {
 
     public SeenPlugin() {}
 
-    public SeenPlugin(Wand fakeWand, History history) {
-        this.wand = fakeWand;
-        this.historyPlugin = history;
-    }
-
     @Override
     public String[] getDependencies() {
         return new String[]{"HistoryPlugin"};  //To change body of implemented methods use File | Settings | File Templates.

@@ -5,14 +5,13 @@ import no.fictive.irclib.event.container.command.ConnectEvent;
 import no.fictive.irclib.event.container.command.NickEvent;
 import no.fictive.irclib.event.container.command.NumericEvent;
 import no.fictive.irclib.event.container.command.QuitEvent;
-import no.fictive.irclib.model.channel.Channel;
 import no.fictive.irclib.model.network.Network;
 import no.ntnu.online.onlineguru.utils.Wand;
+import org.junit.Before;
 import org.junit.Test;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Håvard Slettvold
@@ -23,90 +22,84 @@ public class NickServPluginTest {
 
     String myNick = "OnlineGuru";
 
-    NickServPlugin ns;
-    Network network;
+    NickServPlugin nickServ;
     IRCEventPacket testPackage;
 
+    Network mockNetwork;
+    Wand mockWand;
 
     public IRCEventPacket makePacket(String rawline) {
         return new IRCEventPacket(rawline);
     }
 
-    @Test
-    public void checkForValidAddingOfAuthedNick() {
-        simulateSetUp();
-        simulateAuthedJoin();
-
-        assertTrue(ns.isAuthed(network, "Authed"));
-        assertEquals(ns.getUsername(network, "Authed"), "Yes");
-
-    }
-
-    private void simulateSetUp() {
-        // Setup a network and a wand
-        network = new Network();
-        network.setServerAlias("freenode");
-        ConcurrentHashMap<String, Network> networks = new ConcurrentHashMap<String, Network>();
-        ConcurrentHashMap<String, Channel> channels = new ConcurrentHashMap<String, Channel>();
-
-        Wand fakeWand = new FakeWand(networks, channels);
+    @Before
+    public void setup() {
+        mockNetwork = mock(Network.class);
+        mockWand = mock(Wand.class);
 
         // Make NickServPlugin and a Network instance
-        ns = new NickServPlugin();
-        ns.addWand(fakeWand);
+        nickServ = new NickServPlugin();
+        nickServ.addWand(mockWand);
 
         // Simulate a connect to a server. This will make an AuthHandler.
-        ns.incomingEvent(new ConnectEvent(network));
+        nickServ.incomingEvent(new ConnectEvent(mockNetwork));
+    }
+
+    @Test
+    public void checkForValidAddingOfAuthedNick() {
+        simulateAuthedJoin();
+
+        assertTrue(nickServ.isAuthed(mockNetwork, "Authed"));
+        assertEquals(nickServ.getUsername(mockNetwork, "Authed"), "Yes");
+
     }
 
     private void simulateAuthedJoin() {
         // Fake a packet for NUMERIC 354
         testPackage = makePacket(":server 354 test Authed Yes");
-        ns.incomingEvent(new NumericEvent(testPackage, network));
+        nickServ.incomingEvent(new NumericEvent(testPackage, mockNetwork));
     }
 
     @Test
     public void checkForValidAddingOfNonAuthedUsers() {
-        simulateSetUp();
         simulateNonAuthedJoin();
 
-        assertFalse(ns.isAuthed(network, "NonAuthed"));
-        assertNull(ns.getUsername(network, "NonAuthed"));
+        assertFalse(nickServ.isAuthed(mockNetwork, "NonAuthed"));
+        assertNull(nickServ.getUsername(mockNetwork, "NonAuthed"));
     }
 
     private void simulateNonAuthedJoin() {
         testPackage = makePacket(":server 354 test NonAuthed 0");
-        ns.incomingEvent(new NumericEvent(testPackage, network));
+        nickServ.incomingEvent(new NumericEvent(testPackage, mockNetwork));
     }
 
     @Test
     public void checkNickChanges() {
-        simulateSetUp();
         simulateAuthedJoin();
         simulateNickChange();
 
-        assertEquals(ns.getUsername(network, "NewNick"), "Yes");
+        assertEquals(nickServ.getUsername(mockNetwork, "NewNick"), "Yes");
     }
 
     private void simulateNickChange() {
         // Fake a packet for nick change
         testPackage = makePacket(":Authed!ident@hostname.com NICK :NewNick");
-        ns.incomingEvent(new NickEvent(testPackage, network));
+        nickServ.incomingEvent(new NickEvent(testPackage, mockNetwork));
     }
 
     @Test
     public void checkQuit() {
-        simulateSetUp();
         simulateAuthedJoin();
         simulateQuit();
 
-        assertNull(ns.getUsername(network, "Authed"));
-        assertFalse(ns.isAuthed(network, "Authed"));
+        assertNull(nickServ.getUsername(mockNetwork, "Authed"));
+        assertFalse(nickServ.isAuthed(mockNetwork, "Authed"));
     }
 
     private void simulateQuit() {
         // Fake a packet for quit
         testPackage = makePacket(":Authed!ident@hostname.com QUIT :Some reason");
-        ns.incomingEvent(new QuitEvent(testPackage, network));
+        nickServ.incomingEvent(new QuitEvent(testPackage, mockNetwork));
     }
+
 }
