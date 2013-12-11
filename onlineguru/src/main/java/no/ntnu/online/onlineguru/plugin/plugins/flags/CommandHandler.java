@@ -84,8 +84,8 @@ public class CommandHandler {
                 wand.sendMessageToTarget(e.getNetwork(), target, "[flags] You do not have permission to use this command.");
             }
             else {
-                String matchedNick = matcher.group(1);
-                boolean matchedAction = matcher.group(2) != null;
+                String matchedNick = matcher.group(3);
+                boolean matchedAction = matcher.group(1) != null;
 
                 handleSuperuserCommand(e.getNetwork(), target, matchedNick, matchedAction);
             }
