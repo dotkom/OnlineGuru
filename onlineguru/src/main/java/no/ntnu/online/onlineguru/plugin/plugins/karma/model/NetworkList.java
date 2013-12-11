@@ -12,7 +12,7 @@ public class NetworkList {
     private HashMap<String, ChannelList> networks = new HashMap<String, ChannelList>();
 
     public int changeKarma(Network network, String channel, String nick, int amount) {
-        if (networks.containsKey(network)) {
+        if (networks.containsKey(network.getServerAlias())) {
             return networks.get(network.getServerAlias()).changeKarma(channel, nick, amount);
         }
         else {
