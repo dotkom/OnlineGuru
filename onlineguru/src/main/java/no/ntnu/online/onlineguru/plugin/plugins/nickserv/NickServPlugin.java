@@ -107,7 +107,6 @@ public class NickServPlugin implements PluginWithDependencies {
     public void checkForNewJoinsOrPerformSingleWHO(Object[] argsObjects) {
         String[] args = (String[]) argsObjects;
         long duration = new Duration(lastJoin, new DateTime()).getMillis();
-        System.out.println("Millis: "+duration);
         if (duration > 3000) {
             joinTimer = null;
             wand.sendServerMessage(wand.getNetworkByAlias(args[0]), "WHO "+ args[2] +" %na");
