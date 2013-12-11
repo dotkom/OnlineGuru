@@ -80,11 +80,24 @@ public class UpdateMenu implements Runnable {
 
         Element ul = doc.select("ul").first();
 
-        for (Element li : ul.children()) {
-            menu += li.select(".food").text() + " " + li.select(".price").text() + " ";
+        // This is the case for a normal menu.
+        if (ul != null) {
+            for (Element li : ul.children()) {
+                menu += li.select(".food").text() + " " + li.select(".price").text() + " ";
+            }
+
+            return menu.trim();
         }
 
-        return menu;
+        Element p = doc.select("p").first();
+
+        // This is the case for empty menues.
+        if (p != null) {
+            return p.text();
+        }
+
+        logger.debug("Unmatched dinner menu: " + html);
+        return "No matches for menu items were found.";
     }
 
     private void setMenu(String kantine, String menu) {
