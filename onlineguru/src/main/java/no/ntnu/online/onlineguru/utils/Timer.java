@@ -1,4 +1,5 @@
 package no.ntnu.online.onlineguru.utils;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -18,7 +19,7 @@ public class Timer extends Thread {
 		this.runForever = runForever;
 	}
 	
-	public Timer(Object caller, String methodName, long waitTime, boolean runForever,Object[] arguments) {
+	public Timer(Object caller, String methodName, long waitTime, boolean runForever, Object[] arguments) {
 		this.caller = caller;
 		this.methodName = methodName;
 		this.waitTime = waitTime;
@@ -33,10 +34,11 @@ public class Timer extends Thread {
 				sleep(waitTime);
 				if(!running) break;
 				
-				Method method = caller.getClass().getMethod(methodName);
 				if(arguments != null) {
-					method.invoke(caller, arguments);
+                    Method method = caller.getClass().getMethod(methodName, Object[].class);
+					method.invoke(caller, (Object)arguments);
 				} else {
+				    Method method = caller.getClass().getMethod(methodName);
 					method.invoke(caller);
 				}
 			} catch (SecurityException e) {
