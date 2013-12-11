@@ -68,8 +68,6 @@ public class UpdateMenu implements Runnable {
         json = StringEscapeUtils.unescapeJava(json);
         String html = json.split(":")[1].replaceAll("^\"|\"}$", "");
 
-        System.out.println(html);
-
         // Traverse html with Jsoup
         String menu = findMenuItems(html);
 

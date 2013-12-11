@@ -53,6 +53,7 @@ public class MiddagPlugin implements PluginWithDependencies {
         finishedUpdating++;
         if (finishedUpdating == totalMenues && eventRunAfterUpdate != null) {
             incomingEvent(eventRunAfterUpdate);
+            eventRunAfterUpdate = null;
         }
     }
 
@@ -61,11 +62,12 @@ public class MiddagPlugin implements PluginWithDependencies {
         finishedUpdating++;
         if (finishedUpdating == totalMenues && eventRunAfterUpdate != null) {
             incomingEvent(eventRunAfterUpdate);
+            eventRunAfterUpdate = null;
         }
     }
 
     /*
-     * Metoder som arves fra PluginWithDependencies
+     * Metods inherited from PluginWithDependencies
      */
 
     public String getDescription() {
@@ -89,7 +91,7 @@ public class MiddagPlugin implements PluginWithDependencies {
     }
 
     public String[] getDependencies() {
-        return new String[]{"HelpPlugin",};
+        return new String[]{"HelpPlugin", };
     }
 
     public void loadDependency(Plugin plugin) {
@@ -105,7 +107,7 @@ public class MiddagPlugin implements PluginWithDependencies {
     }
 
 	/*
-     * Triggerprosessering
+     * Trigger processing
 	 */
 
     private void handlePrivMsgEvent(PrivMsgEvent pme) {
@@ -175,9 +177,6 @@ public class MiddagPlugin implements PluginWithDependencies {
     }
 
     private void updateMenu() {
-        if (eventRunAfterUpdate != null) {
-            eventRunAfterUpdate = null;
-        }
         cache = new DateTime();
         finishedUpdating = 0;
 
