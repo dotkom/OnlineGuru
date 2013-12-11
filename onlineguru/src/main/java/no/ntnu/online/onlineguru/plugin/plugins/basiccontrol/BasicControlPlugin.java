@@ -60,13 +60,11 @@ public class BasicControlPlugin implements PluginWithDependencies {
 
         // Check if this bot was the target for the command.
         if (e.isChannelMessage()) {
-            if (!message.startsWith(wand.getMyNick(e.getNetwork()) + " ")) {
-                return;
-            }
-            else {
-                // Remove the bots nick from the string if it was there.
-                message = message.substring(wand.getMyNick(e.getNetwork()).length()+1);
-            }
+            // Only trigger in public if the bots nick is the first argument.
+            if (!message.startsWith(wand.getMyNick(e.getNetwork()) + " ")) return;
+
+            // Remove the bots nick from the string if it was there.
+            message = message.substring(wand.getMyNick(e.getNetwork()).length()+1);
         }
 
         Set<Flag> flags = flagsPlugin.getFlags(e.getNetwork(), e.getSender());
