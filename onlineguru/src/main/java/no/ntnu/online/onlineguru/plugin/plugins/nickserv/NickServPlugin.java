@@ -81,6 +81,11 @@ public class NickServPlugin implements PluginWithDependencies {
      * Someone joined a channel.
      * If it was the bot, /who the whole channel.
      * Otherwise /who the person that joined.
+     *
+     * /who is delayed by 3 seconds to check if more people joined. If this is the case, it will delay another 3
+     * seconds until there has been 3 seconds without any joins, and then /who the entire channel again.
+     * This is to prevent the bot from hanging when there are many joins in a short time, such as resolved netsplits.
+     *
      * This will provoke 354 {@link EventType} NUMERIC events, which contain nick and its registered username.
      *
      * @param e {@link JoinEvent} to be investigated.
