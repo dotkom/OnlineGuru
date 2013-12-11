@@ -176,15 +176,15 @@ public class BusBuddyPlugin implements Plugin {
                 try {
                     logger.debug(String.format("BusBuddy asking '%s'", privMsgEvent.getMessage().toLowerCase().substring(triggerLength + 1).trim()));
                     answer = handleBusBuddyOracleRequest(privMsgEvent.getMessage().toLowerCase().substring(triggerLength + 1).trim());
-                    wand.sendMessageToTarget(privMsgEvent.getNetwork(), privMsgEvent.getTarget(), String.format("[BusBuddy] %s", answer.getAnswer().trim().replaceAll("\\r\\n|\\r|\\n", " ")));
+                    wand.sendMessageToTarget(privMsgEvent.getNetwork(), privMsgEvent.getSender(), String.format("[BusBuddy] %s", answer.getAnswer().trim().replaceAll("\\r\\n|\\r|\\n", " ")));
                     System.out.println(answer);
                     System.out.println(answer.getDestinationFrom());
                     if (answer.getDestinationFrom() != null) {
-                        announceRealtimeAd(privMsgEvent, answer.getDestinationFrom());
+                        //announceRealtimeAd(privMsgEvent, answer.getDestinationFrom());
                     }
                 } catch (IOException e1) {
                     logger.error(String.format("Error while asking busbuddy oracle: %s", e1));
-                    wand.sendMessageToTarget(privMsgEvent.getNetwork(), privMsgEvent.getTarget(), String.format("[BusBuddy-ERR] IOException: %s", e1.getMessage()));
+                    wand.sendMessageToTarget(privMsgEvent.getNetwork(), privMsgEvent.getSender(), String.format("[BusBuddy-ERR] IOException: %s", e1.getMessage()));
                 }
 
             }
@@ -217,7 +217,7 @@ public class BusBuddyPlugin implements Plugin {
                 }
             }
         };
-        newAsyncSearchQuery.run();
+        new Thread(newAsyncSearchQuery).start();
     }
 
     public List<BusStop> removeDuplicateBusStops(List<BusStop> searchStops) {
