@@ -32,7 +32,6 @@ public class FetchURI implements URLReader {
 		this.target = target;
 		this.linkCase = linkCase;
 
-        System.out.println("In the lulz");
         try {
 		    new XMLRetriever(this, url);
         } catch (IncompliantCallerException e) {
