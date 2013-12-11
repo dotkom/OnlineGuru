@@ -24,7 +24,7 @@ public class OnlineGuru implements IRCEventListener, Runnable {
     private Queue<Event> eventQueue = new LinkedList<Event>();
 
     private ConcurrentHashMap<String, Network> networks = new ConcurrentHashMap<String, Network>();
-    private Map<Network, Vector<String>> channelsOnConnect = new HashMap<Network, Vector<String>>();
+    private Map<Network, ArrayList<String>> channelsOnConnect = new HashMap<Network, ArrayList<String>>();
     private EventDistributor eventDistributor;
     private Thread thread = null;
 
@@ -147,7 +147,7 @@ public class OnlineGuru implements IRCEventListener, Runnable {
 
     private void handleConnect(Event event) {
         Network network = event.getNetwork();
-        Vector<String> channels = channelsOnConnect.get(network);
+        ArrayList<String> channels = channelsOnConnect.get(network);
         for (String channel : channels) {
             sendToServer(network, "JOIN " + channel);
         }
