@@ -12,10 +12,7 @@ import no.ntnu.online.onlineguru.plugin.control.PluginManager;
 import no.ntnu.online.onlineguru.service.OnlineGuruServices;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 
@@ -24,9 +21,10 @@ public class OnlineGuru implements IRCEventListener, Runnable {
     private static Logger logger = Logger.getLogger(OnlineGuru.class);
     public static Injector serviceLocator;
 
+    private Queue<Event> eventQueue = new LinkedList<Event>();
 
     private ConcurrentHashMap<String, Network> networks = new ConcurrentHashMap<String, Network>();
-    private Hashtable<Network, Vector<String>> channelsOnConnect = new Hashtable<Network, Vector<String>>();
+    private Map<Network, ArrayList<String>> channelsOnConnect = new HashMap<Network, ArrayList<String>>();
     private EventDistributor eventDistributor;
     private Thread thread = null;
 
@@ -51,7 +49,12 @@ public class OnlineGuru implements IRCEventListener, Runnable {
         //Keep the program rolling.
         while (true) {
             try {
-                Thread.sleep(1000);
+                Thread.sleep(1);
+                Event event = eventQueue.poll();
+
+                if (event != null) {
+                    processEvent(event);
+                }
             } catch (InterruptedException ie) {
                 break;
             }
@@ -114,6 +117,10 @@ public class OnlineGuru implements IRCEventListener, Runnable {
 
     public void receiveEvent(Event event) {
         logger.info(String.format("<- %s: %s", event.getNetwork().getServerAlias(), event.getRawData()));
+        eventQueue.offer(event);
+    }
+
+    private void processEvent(Event event) {
         switch (event.getEventType()) {
             case JOIN:
                 handleJoin(event);
@@ -140,7 +147,7 @@ public class OnlineGuru implements IRCEventListener, Runnable {
 
     private void handleConnect(Event event) {
         Network network = event.getNetwork();
-        Vector<String> channels = channelsOnConnect.get(network);
+        ArrayList<String> channels = channelsOnConnect.get(network);
         for (String channel : channels) {
             sendToServer(network, "JOIN " + channel);
         }

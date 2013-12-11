@@ -6,6 +6,7 @@ import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Vector;
 
 public class ConnectionInformation {
@@ -15,7 +16,7 @@ public class ConnectionInformation {
 	private String port = "";
     private InetAddress bindAddress = null;
 	private String serveralias = "";
-	private Vector<String> channels = new Vector<String>();
+	private ArrayList<String> channels = new ArrayList<String>();
     private Boolean isIpv6 = false; // defaults to false if not set in config.
 
     public boolean isValid() {
@@ -91,7 +92,7 @@ public class ConnectionInformation {
 		channels.add(channel);
 	}
 	
-	public Vector<String> getChannels() {
+	public ArrayList<String> getChannels() {
 		return channels;
 	}
 }
