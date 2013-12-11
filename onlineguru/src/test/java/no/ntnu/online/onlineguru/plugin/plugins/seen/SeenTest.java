@@ -5,7 +5,7 @@ import no.fictive.irclib.event.container.command.PrivMsgEvent;
 import no.fictive.irclib.model.channel.Channel;
 import no.fictive.irclib.model.network.Network;
 import no.fictive.irclib.model.nick.Nick;
-import no.ntnu.online.onlineguru.plugin.plugins.nickserv.FakeWand;
+import no.ntnu.online.onlineguru.plugin.plugins.history.HistoryPlugin;
 import no.ntnu.online.onlineguru.utils.Wand;
 import no.ntnu.online.onlineguru.service.services.history.History;
 import org.junit.Before;
@@ -15,18 +15,20 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static no.fictive.irclib.HelperFactory.*;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Roy Sindre Norangshol
  */
 public class SeenTest {
 
-    private History history;
+    private History history = new History();
     private Nick rockj;
     private Nick fictive;
     private Nick melwil;
-    private Wand fakeWand;
-    private SeenPlugin plugin;
+    private SeenPlugin seenPlugin;
+    private Wand mockWand = mock(Wand.class);
+    private HistoryPlugin mockHistoryPlugin = mock(HistoryPlugin.class);
 
 
     @Before
@@ -37,10 +39,11 @@ public class SeenTest {
         ConcurrentHashMap<String, Channel> channels = new ConcurrentHashMap<String, Channel>();
         channels.put("#test", new Channel("#test"));
 
-        fakeWand = new FakeWand(networks, channels);
+        seenPlugin = new SeenPlugin();
+        seenPlugin.addWand(mockWand);
 
-        history = new History();
-        plugin = new SeenPlugin(fakeWand, history);
+        when(mockHistoryPlugin.getHistory()).thenReturn(history);
+        seenPlugin.loadDependency(mockHistoryPlugin);
 
         rockj = new Nick("Rockj");
         fictive = new Nick("Fictive");
@@ -69,14 +72,14 @@ public class SeenTest {
 
     @Test
     public void testLastActionByNicksWithWand() {
-        assertEquals("Rockj sent a message to #test and said: This is a trolling message, what's up?!", plugin.handleSeenQuery(createPrivMsgEvent("freenode", melwil.getNickname(), "#test", "!seen Rockj")));
-        assertEquals("fictiveLulz changed nick from Fictive", plugin.handleSeenQuery(createPrivMsgEvent("freenode", melwil.getNickname(), "#test", "!seen fictiveLulz")));
-        assertEquals("melwil sent a message to #test and said: Flood 2!", plugin.handleSeenQuery(createPrivMsgEvent("freenode", fictive.getNickname(), "#test", "!seen melwil")));
+        assertEquals("Rockj sent a message to #test and said: This is a trolling message, what's up?!", seenPlugin.handleSeenQuery(createPrivMsgEvent("freenode", melwil.getNickname(), "#test", "!seen Rockj")));
+        assertEquals("fictiveLulz changed nick from Fictive", seenPlugin.handleSeenQuery(createPrivMsgEvent("freenode", melwil.getNickname(), "#test", "!seen fictiveLulz")));
+        assertEquals("melwil sent a message to #test and said: Flood 2!", seenPlugin.handleSeenQuery(createPrivMsgEvent("freenode", fictive.getNickname(), "#test", "!seen melwil")));
     }
 
     @Test
     public void testLastMessageFromAnotherChannel() {
-        assertEquals("Rockj was seen talking in #test", plugin.handleSeenQuery(createPrivMsgEvent("freenode", melwil.getNickname(), "#someotherchannel", "!seen Rockj")));
+        assertEquals("Rockj was seen talking in #test", seenPlugin.handleSeenQuery(createPrivMsgEvent("freenode", melwil.getNickname(), "#someotherchannel", "!seen Rockj")));
     }
 
 }

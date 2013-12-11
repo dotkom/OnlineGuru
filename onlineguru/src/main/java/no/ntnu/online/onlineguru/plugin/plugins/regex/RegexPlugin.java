@@ -27,8 +27,8 @@ import java.util.regex.PatternSyntaxException;
 public class RegexPlugin implements PluginWithDependencies {
     static Logger logger = Logger.getLogger(RegexPlugin.class);
 
-    private History history;
     private static final String DESCRIPTION = "Plugin implements sed for your first match in the channel history.";
+    private History history;
     private Wand wand;
 
     private final Pattern SED_PATTERN = Pattern.compile(
@@ -51,17 +51,19 @@ public class RegexPlugin implements PluginWithDependencies {
         // Need empty constructor.
     }
 
+    /*
     public RegexPlugin(Wand wand, History history) {
         this.wand = wand;
         this.history = history;
     }
+    /*
 
     /*
      * Inherited from PluginWithDependencies
      */
 
     public String[] getDependencies() {
-        return new String[]{"HistoryPlugin", "HelpPlugin"};
+        return new String[]{"HistoryPlugin", "HelpPlugin", };
     }
 
     public void loadDependency(Plugin plugin) {

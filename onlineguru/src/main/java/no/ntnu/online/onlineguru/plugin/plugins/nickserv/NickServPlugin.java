@@ -10,8 +10,11 @@ import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
 import no.ntnu.online.onlineguru.plugin.plugins.help.HelpPlugin;
 import no.ntnu.online.onlineguru.plugin.plugins.manuallogin.ManualLoginPlugin;
+import no.ntnu.online.onlineguru.utils.Timer;
 import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +29,8 @@ public class NickServPlugin implements PluginWithDependencies {
     private Wand wand;
 
     private Map<Network, AuthHandler> authHandlers;
+    private Timer joinTimer;
+    private DateTime lastJoin;
 
     static Logger logger = Logger.getLogger(NickServPlugin.class);
 
@@ -76,6 +81,11 @@ public class NickServPlugin implements PluginWithDependencies {
      * Someone joined a channel.
      * If it was the bot, /who the whole channel.
      * Otherwise /who the person that joined.
+     *
+     * /who is delayed by 3 seconds to check if more people joined. If this is the case, it will delay another 3
+     * seconds until there has been 3 seconds without any joins, and then /who the entire channel again.
+     * This is to prevent the bot from hanging when there are many joins in a short time, such as resolved netsplits.
+     *
      * This will provoke 354 {@link EventType} NUMERIC events, which contain nick and its registered username.
      *
      * @param e {@link JoinEvent} to be investigated.
@@ -85,7 +95,39 @@ public class NickServPlugin implements PluginWithDependencies {
             wand.sendServerMessage(e.getNetwork(), "WHO "+ e.getChannel() +" %na");
         }
         else {
-            wand.sendServerMessage(e.getNetwork(), "WHO "+ e.getNick() +" %na");
+            lastJoin = new DateTime();
+            if (joinTimer == null) {
+                String[] args = new String[]{e.getNetwork().getServerAlias(), e.getChannel(), e.getNick(), };
+                joinTimer = new Timer(this, "checkForNewJoinsOrPerformSingleWHO", 3000, false, args);
+                joinTimer.startTimer();
+            }
+        }
+    }
+
+    public void checkForNewJoinsOrPerformSingleWHO(Object[] argsObjects) {
+        String[] args = (String[]) argsObjects;
+        long duration = new Duration(lastJoin, new DateTime()).getMillis();
+        System.out.println("Millis: "+duration);
+        if (duration > 3000) {
+            joinTimer = null;
+            wand.sendServerMessage(wand.getNetworkByAlias(args[0]), "WHO "+ args[2] +" %na");
+        }
+        else {
+            joinTimer = new Timer(this, "checkForNewJoinsOrPerformChannelWHO", 3000, false, args);
+            joinTimer.startTimer();
+        }
+    }
+
+    public void checkForNewJoinsOrPerformChannelWHO(Object[] argsObjects) {
+        String[] args = (String[]) argsObjects;
+        long duration = new Duration(lastJoin, new DateTime()).getMillis();
+        if (duration > 3000) {
+            joinTimer = null;
+            wand.sendServerMessage(wand.getNetworkByAlias(args[0]), "WHO "+ args[1] +" %na");
+        }
+        else {
+            joinTimer = new Timer(this, "checkForNewJoinsOrPerformChannelWHO", 3000, false, args);
+            joinTimer.startTimer();
         }
     }
 
@@ -111,8 +153,6 @@ public class NickServPlugin implements PluginWithDependencies {
         if (e.getNumeric() == 354) {
             authHandlers.get(e.getNetwork())
                     .addNick(e.getParamaters().get(1), e.getParamaters().get(2));
-
-            //logger.debug("Added '"+e.getParamaters().get(1)+ "' with auth; "+e.getParamaters().get(2));
         }
     }
 
