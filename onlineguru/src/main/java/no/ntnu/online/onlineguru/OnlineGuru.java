@@ -24,7 +24,7 @@ public class OnlineGuru implements IRCEventListener, Runnable {
     private Queue<Event> eventQueue = new LinkedList<Event>();
 
     private ConcurrentHashMap<String, Network> networks = new ConcurrentHashMap<String, Network>();
-    private Hashtable<Network, Vector<String>> channelsOnConnect = new Hashtable<Network, Vector<String>>();
+    private Map<Network, Vector<String>> channelsOnConnect = new HashMap<Network, Vector<String>>();
     private EventDistributor eventDistributor;
     private Thread thread = null;
 
