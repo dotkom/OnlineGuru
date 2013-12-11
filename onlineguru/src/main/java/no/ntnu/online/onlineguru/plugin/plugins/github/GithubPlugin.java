@@ -145,7 +145,7 @@ public class GithubPlugin implements PluginWithDependencies {
 
                 // Check if the user has permissions to access.
                 Set<Flag> flags = flagsPlugin.getFlags(e.getNetwork(), channel, e.getSender());
-                if (!flags.contains(Flag.a) && !flags.contains(Flag.A)) {
+                if (!flags.contains(peekingFlag) && !flags.contains(Flag.A)) {
                     return "You do not have access to use this command. It requires +a for info and +A to edit.";
                 }
 
@@ -171,7 +171,7 @@ public class GithubPlugin implements PluginWithDependencies {
                         setting = setting.toLowerCase();
                     }
 
-                    if (!flags.contains(Flag.A)) {
+                    if (!flags.contains(editorFlag)) {
                         return "You do not have access to this feature. It requires +A.";
                     }
                     else {
