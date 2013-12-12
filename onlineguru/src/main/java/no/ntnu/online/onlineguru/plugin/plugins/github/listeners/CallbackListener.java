@@ -18,58 +18,73 @@ public class CallbackListener {
     private List<AnnounceSubscription> announceSubscriptions = new ArrayList<AnnounceSubscription>();
 
     public void incomingPayload(GithubCallback gc, GithubPayload githubPayload) {
-        String network = "";
-        String channel = "";
-        String output = "";
+        String network;
+        String channel;
+        String output;
 
         // Branch deleted
         if (githubPayload.isDeleted()) {
             output = announceDelete(githubPayload);
             for (AnnounceSubscription as : announceSubscriptions) {
+                channel = "";
+                network = "";
                 if (as.wantsBranches()) {
                     network = as.getNetwork();
                     channel = as.getChannel();
                 }
+                if (!network.isEmpty() && !channel.isEmpty()) gc.announceToIRC(network, channel, output);
             }
         }
         // Branch created
         else if (githubPayload.isCreated()) {
             output = announceCreate(githubPayload);
             for (AnnounceSubscription as : announceSubscriptions) {
+                channel = "";
+                network = "";
                 if (as.wantsBranches()) {
                     network = as.getNetwork();
                     channel = as.getChannel();
                 }
+                if (!network.isEmpty() && !channel.isEmpty()) gc.announceToIRC(network, channel, output);
             }
         }
         // New commits (push)
         else if (githubPayload.getCommits() != null && !githubPayload.getCommits().isEmpty()) {
             output = announceCommit(githubPayload);
             for (AnnounceSubscription as : announceSubscriptions) {
+                channel = "";
+                network = "";
                 if (as.wantsCommits()) {
                     network = as.getNetwork();
                     channel = as.getChannel();
                 }
+                if (!network.isEmpty() && !channel.isEmpty()) gc.announceToIRC(network, channel, output);
             }
         }
         // New issue / issue activity?
         else if (githubPayload.getIssue() != null) {
             output = announceIssue(githubPayload);
             for (AnnounceSubscription as : announceSubscriptions) {
+                channel = "";
+                network = "";
                 if (as.wantsIssues()) {
                     network = as.getNetwork();
                     channel = as.getChannel();
                 }
+                if (!network.isEmpty() && !channel.isEmpty()) gc.announceToIRC(network, channel, output);
             }
         }
         // New pull request / pull request activity?
         else if (githubPayload.getPullRequest() != null) {
             output = announcePullRequest(githubPayload);
             for (AnnounceSubscription as : announceSubscriptions) {
+                channel = "";
+                network = "";
                 if (as.wantsPullRequests()) {
                     network = as.getNetwork();
                     channel = as.getChannel();
                 }
+                if (!network.isEmpty() && !channel.isEmpty()) gc.announceToIRC(network, channel, output);
             }
         }
         // Used for debugging in case.
@@ -78,9 +93,6 @@ public class CallbackListener {
             logger.debug(githubPayload.toString());
         }
 
-        if (!network.isEmpty() && !channel.isEmpty()) {
-            gc.announceToIRC(network, channel, output);
-        }
     }
 
     protected String announceDelete(GithubPayload githubPayload) {
