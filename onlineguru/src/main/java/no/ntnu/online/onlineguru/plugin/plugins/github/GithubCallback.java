@@ -6,11 +6,12 @@ import com.google.gson.JsonParseException;
 import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.Listeners;
 import no.ntnu.online.onlineguru.plugin.plugins.github.model.GithubPayload;
 import no.ntnu.online.onlineguru.service.services.webserver.NanoHTTPD;
-import no.ntnu.online.onlineguru.service.services.webserver.Response;
+import no.ntnu.online.onlineguru.service.services.webserver.NanoHTTPD.*;
 import no.ntnu.online.onlineguru.service.services.webserver.WebserverCallback;
 import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
 
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -36,17 +37,17 @@ public class GithubCallback implements WebserverCallback {
     }
 
     @Override
-    public Response serve(String uri, String method, Properties header, Properties parms, Properties files) {
+    public Response serve(String uri, Method method,  Map<String, String> headers, Map<String, String> parms) {
         // make payload to get IRCAnnounce
         logger.debug("Request received from webserver.");
 
         GithubPayload payload = null;
-        if (method.equalsIgnoreCase("POST") && parms.containsKey("payload")) {
+        if (method.name().equalsIgnoreCase("POST") && parms.containsKey("payload")) {
             try {
-                payload = gson.fromJson(parms.getProperty("payload"), GithubPayload.class);
+                payload = gson.fromJson(parms.get("payload"), GithubPayload.class);
             } catch (JsonParseException e) {
                 logger.error("Failed to parse JSON from "+uri, e.getCause());
-                logger.error(parms.getProperty("payload"));
+                logger.error(parms.get("payload"));
             }
         }
 
@@ -60,7 +61,7 @@ public class GithubCallback implements WebserverCallback {
             }
         }
 
-        return new Response(NanoHTTPD.HTTP_OK, NanoHTTPD.MIME_PLAINTEXT, "OK");
+        return new Response(Response.Status.OK, NanoHTTPD.MIME_PLAINTEXT, "OK");
     }
 
     @Override

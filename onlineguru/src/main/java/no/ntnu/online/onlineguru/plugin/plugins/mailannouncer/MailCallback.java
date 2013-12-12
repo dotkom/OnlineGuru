@@ -4,11 +4,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import no.ntnu.online.onlineguru.plugin.plugins.mailannouncer.listeners.Listeners;
 import no.ntnu.online.onlineguru.service.services.webserver.NanoHTTPD;
-import no.ntnu.online.onlineguru.service.services.webserver.Response;
+import no.ntnu.online.onlineguru.service.services.webserver.NanoHTTPD.Method;
 import no.ntnu.online.onlineguru.service.services.webserver.WebserverCallback;
 import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
 
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -34,11 +35,11 @@ public class MailCallback implements WebserverCallback {
     }
 
     @Override
-    public Response serve(String uri, String method, Properties header, Properties parms, Properties files) {
+    public NanoHTTPD.Response serve(String uri, Method method,  Map<String, String> headers, Map<String, String> parms) {
         System.out.println("Received mail call");
 
 
-        return new Response(NanoHTTPD.HTTP_OK, NanoHTTPD.MIME_PLAINTEXT, "OK");
+        return new NanoHTTPD.Response(NanoHTTPD.Response.Status.OK, NanoHTTPD.MIME_PLAINTEXT, "OK");
     }
 
     @Override
