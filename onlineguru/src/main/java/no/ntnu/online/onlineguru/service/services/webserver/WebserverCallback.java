@@ -1,11 +1,13 @@
 package no.ntnu.online.onlineguru.service.services.webserver;
 
-import java.util.Properties;
+import no.ntnu.online.onlineguru.service.services.webserver.NanoHTTPD.Method;
+
+import java.util.Map;
 
 /**
  * @author Roy Sindre Norangshol
  */
 public interface WebserverCallback {
-    public Response serve(String uri, String method, Properties header, Properties parms, Properties files);
+    public NanoHTTPD.Response serve(String uri, Method method, Map<String, String> headers, Map<String, String> parms);
     public void httpdServerShutdown(String message);
 }
