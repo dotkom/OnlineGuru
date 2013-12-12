@@ -38,9 +38,6 @@ public class GithubCallback implements WebserverCallback {
 
     @Override
     public Response serve(String uri, Method method,  Map<String, String> headers, Map<String, String> parms) {
-        // make payload to get IRCAnnounce
-        logger.debug("Request received from webserver.");
-
         GithubPayload payload = null;
         if (method.name().equalsIgnoreCase("POST") && parms.containsKey("payload")) {
             try {
