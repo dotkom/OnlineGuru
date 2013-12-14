@@ -8,7 +8,7 @@ public class Mail {
     private String to;
     private String from;
     private String subject;
-    private String list;
+    private String mailinglist;
 
     public String getTo() {
         return to;
@@ -22,8 +22,8 @@ public class Mail {
         return subject;
     }
 
-    public String getList() {
-        return list;
+    public String getMailinglist() {
+        return mailinglist;
     }
 
 }
