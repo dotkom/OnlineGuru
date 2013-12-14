@@ -56,6 +56,8 @@ public class GithubPlugin implements PluginWithDependencies {
 
     public GithubPlugin() {
         storageManager = new StorageManager(database_file);
+
+        // This needs to be initiated here for testing purposes, deal with it.
         listeners = new Listeners();
     }
 
