@@ -11,9 +11,9 @@ import java.util.List;
 /**
  * @author Håvard Slettvold
  */
-public class CallbackListener {
+public class GithubCallbackListener {
 
-    static Logger logger = Logger.getLogger(CallbackListener.class);
+    static Logger logger = Logger.getLogger(GithubCallbackListener.class);
 
     private List<AnnounceSubscription> announceSubscriptions = new ArrayList<AnnounceSubscription>();
 

@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * @author Håvard Slettvold
  */
-public class CallbackListener {
+public class MailCallbackListener {
 
     private List<AnnounceSubscription> announceSubscriptions = new ArrayList<AnnounceSubscription>();
 

@@ -8,22 +8,22 @@ import java.util.Map;
  */
 public class Listeners {
 
-    private Map<String, CallbackListener> callbackListeners;
+    private Map<String, GithubCallbackListener> githubCallbackListeners;
 
     public Listeners() {
-        this.callbackListeners = new HashMap<String, CallbackListener>();
+        this.githubCallbackListeners = new HashMap<String, GithubCallbackListener>();
     }
 
-    public void put(String repository, CallbackListener callbackListener) {
-        callbackListeners.put(repository, callbackListener);
+    public void put(String repository, GithubCallbackListener githubCallbackListener) {
+        this.githubCallbackListeners.put(repository, githubCallbackListener);
     }
 
     public boolean containsKey(String repository) {
-        return callbackListeners.containsKey(repository);
+        return githubCallbackListeners.containsKey(repository);
     }
 
-    public CallbackListener get(String repository) {
-        return callbackListeners.get(repository);
+    public GithubCallbackListener get(String repository) {
+        return githubCallbackListeners.get(repository);
     }
 
 }

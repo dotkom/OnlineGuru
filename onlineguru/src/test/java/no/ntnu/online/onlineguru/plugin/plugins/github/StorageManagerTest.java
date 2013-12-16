@@ -1,6 +1,6 @@
 package no.ntnu.online.onlineguru.plugin.plugins.github;
 
-import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.CallbackListener;
+import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.GithubCallbackListener;
 import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.Listeners;
 import org.junit.Test;
 
@@ -21,13 +21,13 @@ public class StorageManagerTest {
     @Test
     public void testSave() {
 
-        CallbackListener cl1 = new CallbackListener();
+        GithubCallbackListener cl1 = new GithubCallbackListener();
         listeners.put("https://github.com/moo/moo", cl1);
 
         cl1.getOrCreateSubscription("testnetwork", "#testchannel1");
         cl1.getOrCreateSubscription("testnetwork", "#testchannel2");
 
-        CallbackListener cl2 = new CallbackListener();
+        GithubCallbackListener cl2 = new GithubCallbackListener();
         listeners.put("https://github.com/test/test", cl2);
 
         cl2.getOrCreateSubscription("testnetwork", "#testchannel3");

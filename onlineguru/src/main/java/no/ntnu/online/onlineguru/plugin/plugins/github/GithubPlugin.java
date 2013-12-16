@@ -10,12 +10,11 @@ import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.FlagsPlugin;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
 import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.AnnounceSubscription;
-import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.CallbackListener;
+import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.GithubCallbackListener;
 import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.Listeners;
 import no.ntnu.online.onlineguru.plugin.plugins.help.HelpPlugin;
 import no.ntnu.online.onlineguru.service.services.webserver.Webserver;
 import no.ntnu.online.onlineguru.utils.Wand;
-import org.apache.log4j.Logger;
 
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -27,8 +26,6 @@ import java.util.regex.Pattern;
  * @author Håvard Slettvold
  */
 public class GithubPlugin implements PluginWithDependencies {
-
-    static Logger logger = Logger.getLogger(GithubPlugin.class);
 
     private Wand wand;
     private FlagsPlugin flagsPlugin;
@@ -155,14 +152,14 @@ public class GithubPlugin implements PluginWithDependencies {
                 String setting = matcher.group(9);
 
                 // Get the callback listener for the specified repo.
-                CallbackListener cl = listeners.get("https://github.com/" + repo);
+                GithubCallbackListener gcl = listeners.get("https://github.com/" + repo);
                 // If it doesn't exist, create a new one.
-                if (cl == null) {
-                    cl = new CallbackListener();
-                    listeners.put("https://github.com/" + repo, cl);
+                if (gcl == null) {
+                    gcl = new GithubCallbackListener();
+                    listeners.put("https://github.com/" + repo, gcl);
                 }
 
-                AnnounceSubscription as = cl.getOrCreateSubscription(e.getNetwork().getServerAlias(), channel);
+                AnnounceSubscription as = gcl.getOrCreateSubscription(e.getNetwork().getServerAlias(), channel);
 
                 if (matcher.group(3) != null) {
                     // Make sure setting has a sensible content

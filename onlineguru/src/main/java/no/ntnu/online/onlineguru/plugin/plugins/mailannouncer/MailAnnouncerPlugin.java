@@ -10,7 +10,7 @@ import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.FlagsPlugin;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
 import no.ntnu.online.onlineguru.plugin.plugins.help.HelpPlugin;
-import no.ntnu.online.onlineguru.plugin.plugins.mailannouncer.listeners.CallbackListener;
+import no.ntnu.online.onlineguru.plugin.plugins.mailannouncer.listeners.MailCallbackListener;
 import no.ntnu.online.onlineguru.plugin.plugins.mailannouncer.listeners.Listeners;
 import no.ntnu.online.onlineguru.service.services.webserver.Webserver;
 import no.ntnu.online.onlineguru.utils.JSONStorage;
@@ -136,27 +136,27 @@ public class MailAnnouncerPlugin implements PluginWithDependencies {
         String setting = matcher.group(3);
 
         // Get the callback listener for the specified mailinglist.
-        CallbackListener cl = listeners.get(mailinglist);
+        MailCallbackListener mcl = listeners.get(mailinglist);
         // If it doesn't exist, create a new one.
-        if (cl == null) {
-            cl = new CallbackListener();
-            listeners.put(mailinglist, cl);
+        if (mcl == null) {
+            mcl = new MailCallbackListener();
+            listeners.put(mailinglist, mcl);
         }
 
         if (matcher.group(3) == null) {
-            if (cl.isSubscribed(e.getNetwork(), channel)) {
+            if (mcl.isSubscribed(e.getNetwork(), channel)) {
                 return channel + " is subscribed to '" + mailinglist + "'.";
             }
             return channel + " is not subscribed to '" + mailinglist + "'.";
         }
         else if (matcher.group(3).equals("on")) {
-            if (!cl.createSubscription(e.getNetwork(), channel)) {
+            if (!mcl.createSubscription(e.getNetwork(), channel)) {
                 return channel + " is already subscribed to '" + mailinglist + "'.";
             }
             return channel + " is now subscribed to '" + mailinglist + "'.";
         }
         else if (matcher.group(3).equals("off")) {
-            if (!cl.deleteSubscription(e.getNetwork(), channel)) {
+            if (!mcl.deleteSubscription(e.getNetwork(), channel)) {
                 return channel + " is not subscribed to '" + mailinglist + "'.";
             }
             return channel + " is no longer subscribed to '" + mailinglist + "'.";

@@ -50,12 +50,9 @@ public class MailCallback implements WebserverCallback {
             }
         }
 
-        System.out.println("1");
         if (mail != null) {
-            System.out.println("2");
             String mailinglist = mail.getMailinglist();
             if (listeners.containsKey(mailinglist)) {
-                System.out.println("3");
                 listeners.get(mailinglist).incomingMail(this, mail);
             }
             else {

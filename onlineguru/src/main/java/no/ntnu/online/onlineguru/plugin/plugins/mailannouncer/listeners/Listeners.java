@@ -8,22 +8,22 @@ import java.util.Map;
  */
 public class Listeners {
 
-    private Map<String, CallbackListener> callbackListeners;
+    private Map<String, MailCallbackListener> mailCallbackListenerMap;
 
     public Listeners() {
-        this.callbackListeners = new HashMap<String, CallbackListener>();
+        this.mailCallbackListenerMap = new HashMap<String, MailCallbackListener>();
     }
 
-    public void put(String mailinglist, CallbackListener callbackListener) {
-        callbackListeners.put(mailinglist, callbackListener);
+    public void put(String mailinglist, MailCallbackListener mailCallbackListener) {
+        mailCallbackListenerMap.put(mailinglist, mailCallbackListener);
     }
 
     public boolean containsKey(String mailinglist) {
-        return callbackListeners.containsKey(mailinglist);
+        return mailCallbackListenerMap.containsKey(mailinglist);
     }
 
-    public CallbackListener get(String mailinglist) {
-        return callbackListeners.get(mailinglist);
+    public MailCallbackListener get(String mailinglist) {
+        return mailCallbackListenerMap.get(mailinglist);
     }
 
 }
