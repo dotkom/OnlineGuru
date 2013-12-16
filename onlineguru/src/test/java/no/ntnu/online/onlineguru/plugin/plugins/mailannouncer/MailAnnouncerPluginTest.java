@@ -29,9 +29,9 @@ public class MailAnnouncerPluginTest {
         mailAnnouncerPlugin = new MailAnnouncerPlugin();
         mailAnnouncerPlugin.loadDependency(flagsPlugin);
 
-        network.setServerAlias("testNetwork");
         mailAnnouncerPlugin.addWand(wand);
 
+        when(network.getServerAlias()).thenReturn("testNetwork");
         when(flagsPlugin.getFlags(network, "#channel", "melwil")).thenReturn(new HashSet<Flag>(){{ add(Flag.a); add(Flag.A); }});
         when(wand.getNetworkByAlias("testNetwork")).thenReturn(network);
     }

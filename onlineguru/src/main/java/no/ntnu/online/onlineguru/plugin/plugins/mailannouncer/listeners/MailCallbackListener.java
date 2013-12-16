@@ -56,7 +56,7 @@ public class MailCallbackListener {
     private AnnounceSubscription getSubscription(Network network, String channel) {
         AnnounceSubscription announceSubscription = null;
         for (AnnounceSubscription as : announceSubscriptions) {
-            if (as.getNetwork().equals(network.getServerAlias()) && as.getChannel().equalsIgnoreCase(channel)) {
+            if (as.getNetwork().equalsIgnoreCase(network.getServerAlias()) && as.getChannel().equalsIgnoreCase(channel)) {
                 announceSubscription = as;
                 break;
             }
