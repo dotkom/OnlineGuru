@@ -15,7 +15,7 @@ public class Webserver extends NanoHTTPD {
     static Logger logger = Logger.getLogger(Webserver.class);
 
     public Webserver() throws IOException {
-        super("localhost", 9875);
+        super(9875);
         services = new HashMap<String, WebserverCallback>();
         this.start();
     }
