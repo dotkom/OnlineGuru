@@ -3,7 +3,6 @@ package no.ntnu.online.onlineguru.service.services.webserver;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
