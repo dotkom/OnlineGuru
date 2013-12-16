@@ -15,7 +15,15 @@ public class CallbackListener {
     private List<AnnounceSubscription> announceSubscriptions = new ArrayList<AnnounceSubscription>();
 
     public void incomingMail(MailCallback mailCallback, Mail mail) {
-        System.out.println("Incoming mail!");
+        for (AnnounceSubscription announceSubscription : announceSubscriptions) {
+            mailCallback.announceToIRC(announceSubscription.getNetwork(), announceSubscription.getChannel(),
+                    String.format("[mail][%s] %s <%s> - %s",
+                    mail.getMailinglist(),
+                    mail.getFrom(),
+                    mail.getFrom_email(),
+                    mail.getSubject()
+            ));
+        }
     }
 
     public boolean deleteSubscription(Network network, String channel) {
@@ -30,7 +38,7 @@ public class CallbackListener {
     public boolean createSubscription(Network network, String channel) {
         AnnounceSubscription announceSubscription = getSubscription(network, channel);
         if (announceSubscription == null) {
-            announceSubscription = new AnnounceSubscription(network, channel);
+            announceSubscription = new AnnounceSubscription(network.getServerAlias(), channel);
             announceSubscriptions.add(announceSubscription);
             return true;
         }
@@ -48,7 +56,7 @@ public class CallbackListener {
     private AnnounceSubscription getSubscription(Network network, String channel) {
         AnnounceSubscription announceSubscription = null;
         for (AnnounceSubscription as : announceSubscriptions) {
-            if (as.getNetwork().equals(network) && as.getChannel().equalsIgnoreCase(channel)) {
+            if (as.getNetwork().equals(network.getServerAlias()) && as.getChannel().equalsIgnoreCase(channel)) {
                 announceSubscription = as;
                 break;
             }

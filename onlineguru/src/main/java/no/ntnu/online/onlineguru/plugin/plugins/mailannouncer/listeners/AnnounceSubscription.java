@@ -1,23 +1,22 @@
 package no.ntnu.online.onlineguru.plugin.plugins.mailannouncer.listeners;
 
-import no.fictive.irclib.model.network.Network;
-
-import java.util.Objects;
-
 /**
  * @author Håvard Slettvold
  */
 public class AnnounceSubscription {
 
-    private Network network;
+    private String network;
     private String channel;
 
-    public AnnounceSubscription(Network network, String channel) {
+    public AnnounceSubscription() {
+    }
+
+    public AnnounceSubscription(String network, String channel) {
         this.network = network;
         this.channel = channel;
     }
 
-    public Network getNetwork() {
+    public String getNetwork() {
         return network;
     }
 

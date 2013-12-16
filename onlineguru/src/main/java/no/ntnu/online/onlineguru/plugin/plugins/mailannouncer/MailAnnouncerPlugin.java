@@ -40,7 +40,7 @@ public class MailAnnouncerPlugin implements PluginWithDependencies {
 
     private Pattern commandPattern = Pattern.compile(
             "!mail" +                      // Trigger
-            " (\\w+)" +                   // Mailinglist, group 1
+            " (\\w+)" +                    // Mailinglist, group 1
             "(?: (#\\S+))?" +              // Channel, group 2
             "(?: (on|off))?",              // Setting, group 3
             Pattern.CASE_INSENSITIVE
@@ -96,6 +96,13 @@ public class MailAnnouncerPlugin implements PluginWithDependencies {
             PrivMsgEvent pme = (PrivMsgEvent) e;
             String reply = handleCommand(pme);
             if (reply != null) {
+                // Save the config. Not all calls to this method needs a save, but
+                // distinguishing each of the calls from eachother is more complicated than
+                // just saving in any case.
+                // Saving is done in framework-invoked medthods in order to separate out
+                // methods for testing and not overriding prod storage when testing.
+                JSONStorage.save(database_file, listeners);
+
                 wand.sendMessageToTarget(pme.getNetwork(), pme.getTarget(), "[mail] " + reply);
             }
         }

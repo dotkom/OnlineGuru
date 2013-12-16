@@ -12,6 +12,7 @@ import no.ntnu.online.onlineguru.service.services.webserver.WebserverCallback;
 import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Properties;
 
@@ -38,20 +39,23 @@ public class MailCallback implements WebserverCallback {
     }
 
     @Override
-    public Response serve(String uri, Method method,  Map<String, String> headers, Map<String, String> parms) {
+    public Response serve(String uri, Method method,  Map<String, String> headers, Map<String, String> parms, Map<String, String> files) {
         Mail mail = null;
-        if (method == Method.POST && parms.containsKey("payload")) {
+        if (Method.POST.equals(method) && parms.containsKey("payload")) {
             try {
-                gson.fromJson(parms.get("payload"), Mail.class);
+                mail = gson.fromJson(parms.get("payload"), Mail.class);
             } catch (JsonParseException e) {
                 logger.error("Failed to parse JSON from "+uri, e.getCause());
                 logger.error(parms.get("payload"));
             }
         }
 
+        System.out.println("1");
         if (mail != null) {
+            System.out.println("2");
             String mailinglist = mail.getMailinglist();
             if (listeners.containsKey(mailinglist)) {
+                System.out.println("3");
                 listeners.get(mailinglist).incomingMail(this, mail);
             }
             else {
