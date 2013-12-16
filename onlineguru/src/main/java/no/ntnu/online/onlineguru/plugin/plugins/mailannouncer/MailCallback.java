@@ -40,6 +40,7 @@ public class MailCallback implements WebserverCallback {
     public Response serve(String uri, Method method,  Map<String, String> headers, Map<String, String> parms, Map<String, String> files) {
         Mail mail = null;
         if (Method.POST.equals(method) && parms.containsKey("payload")) {
+            logger.debug("Mail paload: "+parms.get("payload"));
             try {
                 mail = gson.fromJson(parms.get("payload"), Mail.class);
             } catch (JsonParseException e) {
