@@ -1,12 +1,13 @@
-package no.ntnu.online.onlineguru.plugin.plugins.github;
+package no.ntnu.online.onlineguru.plugin.plugins.mailannouncer;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
-import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.GithubCallbackListeners;
-import no.ntnu.online.onlineguru.plugin.plugins.github.model.GithubPayload;
+import no.ntnu.online.onlineguru.plugin.plugins.mailannouncer.listeners.MailCallbackListeners;
+import no.ntnu.online.onlineguru.plugin.plugins.mailannouncer.model.Mail;
 import no.ntnu.online.onlineguru.service.services.webserver.NanoHTTPD;
-import no.ntnu.online.onlineguru.service.services.webserver.NanoHTTPD.*;
+import no.ntnu.online.onlineguru.service.services.webserver.NanoHTTPD.Method;
+import no.ntnu.online.onlineguru.service.services.webserver.NanoHTTPD.Response;
 import no.ntnu.online.onlineguru.service.services.webserver.WebserverCallback;
 import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
@@ -16,18 +17,18 @@ import java.util.Map;
 /**
  * @author Håvard Slettvold
  */
-public class GithubCallback implements WebserverCallback {
+public class MailCallback implements WebserverCallback {
 
-    static Logger logger = Logger.getLogger(GithubCallback.class);
+    static Logger logger = Logger.getLogger(MailCallback.class);
 
-    private Wand wand;
     private Gson gson;
+    private Wand wand;
 
-    private GithubCallbackListeners githubCallbackListeners;
+    private MailCallbackListeners mailCallbackListeners;
 
-    public GithubCallback(Wand wand, GithubCallbackListeners githubCallbackListeners) {
+    public MailCallback(Wand wand, MailCallbackListeners mailCallbackListeners) {
         this.wand = wand;
-        this.githubCallbackListeners = githubCallbackListeners;
+        this.mailCallbackListeners = mailCallbackListeners;
 
         GsonBuilder gsonBuilder = new GsonBuilder();
         gson = gsonBuilder
@@ -37,23 +38,23 @@ public class GithubCallback implements WebserverCallback {
 
     @Override
     public Response serve(String uri, Method method,  Map<String, String> headers, Map<String, String> parms, Map<String, String> files) {
-        GithubPayload payload = null;
+        Mail mail = null;
         if (Method.POST.equals(method) && parms.containsKey("payload")) {
             try {
-                payload = gson.fromJson(parms.get("payload"), GithubPayload.class);
+                mail = gson.fromJson(parms.get("payload"), Mail.class);
             } catch (JsonParseException e) {
                 logger.error("Failed to parse JSON from "+uri, e.getCause());
                 logger.error(parms.get("payload"));
             }
         }
 
-        if (payload != null) {
-            String repository = payload.getIdentifier().toLowerCase();
-            if (githubCallbackListeners.containsKey(repository)) {
-                githubCallbackListeners.get(repository).incomingPayload(this, payload);
+        if (mail != null) {
+            String mailinglist = mail.getMailinglist();
+            if (mailCallbackListeners.containsKey(mailinglist)) {
+                mailCallbackListeners.get(mailinglist).incomingMail(this, mail);
             }
             else {
-                logger.debug(String.format("No listener for repository %s", payload.getIdentifier()));
+                logger.debug(String.format("No subscriptions for mailinglist '%s'", mail.getMailinglist()));
             }
         }
 

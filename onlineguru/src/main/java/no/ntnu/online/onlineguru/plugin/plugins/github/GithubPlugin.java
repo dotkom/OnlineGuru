@@ -10,12 +10,11 @@ import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.FlagsPlugin;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
 import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.AnnounceSubscription;
-import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.CallbackListener;
-import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.Listeners;
+import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.GithubCallbackListener;
+import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.GithubCallbackListeners;
 import no.ntnu.online.onlineguru.plugin.plugins.help.HelpPlugin;
 import no.ntnu.online.onlineguru.service.services.webserver.Webserver;
 import no.ntnu.online.onlineguru.utils.Wand;
-import org.apache.log4j.Logger;
 
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -28,8 +27,6 @@ import java.util.regex.Pattern;
  */
 public class GithubPlugin implements PluginWithDependencies {
 
-    static Logger logger = Logger.getLogger(GithubPlugin.class);
-
     private Wand wand;
     private FlagsPlugin flagsPlugin;
 
@@ -41,7 +38,7 @@ public class GithubPlugin implements PluginWithDependencies {
 
     private GithubCallback githubCallback;
     private StorageManager storageManager;
-    private Listeners listeners;
+    private GithubCallbackListeners githubCallbackListeners;
 
     private Pattern commandPattern = Pattern.compile(
             "!github" +                                                                           // Trigger
@@ -56,7 +53,9 @@ public class GithubPlugin implements PluginWithDependencies {
 
     public GithubPlugin() {
         storageManager = new StorageManager(database_file);
-        listeners = new Listeners();
+
+        // This needs to be initiated here for testing purposes, deal with it.
+        githubCallbackListeners = new GithubCallbackListeners();
     }
 
     @Override
@@ -68,11 +67,11 @@ public class GithubPlugin implements PluginWithDependencies {
     public String[] getDependencies() {
         // Doing this setup in a method that is solely called by the PluginManager once.
         // The reason is we do not want to execute these actions during tests.
-        listeners = storageManager.loadListeners();
-        if (listeners == null) {
-            listeners = new Listeners();
+        githubCallbackListeners = storageManager.loadListeners();
+        if (githubCallbackListeners == null) {
+            githubCallbackListeners = new GithubCallbackListeners();
         }
-        githubCallback = new GithubCallback(wand, listeners);
+        githubCallback = new GithubCallback(wand, githubCallbackListeners);
 
         // Running the registering with the web server async, it may take time.
         new Thread() {
@@ -117,7 +116,7 @@ public class GithubPlugin implements PluginWithDependencies {
                 // just saving in any case.
                 // Saving is done in framework-invoked medthods in order to separate out
                 // methods for testing and not overriding prod storage when testing.
-                storageManager.saveListeners(listeners);
+                storageManager.saveListeners(githubCallbackListeners);
 
                 wand.sendMessageToTarget(pme.getNetwork(), pme.getTarget(), "[github] " + reply);
             }
@@ -145,7 +144,7 @@ public class GithubPlugin implements PluginWithDependencies {
 
                 // Check if the user has permissions to access.
                 Set<Flag> flags = flagsPlugin.getFlags(e.getNetwork(), channel, e.getSender());
-                if (!flags.contains(Flag.a) && !flags.contains(Flag.A)) {
+                if (!flags.contains(peekingFlag) && !flags.contains(Flag.A)) {
                     return "You do not have access to use this command. It requires +a for info and +A to edit.";
                 }
 
@@ -153,14 +152,14 @@ public class GithubPlugin implements PluginWithDependencies {
                 String setting = matcher.group(9);
 
                 // Get the callback listener for the specified repo.
-                CallbackListener cl = listeners.get("https://github.com/" + repo);
+                GithubCallbackListener gcl = githubCallbackListeners.get("https://github.com/" + repo);
                 // If it doesn't exist, create a new one.
-                if (cl == null) {
-                    cl = new CallbackListener();
-                    listeners.put("https://github.com/" + repo, cl);
+                if (gcl == null) {
+                    gcl = new GithubCallbackListener();
+                    githubCallbackListeners.put("https://github.com/" + repo, gcl);
                 }
 
-                AnnounceSubscription as = cl.getOrCreateSubscription(e.getNetwork().getServerAlias(), channel);
+                AnnounceSubscription as = gcl.getOrCreateSubscription(e.getNetwork().getServerAlias(), channel);
 
                 if (matcher.group(3) != null) {
                     // Make sure setting has a sensible content
@@ -171,7 +170,7 @@ public class GithubPlugin implements PluginWithDependencies {
                         setting = setting.toLowerCase();
                     }
 
-                    if (!flags.contains(Flag.A)) {
+                    if (!flags.contains(editorFlag)) {
                         return "You do not have access to this feature. It requires +A.";
                     }
                     else {

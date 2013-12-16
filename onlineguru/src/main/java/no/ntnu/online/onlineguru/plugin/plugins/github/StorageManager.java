@@ -1,7 +1,7 @@
 package no.ntnu.online.onlineguru.plugin.plugins.github;
 
 import com.google.gson.Gson;
-import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.Listeners;
+import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.GithubCallbackListeners;
 import no.ntnu.online.onlineguru.utils.SimpleIO;
 import org.apache.log4j.Logger;
 
@@ -21,9 +21,9 @@ public class StorageManager {
         this.database_file = database_file;
     }
 
-    protected Listeners loadListeners() {
+    protected GithubCallbackListeners loadListeners() {
         String json = null;
-        Listeners result = null;
+        GithubCallbackListeners result = null;
 
         try {
             json = SimpleIO.loadConfig(database_file).get("json");
@@ -33,15 +33,15 @@ public class StorageManager {
 
         if (json != null) {
             Gson gson = new Gson();
-            result = gson.fromJson(json, Listeners.class);
+            result = gson.fromJson(json, GithubCallbackListeners.class);
         }
 
         return result;
     }
 
-    protected String saveListeners(Listeners listeners) {
+    protected String saveListeners(GithubCallbackListeners githubCallbackListeners) {
         Gson gson = new Gson();
-        final String json = gson.toJson(listeners);
+        final String json = gson.toJson(githubCallbackListeners);
 
         try {
             SimpleIO.saveConfig(database_file, new HashMap<String,String>() {

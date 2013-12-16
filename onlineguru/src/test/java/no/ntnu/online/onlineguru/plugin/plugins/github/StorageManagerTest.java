@@ -1,7 +1,7 @@
 package no.ntnu.online.onlineguru.plugin.plugins.github;
 
-import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.CallbackListener;
-import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.Listeners;
+import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.GithubCallbackListener;
+import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.GithubCallbackListeners;
 import org.junit.Test;
 
 import java.io.File;
@@ -16,19 +16,19 @@ public class StorageManagerTest {
     private String database_file = "database/github_storage_test.db";
     private StorageManager storageManager = new StorageManager(database_file);
 
-    private Listeners listeners = new Listeners();
+    private GithubCallbackListeners githubCallbackListeners = new GithubCallbackListeners();
 
     @Test
     public void testSave() {
 
-        CallbackListener cl1 = new CallbackListener();
-        listeners.put("https://github.com/moo/moo", cl1);
+        GithubCallbackListener cl1 = new GithubCallbackListener();
+        githubCallbackListeners.put("https://github.com/moo/moo", cl1);
 
         cl1.getOrCreateSubscription("testnetwork", "#testchannel1");
         cl1.getOrCreateSubscription("testnetwork", "#testchannel2");
 
-        CallbackListener cl2 = new CallbackListener();
-        listeners.put("https://github.com/test/test", cl2);
+        GithubCallbackListener cl2 = new GithubCallbackListener();
+        githubCallbackListeners.put("https://github.com/test/test", cl2);
 
         cl2.getOrCreateSubscription("testnetwork", "#testchannel3");
         cl2.getOrCreateSubscription("testnetwork", "#testchannel4");
@@ -76,12 +76,12 @@ public class StorageManagerTest {
             }
         */
 
-        assertEquals(desiredResult, storageManager.saveListeners(listeners));
+        assertEquals(desiredResult, storageManager.saveListeners(githubCallbackListeners));
     }
 
     @Test
     public void testLoad() {
-        Listeners fromStorage = storageManager.loadListeners();
+        GithubCallbackListeners fromStorage = storageManager.loadListeners();
 
 
         File f = new File(database_file);
