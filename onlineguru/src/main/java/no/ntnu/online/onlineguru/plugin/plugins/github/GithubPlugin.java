@@ -11,7 +11,7 @@ import no.ntnu.online.onlineguru.plugin.plugins.flags.FlagsPlugin;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
 import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.AnnounceSubscription;
 import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.GithubCallbackListener;
-import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.Listeners;
+import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.GithubCallbackListeners;
 import no.ntnu.online.onlineguru.plugin.plugins.help.HelpPlugin;
 import no.ntnu.online.onlineguru.service.services.webserver.Webserver;
 import no.ntnu.online.onlineguru.utils.Wand;
@@ -38,7 +38,7 @@ public class GithubPlugin implements PluginWithDependencies {
 
     private GithubCallback githubCallback;
     private StorageManager storageManager;
-    private Listeners listeners;
+    private GithubCallbackListeners githubCallbackListeners;
 
     private Pattern commandPattern = Pattern.compile(
             "!github" +                                                                           // Trigger
@@ -55,7 +55,7 @@ public class GithubPlugin implements PluginWithDependencies {
         storageManager = new StorageManager(database_file);
 
         // This needs to be initiated here for testing purposes, deal with it.
-        listeners = new Listeners();
+        githubCallbackListeners = new GithubCallbackListeners();
     }
 
     @Override
@@ -67,11 +67,11 @@ public class GithubPlugin implements PluginWithDependencies {
     public String[] getDependencies() {
         // Doing this setup in a method that is solely called by the PluginManager once.
         // The reason is we do not want to execute these actions during tests.
-        listeners = storageManager.loadListeners();
-        if (listeners == null) {
-            listeners = new Listeners();
+        githubCallbackListeners = storageManager.loadListeners();
+        if (githubCallbackListeners == null) {
+            githubCallbackListeners = new GithubCallbackListeners();
         }
-        githubCallback = new GithubCallback(wand, listeners);
+        githubCallback = new GithubCallback(wand, githubCallbackListeners);
 
         // Running the registering with the web server async, it may take time.
         new Thread() {
@@ -116,7 +116,7 @@ public class GithubPlugin implements PluginWithDependencies {
                 // just saving in any case.
                 // Saving is done in framework-invoked medthods in order to separate out
                 // methods for testing and not overriding prod storage when testing.
-                storageManager.saveListeners(listeners);
+                storageManager.saveListeners(githubCallbackListeners);
 
                 wand.sendMessageToTarget(pme.getNetwork(), pme.getTarget(), "[github] " + reply);
             }
@@ -152,11 +152,11 @@ public class GithubPlugin implements PluginWithDependencies {
                 String setting = matcher.group(9);
 
                 // Get the callback listener for the specified repo.
-                GithubCallbackListener gcl = listeners.get("https://github.com/" + repo);
+                GithubCallbackListener gcl = githubCallbackListeners.get("https://github.com/" + repo);
                 // If it doesn't exist, create a new one.
                 if (gcl == null) {
                     gcl = new GithubCallbackListener();
-                    listeners.put("https://github.com/" + repo, gcl);
+                    githubCallbackListeners.put("https://github.com/" + repo, gcl);
                 }
 
                 AnnounceSubscription as = gcl.getOrCreateSubscription(e.getNetwork().getServerAlias(), channel);

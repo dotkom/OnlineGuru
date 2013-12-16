@@ -3,7 +3,7 @@ package no.ntnu.online.onlineguru.plugin.plugins.github;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
-import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.Listeners;
+import no.ntnu.online.onlineguru.plugin.plugins.github.listeners.GithubCallbackListeners;
 import no.ntnu.online.onlineguru.plugin.plugins.github.model.GithubPayload;
 import no.ntnu.online.onlineguru.service.services.webserver.NanoHTTPD;
 import no.ntnu.online.onlineguru.service.services.webserver.NanoHTTPD.*;
@@ -23,11 +23,11 @@ public class GithubCallback implements WebserverCallback {
     private Wand wand;
     private Gson gson;
 
-    private Listeners listeners;
+    private GithubCallbackListeners githubCallbackListeners;
 
-    public GithubCallback(Wand wand, Listeners listeners) {
+    public GithubCallback(Wand wand, GithubCallbackListeners githubCallbackListeners) {
         this.wand = wand;
-        this.listeners = listeners;
+        this.githubCallbackListeners = githubCallbackListeners;
 
         GsonBuilder gsonBuilder = new GsonBuilder();
         gson = gsonBuilder
@@ -49,8 +49,8 @@ public class GithubCallback implements WebserverCallback {
 
         if (payload != null) {
             String repository = payload.getIdentifier().toLowerCase();
-            if (listeners.containsKey(repository)) {
-                listeners.get(repository).incomingPayload(this, payload);
+            if (githubCallbackListeners.containsKey(repository)) {
+                githubCallbackListeners.get(repository).incomingPayload(this, payload);
             }
             else {
                 logger.debug(String.format("No listener for repository %s", payload.getIdentifier()));

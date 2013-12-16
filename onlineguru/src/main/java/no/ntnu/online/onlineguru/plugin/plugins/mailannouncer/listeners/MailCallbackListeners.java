@@ -6,11 +6,11 @@ import java.util.Map;
 /**
  * @author Håvard Slettvold
  */
-public class Listeners {
+public class MailCallbackListeners {
 
     private Map<String, MailCallbackListener> mailCallbackListenerMap;
 
-    public Listeners() {
+    public MailCallbackListeners() {
         this.mailCallbackListenerMap = new HashMap<String, MailCallbackListener>();
     }
 

@@ -6,11 +6,11 @@ import java.util.Map;
 /**
  * @author Håvard Slettvold
  */
-public class Listeners {
+public class GithubCallbackListeners {
 
     private Map<String, GithubCallbackListener> githubCallbackListeners;
 
-    public Listeners() {
+    public GithubCallbackListeners() {
         this.githubCallbackListeners = new HashMap<String, GithubCallbackListener>();
     }
 
