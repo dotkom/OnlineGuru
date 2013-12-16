@@ -38,7 +38,7 @@ public class GithubCallback implements WebserverCallback {
     @Override
     public Response serve(String uri, Method method,  Map<String, String> headers, Map<String, String> parms, Map<String, String> files) {
         GithubPayload payload = null;
-        if (Method.POST.equals(method) && parms.containsKey("payload")) {
+        if (method.equals(Method.POST) && parms.containsKey("payload")) {
             try {
                 payload = gson.fromJson(parms.get("payload"), GithubPayload.class);
             } catch (JsonParseException e) {
