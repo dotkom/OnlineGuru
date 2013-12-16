@@ -39,7 +39,7 @@ public class MailCallback implements WebserverCallback {
     @Override
     public Response serve(String uri, Method method,  Map<String, String> headers, Map<String, String> parms, Map<String, String> files) {
         Mail mail = null;
-        if (method.equals(Method.POST) && parms.containsKey("payload")) {
+        if (Method.POST.equals(method) && parms.containsKey("payload")) {
             try {
                 mail = gson.fromJson(parms.get("payload"), Mail.class);
             } catch (JsonParseException e) {
