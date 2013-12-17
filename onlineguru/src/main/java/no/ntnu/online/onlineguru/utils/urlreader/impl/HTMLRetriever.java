@@ -106,6 +106,9 @@ public class HTMLRetriever extends Retriever {
         } catch (TransformerException e) {
             logger.error(e.getMessage(), e.getCause());
             e.printStackTrace();
+        } catch (ArrayIndexOutOfBoundsException e) {
+            logger.error(e.getMessage(), e.getCause());
+            e.getStackTrace();
         }
 
         return pageString;
