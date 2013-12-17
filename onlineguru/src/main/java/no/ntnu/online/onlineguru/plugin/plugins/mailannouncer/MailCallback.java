@@ -3,7 +3,7 @@ package no.ntnu.online.onlineguru.plugin.plugins.mailannouncer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
-import no.ntnu.online.onlineguru.plugin.plugins.mailannouncer.listeners.MailCallbackListeners;
+import no.ntnu.online.onlineguru.plugin.plugins.mailannouncer.listeners.MailCallbackManager;
 import no.ntnu.online.onlineguru.plugin.plugins.mailannouncer.model.Mail;
 import no.ntnu.online.onlineguru.service.services.webserver.NanoHTTPD;
 import no.ntnu.online.onlineguru.service.services.webserver.NanoHTTPD.Method;
@@ -24,11 +24,11 @@ public class MailCallback implements WebserverCallback {
     private Gson gson;
     private Wand wand;
 
-    private MailCallbackListeners mailCallbackListeners;
+    private MailCallbackManager mailCallbackManager;
 
-    public MailCallback(Wand wand, MailCallbackListeners mailCallbackListeners) {
+    public MailCallback(Wand wand, MailCallbackManager mailCallbackManager) {
         this.wand = wand;
-        this.mailCallbackListeners = mailCallbackListeners;
+        this.mailCallbackManager = mailCallbackManager;
 
         GsonBuilder gsonBuilder = new GsonBuilder();
         gson = gsonBuilder
@@ -51,8 +51,8 @@ public class MailCallback implements WebserverCallback {
 
         if (mail != null) {
             String mailinglist = mail.getMailinglist();
-            if (mailCallbackListeners.containsKey(mailinglist)) {
-                mailCallbackListeners.get(mailinglist).incomingMail(this, mail);
+            if (mailCallbackManager.containsKey(mailinglist)) {
+                mailCallbackManager.get(mailinglist).incomingMail(this, mail);
             }
             else {
                 logger.debug(String.format("No subscriptions for mailinglist '%s'", mail.getMailinglist()));

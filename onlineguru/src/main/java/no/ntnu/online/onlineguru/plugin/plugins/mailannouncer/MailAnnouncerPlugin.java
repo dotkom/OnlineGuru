@@ -11,7 +11,7 @@ import no.ntnu.online.onlineguru.plugin.plugins.flags.FlagsPlugin;
 import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
 import no.ntnu.online.onlineguru.plugin.plugins.help.HelpPlugin;
 import no.ntnu.online.onlineguru.plugin.plugins.mailannouncer.listeners.MailCallbackListener;
-import no.ntnu.online.onlineguru.plugin.plugins.mailannouncer.listeners.MailCallbackListeners;
+import no.ntnu.online.onlineguru.plugin.plugins.mailannouncer.listeners.MailCallbackManager;
 import no.ntnu.online.onlineguru.service.services.webserver.Webserver;
 import no.ntnu.online.onlineguru.utils.JSONStorage;
 import no.ntnu.online.onlineguru.utils.Wand;
@@ -36,7 +36,7 @@ public class MailAnnouncerPlugin implements PluginWithDependencies {
     private final Flag peekingFlag = Flag.a;
 
     private MailCallback mailCallback;
-    private MailCallbackListeners mailCallbackListeners;
+    private MailCallbackManager mailCallbackManager;
 
     private Pattern commandPattern = Pattern.compile(
             "!mail" +                      // Trigger
@@ -48,18 +48,18 @@ public class MailAnnouncerPlugin implements PluginWithDependencies {
 
     public MailAnnouncerPlugin() {
         // This needs to be initiated here for testing purposes, deal with it.
-        mailCallbackListeners = new MailCallbackListeners();
+        mailCallbackManager = new MailCallbackManager();
     }
 
     @Override
     public String[] getDependencies() {
         // Doing this setup in a method that is solely called by the PluginManager once.
         // The reason is we do not want to execute these actions during tests.
-        mailCallbackListeners = (MailCallbackListeners) JSONStorage.load(database_file, MailCallbackListeners.class);
-        if (mailCallbackListeners == null) {
-            mailCallbackListeners = new MailCallbackListeners();
+        mailCallbackManager = (MailCallbackManager) JSONStorage.load(database_file, MailCallbackManager.class);
+        if (mailCallbackManager == null) {
+            mailCallbackManager = new MailCallbackManager();
         }
-        mailCallback = new MailCallback(wand, mailCallbackListeners);
+        mailCallback = new MailCallback(wand, mailCallbackManager);
 
         // Running the registering with the web server async, it may take time.
         new Thread() {
@@ -101,7 +101,7 @@ public class MailAnnouncerPlugin implements PluginWithDependencies {
                 // just saving in any case.
                 // Saving is done in framework-invoked medthods in order to separate out
                 // methods for testing and not overriding prod storage when testing.
-                JSONStorage.save(database_file, mailCallbackListeners);
+                JSONStorage.save(database_file, mailCallbackManager);
 
                 wand.sendMessageToTarget(pme.getNetwork(), pme.getTarget(), "[mail] " + reply);
             }
@@ -136,11 +136,11 @@ public class MailAnnouncerPlugin implements PluginWithDependencies {
         String setting = matcher.group(3);
 
         // Get the callback listener for the specified mailinglist.
-        MailCallbackListener mcl = mailCallbackListeners.get(mailinglist);
+        MailCallbackListener mcl = mailCallbackManager.get(mailinglist);
         // If it doesn't exist, create a new one.
         if (mcl == null) {
             mcl = new MailCallbackListener();
-            mailCallbackListeners.put(mailinglist, mcl);
+            mailCallbackManager.put(mailinglist, mcl);
         }
 
         if (matcher.group(3) == null) {
