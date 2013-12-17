@@ -175,7 +175,7 @@ public class KarmaPlugin implements PluginWithDependencies {
         if (plugin instanceof HelpPlugin) {
             HelpPlugin helpPlugin = (HelpPlugin) plugin;
             helpPlugin.addHelp("nick++ | nick--", Flag.ANYONE, "Increase or decrease karma for a nick.");
-            helpPlugin.addHelp("!karma <nick>", Flag.ANYONE, "Check karma for <nick>, or yourself if <nick> is omitted.");
+            helpPlugin.addHelp("!karma", Flag.ANYONE, "Check karma for <nick>, or yourself if <nick> is omitted.");
             helpPlugin.addHelp("nick+=<num> | nick-=<num>", controlFlag, "Increase or decrease karma for a nick by <num>    ");
         }
     }
