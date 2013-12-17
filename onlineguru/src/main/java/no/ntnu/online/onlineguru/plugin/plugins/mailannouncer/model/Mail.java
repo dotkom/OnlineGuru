@@ -9,6 +9,7 @@ public class Mail {
     private String from;
     private String subject;
     private String mailinglist;
+    private String mailinglistAlias;
 
     public String getTo() {
         return to;
@@ -26,4 +27,13 @@ public class Mail {
         return mailinglist;
     }
 
+    public void setMailinglistAlias(String alias) {
+        this.mailinglistAlias = alias;
+    }
+
+    public String getLookupValue() {
+        if (mailinglistAlias != null) return mailinglistAlias;
+        else if (mailinglist != null) return mailinglist;
+        else return to;
+    }
 }

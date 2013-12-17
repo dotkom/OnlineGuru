@@ -3,7 +3,7 @@ package no.ntnu.online.onlineguru.plugin.plugins.mailannouncer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
-import no.ntnu.online.onlineguru.plugin.plugins.mailannouncer.listeners.MailCallbackListeners;
+import no.ntnu.online.onlineguru.plugin.plugins.mailannouncer.listeners.MailCallbackManager;
 import no.ntnu.online.onlineguru.plugin.plugins.mailannouncer.model.Mail;
 import no.ntnu.online.onlineguru.service.services.webserver.NanoHTTPD;
 import no.ntnu.online.onlineguru.service.services.webserver.NanoHTTPD.Method;
@@ -24,11 +24,13 @@ public class MailCallback implements WebserverCallback {
     private Gson gson;
     private Wand wand;
 
-    private MailCallbackListeners mailCallbackListeners;
+    private MailCallbackManager mailCallbackManager;
 
-    public MailCallback(Wand wand, MailCallbackListeners mailCallbackListeners) {
+    private String debugChannel = "#online.dotkom";
+
+    public MailCallback(Wand wand, MailCallbackManager mailCallbackManager) {
         this.wand = wand;
-        this.mailCallbackListeners = mailCallbackListeners;
+        this.mailCallbackManager = mailCallbackManager;
 
         GsonBuilder gsonBuilder = new GsonBuilder();
         gson = gsonBuilder
@@ -50,12 +52,22 @@ public class MailCallback implements WebserverCallback {
         }
 
         if (mail != null) {
-            String mailinglist = mail.getMailinglist();
-            if (mailCallbackListeners.containsKey(mailinglist)) {
-                mailCallbackListeners.get(mailinglist).incomingMail(this, mail);
+            mail.setMailinglistAlias(mailCallbackManager.getAlias(mail.getMailinglist()));
+            // Find the lookup value.
+            // If there is an alias, it will be used, if not the mailinglist's name will be used.
+            // If there was no mailinglist in the mail either, the 'to' email will be used.
+            String lookupValue = mail.getLookupValue();
+            if (mailCallbackManager.containsKey(lookupValue)) {
+                mailCallbackManager.get(lookupValue).incomingMail(this, mail);
             }
             else {
                 logger.debug(String.format("No subscriptions for mailinglist '%s'", mail.getMailinglist()));
+                // Announce to #dotkom at freenode that an unsubscribed list received mail.
+                if (wand.amIOnChannel(wand.getNetworkByAlias("freenode"), debugChannel)) {
+                    announceToIRC("freenode", debugChannel, String.format(
+                            "[mail][DEBUG] Unsubscribed list '%s' - %s ", lookupValue, mail.getSubject()
+                    ));
+                }
             }
         }
 
