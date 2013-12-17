@@ -82,7 +82,11 @@ public class MailAnnouncerPlugin implements PluginWithDependencies {
         if (plugin instanceof FlagsPlugin) this.flagsPlugin = (FlagsPlugin) plugin;
         if (plugin instanceof HelpPlugin) {
             HelpPlugin helpPlugin = (HelpPlugin) plugin;
-
+            helpPlugin.addHelp(
+                    "!mail",
+                    Flag.a,
+                    "!mail <list> [on/off] - Turns announcing for list on or off. Or gives information if last parameter is left out.",
+                    "!mail alias <list> <alias> - Changes the way lists are being displayed when announced. leave out <alias> to see information.");
         }
     }
 
