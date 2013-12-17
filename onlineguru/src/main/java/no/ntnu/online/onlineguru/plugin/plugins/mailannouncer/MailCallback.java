@@ -26,6 +26,8 @@ public class MailCallback implements WebserverCallback {
 
     private MailCallbackManager mailCallbackManager;
 
+    private String debugChannel = "#online.dotkom";
+
     public MailCallback(Wand wand, MailCallbackManager mailCallbackManager) {
         this.wand = wand;
         this.mailCallbackManager = mailCallbackManager;
@@ -60,6 +62,12 @@ public class MailCallback implements WebserverCallback {
             }
             else {
                 logger.debug(String.format("No subscriptions for mailinglist '%s'", mail.getMailinglist()));
+                // Announce to #dotkom at freenode that an unsubscribed list received mail.
+                if (wand.amIOnChannel(wand.getNetworkByAlias("freenode"), debugChannel)) {
+                    announceToIRC("freenode", debugChannel, String.format(
+                            "[mail][DEBUG] Unsubscribed list '%s' - %s ", lookupValue, mail.getSubject()
+                    ));
+                }
             }
         }
 
