@@ -157,11 +157,11 @@ public class MailAnnouncerPluginTest {
         );
         mailAnnouncerPlugin.handleCommand(EventFactory.createPrivMsgEvent(network, "melwil", "notinachannel", "!mail alias <list> alias"));
         assertEquals(
-                "Match found as alias: <list> -> alias",
+                "Match found as mailing list: <list> -> alias",
                 mailAnnouncerPlugin.handleCommand(EventFactory.createPrivMsgEvent(network, "melwil", "#channel", "!mail alias <list>"))
         );
         assertEquals(
-                "Match found as mailinglist: <list> -> alias",
+                "Match found as alias: <list> -> alias",
                 mailAnnouncerPlugin.handleCommand(EventFactory.createPrivMsgEvent(network, "melwil", "#channel", "!mail alias alias"))
         );
     }
