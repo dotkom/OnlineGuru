@@ -40,7 +40,7 @@ public class MailAnnouncerPlugin implements PluginWithDependencies {
 
     private Pattern commandPattern = Pattern.compile(
             "!mail" +                      // Trigger
-            " (\\w+)" +                    // Mailinglist, group 1
+            " (\\S+)" +                    // Mailinglist, group 1
             "(?: (#\\S+))?" +              // Channel, group 2
             "(?: (on|off))?",              // Setting, group 3
             Pattern.CASE_INSENSITIVE
