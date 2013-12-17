@@ -17,10 +17,9 @@ public class MailCallbackListener {
     public void incomingMail(MailCallback mailCallback, Mail mail) {
         for (AnnounceSubscription announceSubscription : announceSubscriptions) {
             mailCallback.announceToIRC(announceSubscription.getNetwork(), announceSubscription.getChannel(),
-                    String.format("[mail][%s] %s <%s> - %s",
+                    String.format("[mail][%s] %s - %s",
                     mail.getMailinglist(),
                     mail.getFrom(),
-                    mail.getFrom_email(),
                     mail.getSubject()
             ));
         }
