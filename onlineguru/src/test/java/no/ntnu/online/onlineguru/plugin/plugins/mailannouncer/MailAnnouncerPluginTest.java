@@ -33,6 +33,7 @@ public class MailAnnouncerPluginTest {
 
         when(network.getServerAlias()).thenReturn("testNetwork");
         when(flagsPlugin.getFlags(network, "#channel", "melwil")).thenReturn(new HashSet<Flag>(){{ add(Flag.a); add(Flag.A); }});
+        when(flagsPlugin.getFlags(network, "melwil")).thenReturn(new HashSet<Flag>(){{ add(Flag.a); add(Flag.A); }});
         when(wand.getNetworkByAlias("testNetwork")).thenReturn(network);
     }
 
@@ -113,6 +114,63 @@ public class MailAnnouncerPluginTest {
         assertEquals(
                 "#channel is subscribed to 'testlist'.",
                 mailAnnouncerPlugin.handleCommand(EventFactory.createPrivMsgEvent(network, "melwil", "notinachannel", "!mail testlist #channel"))
+        );
+    }
+
+    @Test
+    public void testInfoWithoutAccess() {
+        assertEquals(
+                "You do not have access to use this command. +a is required to view subscriptions and +A to edit.",
+                mailAnnouncerPlugin.handleCommand(EventFactory.createPrivMsgEvent(network, "notauthed", "#channel", "!mail testlist"))
+        );
+    }
+
+    @Test
+    public void testEmptyAliasTrigger() {
+        assertEquals(
+                null,
+                mailAnnouncerPlugin.handleCommand(EventFactory.createPrivMsgEvent(network, "melwil", "notinachannel", "!mail alias"))
+        );
+        assertEquals(
+                null,
+                mailAnnouncerPlugin.handleCommand(EventFactory.createPrivMsgEvent(network, "melwil", "#channel", "!mail alias"))
+        );
+    }
+
+    @Test
+    public void testAddAlias() {
+        assertEquals(
+                "Added alias: <list> -> alias",
+                mailAnnouncerPlugin.handleCommand(EventFactory.createPrivMsgEvent(network, "melwil", "notinachannel", "!mail alias <list> alias"))
+        );
+        assertEquals(
+                "Added alias: <list> -> alias",
+                mailAnnouncerPlugin.handleCommand(EventFactory.createPrivMsgEvent(network, "melwil", "#channel", "!mail alias <list> alias"))
+        );
+    }
+
+    @Test
+    public void testAliasInfo() {
+        assertEquals(
+                "No record found for '<list>'.",
+                mailAnnouncerPlugin.handleCommand(EventFactory.createPrivMsgEvent(network, "melwil", "#channel", "!mail alias <list>"))
+        );
+        mailAnnouncerPlugin.handleCommand(EventFactory.createPrivMsgEvent(network, "melwil", "notinachannel", "!mail alias <list> alias"));
+        assertEquals(
+                "Match found as alias: <list> -> alias",
+                mailAnnouncerPlugin.handleCommand(EventFactory.createPrivMsgEvent(network, "melwil", "#channel", "!mail alias <list>"))
+        );
+        assertEquals(
+                "Match found as mailinglist: <list> -> alias",
+                mailAnnouncerPlugin.handleCommand(EventFactory.createPrivMsgEvent(network, "melwil", "#channel", "!mail alias alias"))
+        );
+    }
+
+    @Test
+    public void testAliasInfoWithoutAccess() {
+        assertEquals(
+                "You do not have access to use this command. +a is required to view aliases and +A to edit.",
+                mailAnnouncerPlugin.handleCommand(EventFactory.createPrivMsgEvent(network, "notauthed", "#channel", "!mail alias <somelist>"))
         );
     }
 }
