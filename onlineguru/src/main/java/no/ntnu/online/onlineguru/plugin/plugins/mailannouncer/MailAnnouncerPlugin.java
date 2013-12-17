@@ -39,6 +39,7 @@ public class MailAnnouncerPlugin implements PluginWithDependencies {
     private MailCallbackManager mailCallbackManager;
 
     private Pattern commandPattern = Pattern.compile(
+            // Due to the way this regex is designed it will also let through !mail alias <mailinglist> <alias>
             "!mail" +                      // Trigger
             " (\\S+)" +                    // Mailinglist, group 1
             "(?: (#\\S+))?" +              // Channel, group 2
@@ -108,14 +109,19 @@ public class MailAnnouncerPlugin implements PluginWithDependencies {
         }
     }
 
-    public String handleCommand(PrivMsgEvent e) {
+    protected String handleCommand(PrivMsgEvent e) {
         String message = e.getMessage().toLowerCase();
         if (!message.startsWith("!mail")) return null;
+
+        // If the command is regarding aliases, handle it in another method.
+        if (message.startsWith("!mail alias")) {
+            return handleAliases(e);
+        }
 
         Matcher matcher = commandPattern.matcher(message);
         if (!matcher.find()) return null;
 
-        // Find a channel, or return an error
+        // Find a channel, or return an error.
         String channel = matcher.group(2);
         if (channel == null) {
             if (e.isChannelMessage()) {
@@ -129,7 +135,7 @@ public class MailAnnouncerPlugin implements PluginWithDependencies {
         // Check if the user has permissions to access.
         Set<Flag> flags = flagsPlugin.getFlags(e.getNetwork(), channel, e.getSender());
         if (!flags.contains(peekingFlag) && !flags.contains(Flag.A)) {
-            return "You do not have access to use this command. It requires +a for info and +A to edit.";
+            return "You do not have access to use this command. +a is required to view subscriptions and +A to edit.";
         }
 
         String mailinglist = matcher.group(1).toLowerCase();
@@ -149,7 +155,12 @@ public class MailAnnouncerPlugin implements PluginWithDependencies {
             }
             return channel + " is not subscribed to '" + mailinglist + "'.";
         }
-        else if (matcher.group(3).equals("on")) {
+
+        if (!flags.contains(editorFlag)) {
+            return "You do not have access to use this command. It requires +A to edit subscriptions.";
+        }
+
+        if (matcher.group(3).equals("on")) {
             if (!mcl.createSubscription(e.getNetwork(), channel)) {
                 return channel + " is already subscribed to '" + mailinglist + "'.";
             }
@@ -163,6 +174,47 @@ public class MailAnnouncerPlugin implements PluginWithDependencies {
         }
 
         return null;
+    }
+
+    protected String handleAliases(PrivMsgEvent e) {
+        String[] messageParts = e.getMessage().split(" ");
+
+        // If there are not enough parameters, abort.
+        if (messageParts.length < 3) return null;
+
+        // Messages to this trigger cannot have more than 4 words.
+        if (messageParts.length > 4) return null;
+
+        Set<Flag> flags = flagsPlugin.getFlags(e.getNetwork(), e.getSender());
+        // If it got here it means that the message had 4 words. Check if the user has editor access.
+        if (!flags.contains(editorFlag) && !flags.contains(Flag.A)) {
+            return "You do not have access to use this command. +a is required to view aliases and +A to edit.";
+        }
+
+        // If the length is less than 4 it's an informational call.
+        // !mail alias <mailinglistOrAlias>
+        if (messageParts.length < 4) {
+            String mailinglistOrAlias = messageParts[2];
+            String alias = mailCallbackManager.getAlias(mailinglistOrAlias);
+            String original = mailCallbackManager.getOriginal(mailinglistOrAlias);
+            if (alias != null) {
+                return "Match found as mailing list: "+ mailinglistOrAlias +" -> "+ alias;
+            }
+            else if (original != null) {
+                return "Match found as alias: "+ original +" -> "+ mailinglistOrAlias;
+            }
+            else {
+                return "No record found for '"+ mailinglistOrAlias +"'.";
+            }
+        }
+
+        // If it got here it means that the message had 4 words. Check if the user has editor access.
+        if (!flags.contains(editorFlag) && !flags.contains(Flag.A)) {
+            return "You do not have access to use this command. +A is required to edit.";
+        }
+
+        mailCallbackManager.addAlias(messageParts[2], messageParts[3]);
+        return "Added alias: "+ messageParts[2] +" -> "+ messageParts[3];
     }
 
     @Override
