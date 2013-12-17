@@ -50,9 +50,13 @@ public class MailCallback implements WebserverCallback {
         }
 
         if (mail != null) {
-            String mailinglist = mail.getMailinglist();
-            if (mailCallbackManager.containsKey(mailinglist)) {
-                mailCallbackManager.get(mailinglist).incomingMail(this, mail);
+            mail.setMailinglistAlias(mailCallbackManager.getAlias(mail.getMailinglist()));
+            // Find the lookup value.
+            // If there is an alias, it will be used, if not the mailinglist's name will be used.
+            // If there was no mailinglist in the mail either, the 'to' email will be used.
+            String lookupValue = mail.getLookupValue();
+            if (mailCallbackManager.containsKey(lookupValue)) {
+                mailCallbackManager.get(lookupValue).incomingMail(this, mail);
             }
             else {
                 logger.debug(String.format("No subscriptions for mailinglist '%s'", mail.getMailinglist()));
