@@ -6,11 +6,12 @@ import java.util.Map;
 /**
  * @author Håvard Slettvold
  */
-public class MailCallbackListeners {
+public class MailCallbackManager {
 
+    private Map<String, String> aliases;
     private Map<String, MailCallbackListener> mailCallbackListenerMap;
 
-    public MailCallbackListeners() {
+    public MailCallbackManager() {
         this.mailCallbackListenerMap = new HashMap<String, MailCallbackListener>();
     }
 
@@ -24,6 +25,14 @@ public class MailCallbackListeners {
 
     public MailCallbackListener get(String mailinglist) {
         return mailCallbackListenerMap.get(mailinglist);
+    }
+
+    public void addAlias(String mailinglist, String alias) {
+        aliases.put(mailinglist, alias);
+    }
+
+    public String getAlias(String mailinglist) {
+        return aliases.get(mailinglist);
     }
 
 }
