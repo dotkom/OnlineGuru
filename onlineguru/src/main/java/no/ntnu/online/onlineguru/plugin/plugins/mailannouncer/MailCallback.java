@@ -65,7 +65,7 @@ public class MailCallback implements WebserverCallback {
                 // Announce to #dotkom at freenode that an unsubscribed list received mail.
                 if (wand.amIOnChannel(wand.getNetworkByAlias("freenode"), debugChannel)) {
                     announceToIRC("freenode", debugChannel, String.format(
-                            "[mail][DEBUG] Unsubscribed list '%s' - %s ", lookupValue, mail.getSubject()
+                            "[mail][DEBUG] List lacking channel subscriptions '%s' - %s ", lookupValue, mail.getSubject()
                     ));
                 }
             }
