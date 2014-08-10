@@ -22,14 +22,15 @@ public class LastFM {
 
     private String apikey = null;
     private final String settings_folder = "settings/";
-    private final String settings_file = settings_folder + "np.conf";
+    private final String settings_file = settings_folder + "lastfm.conf";
     private final String database_folder = "database/";
-    private final String database_file = database_folder + "np.db";
+    private final String database_file = database_folder + "lastfm.db";
 
     private Map<String, String> usernameMapping = new HashMap<String, String>();
     private Wand wand;
 
-    public LastFM() {
+    public LastFM(Wand wand) {
+        this.wand = wand;
         initiate();
         Caller.getInstance().setUserAgent("onlineguru");
     }
@@ -57,7 +58,7 @@ public class LastFM {
         }
     }
 
-    private void handleNowPlaying(Event e) {
+    protected void handleNowPlaying(Event e) {
         PrivMsgEvent pme = (PrivMsgEvent) e;
 
         String message = pme.getMessage();
@@ -108,7 +109,7 @@ public class LastFM {
         }
     }
 
-    private void handleRegisterNickname(Event e) {
+    protected void handleRegisterNickname(Event e) {
         PrivMsgEvent pme = (PrivMsgEvent) e;
 
         String message = pme.getMessage();
@@ -127,7 +128,7 @@ public class LastFM {
         }
     }
 
-    private void handleUnregisterNickname(Event e) {
+    protected void handleUnregisterNickname(Event e) {
         PrivMsgEvent pme = (PrivMsgEvent) e;
 
         String message = pme.getMessage();
