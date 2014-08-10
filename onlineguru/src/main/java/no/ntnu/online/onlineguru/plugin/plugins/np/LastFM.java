@@ -1,4 +1,4 @@
-package no.ntnu.online.onlineguru.plugin.plugins.lastfm;
+package no.ntnu.online.onlineguru.plugin.plugins.np;
 
 import java.util.*;
 import java.io.FileNotFoundException;
@@ -11,31 +11,25 @@ import de.umass.lastfm.Track;
 import de.umass.lastfm.User;
 import no.fictive.irclib.event.container.Event;
 import no.fictive.irclib.event.container.command.PrivMsgEvent;
-import no.fictive.irclib.event.model.EventType;
 import no.fictive.irclib.model.network.Network;
-import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
-import no.ntnu.online.onlineguru.plugin.model.Plugin;
-import no.ntnu.online.onlineguru.plugin.model.PluginWithDependencies;
-import no.ntnu.online.onlineguru.plugin.plugins.flags.model.Flag;
-import no.ntnu.online.onlineguru.plugin.plugins.help.HelpPlugin;
 import no.ntnu.online.onlineguru.utils.SimpleIO;
 import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
 
 
-public class LastFMPlugin implements PluginWithDependencies {
-    static Logger logger = Logger.getLogger(LastFMPlugin.class);
+public class LastFM {
+    static Logger logger = Logger.getLogger(LastFM.class);
 
     private String apikey = null;
     private final String settings_folder = "settings/";
-    private final String settings_file = settings_folder + "lastfm.conf";
+    private final String settings_file = settings_folder + "np.conf";
     private final String database_folder = "database/";
-    private final String database_file = database_folder + "lastfm.db";
+    private final String database_file = database_folder + "np.db";
 
     private Map<String, String> usernameMapping = new HashMap<String, String>();
     private Wand wand;
 
-    public LastFMPlugin() {
+    public LastFM() {
         initiate();
         Caller.getInstance().setUserAgent("onlineguru");
     }
@@ -154,51 +148,6 @@ public class LastFMPlugin implements PluginWithDependencies {
             else {
                 wand.sendMessageToTarget(e.getNetwork(), sender, "You have not yet registered your nickname with !np");
             }
-        }
-    }
-
-    public void addEventDistributor(EventDistributor eventDistributor) {
-        eventDistributor.addListener(this, EventType.PRIVMSG);
-
-    }
-
-    public void addWand(Wand wand) {
-        this.wand = wand;
-    }
-
-    public String getDescription() {
-        return "Displays last.fm information.";
-    }
-
-    public void incomingEvent(Event e) {
-        PrivMsgEvent pme = (PrivMsgEvent) e;
-        String message = pme.getMessage();
-
-        if (message.startsWith("!np unregister")) {
-            handleUnregisterNickname(e);
-        }
-        else if (message.startsWith("!np register")) {
-            handleRegisterNickname(e);
-        }
-        else if (message.startsWith("!np")) {
-            handleNowPlaying(e);
-        }
-    }
-
-    public String[] getDependencies() {
-        return new String[]{"HelpPlugin",};
-    }
-
-    public void loadDependency(Plugin plugin) {
-        if (plugin instanceof HelpPlugin) {
-            HelpPlugin help = (HelpPlugin) plugin;
-            help.addHelp(
-                    "!np",
-                    Flag.ANYONE,
-                    "!np <Last.fm username> - Displays the last track played by the supplied Last.fm api.",
-                    "!np register <Last.fm username> - Links the Last.fm username to your nick.",
-                    "!np unregister <Last.fm username> - Unlinks the Last.fm username from your nick."
-            );
         }
     }
 
