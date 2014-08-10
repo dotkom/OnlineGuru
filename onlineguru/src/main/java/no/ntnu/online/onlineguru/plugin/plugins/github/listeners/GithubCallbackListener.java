@@ -18,7 +18,7 @@ public class GithubCallbackListener {
     static Logger logger = Logger.getLogger(GithubCallbackListener.class);
 
     private List<AnnounceSubscription> announceSubscriptions = new ArrayList<AnnounceSubscription>();
-    private Set<String> wantedActions = new HashSet<String>(){{add("opened");add("closed");}};
+    private Set<String> wantedActions = new HashSet<String>(){{add("opened");add("closed");add("reopened");}};
 
     public void incomingPayload(GithubCallback gc, GithubPayload githubPayload) {
         String network;

@@ -33,7 +33,7 @@ public class StorageManagerTest {
         cl2.getOrCreateSubscription("testnetwork", "#testchannel3");
         cl2.getOrCreateSubscription("testnetwork", "#testchannel4");
 
-        String desiredResult = "{\"githubCallbackListeners\":{\"https://github.com/moo/moo\":{\"announceSubscriptions\":[{\"network\":\"testnetwork\",\"channel\":\"#testchannel1\",\"wantsIssues\":false,\"wantsCommits\":false,\"wantsPullRequests\":false,\"wantsBranches\":false},{\"network\":\"testnetwork\",\"channel\":\"#testchannel2\",\"wantsIssues\":false,\"wantsCommits\":false,\"wantsPullRequests\":false,\"wantsBranches\":false}],\"wantedActions\":[\"closed\",\"opened\"]},\"https://github.com/test/test\":{\"announceSubscriptions\":[{\"network\":\"testnetwork\",\"channel\":\"#testchannel3\",\"wantsIssues\":false,\"wantsCommits\":false,\"wantsPullRequests\":false,\"wantsBranches\":false},{\"network\":\"testnetwork\",\"channel\":\"#testchannel4\",\"wantsIssues\":false,\"wantsCommits\":false,\"wantsPullRequests\":false,\"wantsBranches\":false}],\"wantedActions\":[\"closed\",\"opened\"]}}}";
+        String desiredResult = "{\"githubCallbackListeners\":{\"https://github.com/moo/moo\":{\"announceSubscriptions\":[{\"network\":\"testnetwork\",\"channel\":\"#testchannel1\",\"wantsIssues\":false,\"wantsCommits\":false,\"wantsPullRequests\":false,\"wantsBranches\":false},{\"network\":\"testnetwork\",\"channel\":\"#testchannel2\",\"wantsIssues\":false,\"wantsCommits\":false,\"wantsPullRequests\":false,\"wantsBranches\":false}],\"wantedActions\":[\"reopened\",\"closed\",\"opened\"]},\"https://github.com/test/test\":{\"announceSubscriptions\":[{\"network\":\"testnetwork\",\"channel\":\"#testchannel3\",\"wantsIssues\":false,\"wantsCommits\":false,\"wantsPullRequests\":false,\"wantsBranches\":false},{\"network\":\"testnetwork\",\"channel\":\"#testchannel4\",\"wantsIssues\":false,\"wantsCommits\":false,\"wantsPullRequests\":false,\"wantsBranches\":false}],\"wantedActions\":[\"reopened\",\"closed\",\"opened\"]}}}";
 
         /* Better formatted;
             {
@@ -83,7 +83,8 @@ public class StorageManagerTest {
                      ],
                      "wantedActions":[
                         "closed",
-                        "opened"
+                        "opened",
+                        "reopened"
                      ]
                   }
                }
