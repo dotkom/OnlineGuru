@@ -33,46 +33,60 @@ public class StorageManagerTest {
         cl2.getOrCreateSubscription("testnetwork", "#testchannel3");
         cl2.getOrCreateSubscription("testnetwork", "#testchannel4");
 
-        String desiredResult = "{\"githubCallbackListeners\":{\"https://github.com/moo/moo\":{\"announceSubscriptions\":[{\"network\":\"testnetwork\",\"channel\":\"#testchannel1\",\"wantsIssues\":false,\"wantsCommits\":false,\"wantsPullRequests\":false,\"wantsBranches\":false},{\"network\":\"testnetwork\",\"channel\":\"#testchannel2\",\"wantsIssues\":false,\"wantsCommits\":false,\"wantsPullRequests\":false,\"wantsBranches\":false}]},\"https://github.com/test/test\":{\"announceSubscriptions\":[{\"network\":\"testnetwork\",\"channel\":\"#testchannel3\",\"wantsIssues\":false,\"wantsCommits\":false,\"wantsPullRequests\":false,\"wantsBranches\":false},{\"network\":\"testnetwork\",\"channel\":\"#testchannel4\",\"wantsIssues\":false,\"wantsCommits\":false,\"wantsPullRequests\":false,\"wantsBranches\":false}]}}}";
+        String desiredResult = "{\"githubCallbackListeners\":{\"https://github.com/moo/moo\":{\"announceSubscriptions\":[{\"network\":\"testnetwork\",\"channel\":\"#testchannel1\",\"wantsIssues\":false,\"wantsCommits\":false,\"wantsPullRequests\":false,\"wantsBranches\":false},{\"network\":\"testnetwork\",\"channel\":\"#testchannel2\",\"wantsIssues\":false,\"wantsCommits\":false,\"wantsPullRequests\":false,\"wantsBranches\":false}],\"wantedActions\":[\"closed\",\"opened\"]},\"https://github.com/test/test\":{\"announceSubscriptions\":[{\"network\":\"testnetwork\",\"channel\":\"#testchannel3\",\"wantsIssues\":false,\"wantsCommits\":false,\"wantsPullRequests\":false,\"wantsBranches\":false},{\"network\":\"testnetwork\",\"channel\":\"#testchannel4\",\"wantsIssues\":false,\"wantsCommits\":false,\"wantsPullRequests\":false,\"wantsBranches\":false}],\"wantedActions\":[\"closed\",\"opened\"]}}}";
 
         /* Better formatted;
             {
-                "https://github.com/moo/moo": {
-                    "subscribers": [{
-                            "network": "testnetwork",
-                            "channel": "#testchannel1",
-                            "wantsIssues": false,
-                            "wantsCommits": false,
-                            "wantsPullRequests": false,
-                            "wantsBranches": false
-                        }, {
-                            "network": "testnetwork",
-                            "channel": "#testchannel2",
-                            "wantsIssues": false,
-                            "wantsCommits": false,
-                            "wantsPullRequests": false,
-                            "wantsBranches": false
+               "githubCallbackListeners":{
+                  "https://github.com/moo/moo":{
+                     "announceSubscriptions":[
+                        {
+                           "network":"testnetwork",
+                           "channel":"#testchannel1",
+                           "wantsIssues":false,
+                           "wantsCommits":false,
+                           "wantsPullRequests":false,
+                           "wantsBranches":false
+                        },
+                        {
+                           "network":"testnetwork",
+                           "channel":"#testchannel2",
+                           "wantsIssues":false,
+                           "wantsCommits":false,
+                           "wantsPullRequests":false,
+                           "wantsBranches":false
                         }
-                    ]
-                },
-                "https://github.com/test/test": {
-                    "subscribers": [{
-                            "network": "testnetwork",
-                            "channel": "#testchannel3",
-                            "wantsIssues": false,
-                            "wantsCommits": false,
-                            "wantsPullRequests": false,
-                            "wantsBranches": false
-                        }, {
-                            "network": "testnetwork",
-                            "channel": "#testchannel4",
-                            "wantsIssues": false,
-                            "wantsCommits": false,
-                            "wantsPullRequests": false,
-                            "wantsBranches": false
+                     ],
+                     "wantedActions":[
+                        "closed",
+                        "opened"
+                     ]
+                  },
+                  "https://github.com/test/test":{
+                     "announceSubscriptions":[
+                        {
+                           "network":"testnetwork",
+                           "channel":"#testchannel3",
+                           "wantsIssues":false,
+                           "wantsCommits":false,
+                           "wantsPullRequests":false,
+                           "wantsBranches":false
+                        },
+                        {
+                           "network":"testnetwork",
+                           "channel":"#testchannel4",
+                           "wantsIssues":false,
+                           "wantsCommits":false,
+                           "wantsPullRequests":false,
+                           "wantsBranches":false
                         }
-                    ]
-                }
+                     ],
+                     "wantedActions":[
+                        "closed",
+                        "opened"
+                     ]
+                  }
+               }
             }
         */
 
