@@ -6,7 +6,9 @@ import no.ntnu.online.onlineguru.utils.URLShortener;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Håvard Slettvold
@@ -16,6 +18,7 @@ public class GithubCallbackListener {
     static Logger logger = Logger.getLogger(GithubCallbackListener.class);
 
     private List<AnnounceSubscription> announceSubscriptions = new ArrayList<AnnounceSubscription>();
+    private Set<String> wantedActions = new HashSet<String>(){{add("opened");add("closed");}};
 
     public void incomingPayload(GithubCallback gc, GithubPayload githubPayload) {
         String network;
@@ -63,28 +66,34 @@ public class GithubCallbackListener {
         }
         // New issue / issue activity?
         else if (githubPayload.getIssue() != null) {
-            output = announceIssue(githubPayload);
-            for (AnnounceSubscription as : announceSubscriptions) {
-                channel = "";
-                network = "";
-                if (as.wantsIssues()) {
-                    network = as.getNetwork();
-                    channel = as.getChannel();
+            String action = githubPayload.getAction();
+            if (wantedActions.contains(action)) {
+                output = announceIssue(githubPayload);
+                for (AnnounceSubscription as : announceSubscriptions) {
+                    channel = "";
+                    network = "";
+                    if (as.wantsIssues()) {
+                        network = as.getNetwork();
+                        channel = as.getChannel();
+                    }
+                    if (!network.isEmpty() && !channel.isEmpty()) gc.announceToIRC(network, channel, output);
                 }
-                if (!network.isEmpty() && !channel.isEmpty()) gc.announceToIRC(network, channel, output);
             }
         }
         // New pull request / pull request activity?
         else if (githubPayload.getPullRequest() != null) {
-            output = announcePullRequest(githubPayload);
-            for (AnnounceSubscription as : announceSubscriptions) {
-                channel = "";
-                network = "";
-                if (as.wantsPullRequests()) {
-                    network = as.getNetwork();
-                    channel = as.getChannel();
+            String action = githubPayload.getAction();
+            if (wantedActions.contains(action)) {
+                output = announcePullRequest(githubPayload);
+                for (AnnounceSubscription as : announceSubscriptions) {
+                    channel = "";
+                    network = "";
+                    if (as.wantsPullRequests()) {
+                        network = as.getNetwork();
+                        channel = as.getChannel();
+                    }
+                    if (!network.isEmpty() && !channel.isEmpty()) gc.announceToIRC(network, channel, output);
                 }
-                if (!network.isEmpty() && !channel.isEmpty()) gc.announceToIRC(network, channel, output);
             }
         }
         // Used for debugging in case.
