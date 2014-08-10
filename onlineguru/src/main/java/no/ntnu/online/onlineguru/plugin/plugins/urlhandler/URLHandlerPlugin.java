@@ -51,9 +51,14 @@ public class URLHandlerPlugin implements Plugin {
 					if(word.startsWith("www")) {
 						word = "http://" + word;
 					}
-					if( word.startsWith("http://open.spotify.com/track/") ||
+					if(
+                        word.startsWith("http://open.spotify.com/track/") ||
                         word.startsWith("http://open.spotify.com/artist/") ||
-                        word.startsWith("http://open.spotify.com/album/")) {
+                        word.startsWith("http://open.spotify.com/album/") ||
+                        word.startsWith("https://play.spotify.com/track/") ||
+                        word.startsWith("https://play.spotify.com/artist/") ||
+                        word.startsWith("https://play.spotify.com/album/")
+                            ) {
 						    return;
 					}
 					new Entry(wand, pme, word);

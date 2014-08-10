@@ -13,7 +13,7 @@ import no.ntnu.online.onlineguru.utils.Wand;
 public class SpotifyPlugin implements Plugin {
 	
 	private Wand wand;
-	private Pattern linkPattern = Pattern.compile("((http://)?open.spotify.com/(album|artist|track)/([^\\s]+))|(spotify:(album|artist|track):[^\\s]+)");
+	private Pattern linkPattern = Pattern.compile("((https?://)?(?:open|play).spotify.com/(album|artist|track)/(\\w+))|(spotify:(album|artist|track):\\w+)");
 	private Matcher linkMatcher;
 	private Types linkCase;
 	
