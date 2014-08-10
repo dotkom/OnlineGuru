@@ -173,7 +173,7 @@ public class GithubCallbackListener {
                 githubPayload.getAction(),
                 githubPayload.getPullRequest().getTitle(),
                 issueURL,
-                githubPayload.getPullRequest().getUser().getLogin()
+                githubPayload.getSender().getLogin()
         );
 
         return message;
