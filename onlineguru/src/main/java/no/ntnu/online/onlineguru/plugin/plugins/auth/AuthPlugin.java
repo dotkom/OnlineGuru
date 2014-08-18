@@ -12,7 +12,6 @@ import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
 
 import no.fictive.irclib.event.container.Event;
-import no.fictive.irclib.event.container.command.ConnectEvent;
 import no.fictive.irclib.event.model.EventType;
 import no.fictive.irclib.model.network.Network;
 import no.ntnu.online.onlineguru.plugin.control.EventDistributor;
@@ -99,13 +98,19 @@ public class AuthPlugin implements Plugin {
 	}
 
 	public void incomingEvent(Event e) {
-		if (e instanceof ConnectEvent) {
-            auth(e.getNetwork());
-		}
+        switch (e.getEventType()) {
+            case CONNECT:
+                auth(e.getNetwork());
+                break;
+            case PING:
+                checkNick(e);
+                break;
+        }
 	}
 
 	public void addEventDistributor(EventDistributor eventDistributor) {
 		eventDistributor.addListener(this, EventType.CONNECT);
+        eventDistributor.addListener(this, EventType.PING);
 	}
 
 	public void addWand(Wand wand) {
@@ -117,6 +122,17 @@ public class AuthPlugin implements Plugin {
         if (authEntry != null) {
             if (authEntry.getUsername().equalsIgnoreCase(wand.getMyNick(network))) {
                 wand.sendMessageToTarget(network, "NickServ", "identify "+authEntry.getPassword());
+            }
+        }
+    }
+
+    private void checkNick(Event e) {
+        Network network = e.getNetwork();
+        String primaryNick = network.getProfile().getNickname();
+        if (!(primaryNick.equals(wand.getMyNick(network)))) {
+            if (!(network.commonChannels(primaryNick).size() == 0)) {
+                wand.sendServerMessage(network, "NICK " + primaryNick);
+                auth(network);
             }
         }
     }
