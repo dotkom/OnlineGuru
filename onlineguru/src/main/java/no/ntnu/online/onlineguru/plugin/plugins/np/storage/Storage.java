@@ -1,4 +1,6 @@
-package no.ntnu.online.onlineguru.plugin.plugins.np.model;
+package no.ntnu.online.onlineguru.plugin.plugins.np.storage;
+
+import no.ntnu.online.onlineguru.plugin.plugins.np.model.Scrobble;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,7 +8,7 @@ import java.util.Map;
 /**
  * @author Håvard Slettvold
  */
-public class ScrobbleStorage {
+public class Storage {
 
     public static String database_folder = "database/";
     public static String database_file = database_folder + "scrobble.json";
