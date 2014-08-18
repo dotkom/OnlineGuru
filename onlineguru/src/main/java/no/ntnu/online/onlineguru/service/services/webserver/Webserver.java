@@ -22,7 +22,10 @@ public class Webserver extends NanoHTTPD {
 
     @Override
     public Response serve(IHTTPSession session) {
-        logger.debug("Incoming request - " + session.getMethod() + " '" + session.getUri() + "'");
+        logger.debug("---- Incoming webserver call");
+        logger.debug("URI: " + session.getUri());
+        logger.debug("Method: "+session.getMethod());
+        logger.debug("Headers: "+session.getHeaders());
 
         Map<String, String> files = new HashMap<String, String>();
         Method method = session.getMethod();
@@ -35,6 +38,9 @@ public class Webserver extends NanoHTTPD {
                 return new Response(re.getStatus(), MIME_PLAINTEXT, re.getMessage());
             }
         }
+
+        logger.debug("Parms: "+session.getParms());
+        logger.debug("-----------------------------");
 
         if (services.containsKey(session.getUri())) {
             return services.get(session.getUri()).serve(session.getUri(), method, session.getHeaders(), session.getParms(), files);

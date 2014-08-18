@@ -9,9 +9,10 @@ import de.umass.lastfm.Caller;
 import de.umass.lastfm.PaginatedResult;
 import de.umass.lastfm.Track;
 import de.umass.lastfm.User;
-import no.fictive.irclib.event.container.Event;
 import no.fictive.irclib.event.container.command.PrivMsgEvent;
 import no.fictive.irclib.model.network.Network;
+import no.ntnu.online.onlineguru.plugin.plugins.np.model.Alias;
+import no.ntnu.online.onlineguru.plugin.plugins.np.storage.Storage;
 import no.ntnu.online.onlineguru.utils.SimpleIO;
 import no.ntnu.online.onlineguru.utils.Wand;
 import org.apache.log4j.Logger;
@@ -27,10 +28,10 @@ public class LastFM {
     private final String database_file = database_folder + "lastfm.db";
 
     private Map<String, String> usernameMapping = new HashMap<String, String>();
-    private Wand wand;
+    private Storage storage;
 
-    public LastFM(Wand wand) {
-        this.wand = wand;
+    public LastFM(Storage storage) {
+        this.storage = storage;
         initiate();
         Caller.getInstance().setUserAgent("onlineguru");
     }
@@ -51,6 +52,14 @@ public class LastFM {
                 logger.error("Lastfm API key is empty");
             }
 
+            // Remove this now, should be gone already.
+            Iterator it = usernameMapping.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry) it.next();
+                storage.putAlias((String)pair.getKey(), new Alias((String)pair.getKey(), (String)pair.getValue()));
+                it.remove();
+            }
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -58,98 +67,19 @@ public class LastFM {
         }
     }
 
-    protected void handleNowPlaying(Event e) {
-        PrivMsgEvent pme = (PrivMsgEvent) e;
-
-        String message = pme.getMessage();
-        String target = pme.getTarget();
-        String sender = pme.getSender();
-        Network network = pme.getNetwork();
-
-        String[] parameters = message.split("\\s+");
-
-        String lookup = sender;
-        if (parameters.length == 2) {
-            lookup = parameters[1];
-        }
-
-        if (usernameMapping.containsKey(lookup)) {
-            sendRecentTrack(network, target, usernameMapping.get(lookup));
-        }
-        else {
-            sendRecentTrack(network, target, lookup);
-        }
-    }
-
-    private void sendRecentTrack(Network network, String target, String username) {
+    protected Track findRecentTrack(String username) {
         PaginatedResult<Track> pagedTracks = User.getRecentTracks(username, apikey);
         Collection<Track> tracks = pagedTracks.getPageResults();
 
         if (tracks.size() > 0) {
             for (Track track : tracks) {
-                String artist = track.getArtist();
-                String album = track.getAlbum();
-                String song = track.getName();
 
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:kk:ss");
-                Date date = track.getPlayedWhen();
 
-                String lastPlayedWhen = "";
-                if (date != null) {
-                    lastPlayedWhen += " - Last played: " + sdf.format(date);
-                }
-                if (album != null && !album.isEmpty()) {
-                    album = " - Album: " + album;
-                }
-
-                wand.sendMessageToTarget(network, target, artist + " - " + song + album + lastPlayedWhen);
-                //We only want the last song
-                break;
+                return track;
             }
         }
-    }
 
-    protected void handleRegisterNickname(Event e) {
-        PrivMsgEvent pme = (PrivMsgEvent) e;
-
-        String message = pme.getMessage();
-        String sender = pme.getSender();
-        String[] parameters = message.split("\\s+");
-
-        if (parameters.length == 3) {
-            usernameMapping.put(sender, parameters[2]);
-            try {
-                SimpleIO.saveConfig(database_file, usernameMapping);
-                wand.sendMessageToTarget(e.getNetwork(), sender, "Your nickname was registered successfully.");
-            } catch (IOException e1) {
-                e1.printStackTrace();
-                wand.sendMessageToTarget(e.getNetwork(), sender, "Something went wrong with registering your !np nick");
-            }
-        }
-    }
-
-    protected void handleUnregisterNickname(Event e) {
-        PrivMsgEvent pme = (PrivMsgEvent) e;
-
-        String message = pme.getMessage();
-        String sender = pme.getSender();
-        String[] parameters = message.split("\\s+");
-
-        if (parameters.length == 2) {
-            if (usernameMapping.containsKey(sender)) {
-                usernameMapping.remove(sender);
-                try {
-                    SimpleIO.saveConfig(database_file, usernameMapping);
-                    wand.sendMessageToTarget(e.getNetwork(), sender, "Your nickname has been removed.");
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                    wand.sendMessageToTarget(e.getNetwork(), sender, "Something went wrong with unregistering your !np nick");
-                }
-            }
-            else {
-                wand.sendMessageToTarget(e.getNetwork(), sender, "You have not yet registered your nickname with !np");
-            }
-        }
+        return null;
     }
 
 }

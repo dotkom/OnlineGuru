@@ -111,8 +111,7 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>1.4</version>
-            <scope>compile</scope>
+            <version>2.3</version>
         </dependency>
 
         <dependency>
