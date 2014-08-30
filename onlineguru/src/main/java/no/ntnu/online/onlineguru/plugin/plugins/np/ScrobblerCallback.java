@@ -3,18 +3,14 @@ package no.ntnu.online.onlineguru.plugin.plugins.np;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
-import com.sun.xml.internal.ws.util.StringUtils;
 import no.ntnu.online.onlineguru.plugin.plugins.np.model.Alias;
 import no.ntnu.online.onlineguru.plugin.plugins.np.model.Scrobble;
 import no.ntnu.online.onlineguru.plugin.plugins.np.storage.Storage;
 import no.ntnu.online.onlineguru.service.services.webserver.NanoHTTPD;
 import no.ntnu.online.onlineguru.service.services.webserver.NanoHTTPD.*;
 import no.ntnu.online.onlineguru.service.services.webserver.WebserverCallback;
-import no.ntnu.online.onlineguru.utils.JSONStorage;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 
-import java.net.URLEncoder;
 import java.util.Map;
 
 /**
