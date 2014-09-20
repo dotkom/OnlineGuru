@@ -14,7 +14,6 @@ import no.ntnu.online.onlineguru.utils.Wand;
 import no.ntnu.online.onlineguru.service.services.history.History;
 import org.apache.log4j.Logger;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
