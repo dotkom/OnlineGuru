@@ -230,4 +230,5 @@ public class MailAnnouncerPlugin implements PluginWithDependencies {
     public void addWand(Wand wand) {
         this.wand = wand;
     }
+
 }
