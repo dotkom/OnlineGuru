@@ -14,6 +14,7 @@ import no.ntnu.online.onlineguru.utils.Wand;
 import no.ntnu.online.onlineguru.service.services.history.History;
 import org.apache.log4j.Logger;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,12 +34,12 @@ public class RegexPlugin implements PluginWithDependencies {
 
     private final Pattern SED_PATTERN = Pattern.compile(
             "^s(.)" +                       // First group contains a single character, which is the separator.
-            "((?:(?!\\1).|\\\\\\1)+?)" +    // Matches any character that isn't group 1, or an escaped group 1, needs to me 1 or more occurrences.
+            "((?:(?!\\1).|\\\\\\1)+?)" +    // Matches any character that isn't group 1, or an escaped group 1, needs to be 1 or more occurrences.
             "\\1" +                         // Separator.
             "((?:(?!\\1).|\\\\\\1)*?)" +    // Matches any character that isn't group 1, or an escaped group 1, can be empty.
             "\\1" +                         // Separator.
             "(" +                           // Flags, group 4
-            "(?:[igv]" +                     // Matches ignore case (i) or replace all (g)
+            "(?:[igv]" +                    // Matches ignore case (i), replace all (g) or verbose (v)
             "|" +                           // Or
             "(?:(?!\\d\\D+?\\d)\\d)+" +     // One or more digits that aren't followed by one or more nondigits and then another digit.
             ")*" +                          // Can be empty
@@ -175,7 +176,9 @@ public class RegexPlugin implements PluginWithDependencies {
                         int runs = 0;
                         int occurrences = Integer.parseInt(occurrence);
 
-                        while (searches.find()) {
+                        // Checking if the matches text is empty is to prevent a bug where .* matches
+                        // the empty string left after other replacements.
+                        while (searches.find() && !searches.group().isEmpty()) {
                             runs++;
                             if (runs >= occurrences) {
                                 searches.appendReplacement(sb, replacement);
@@ -188,7 +191,13 @@ public class RegexPlugin implements PluginWithDependencies {
                         fixedMessage = sb.toString();
                     }
                     else if (replaceAll) {
-                        fixedMessage = lastMatchingMessage.replaceAll(regex.pattern(), replacement);
+                        // This is just to fix a weird bug where String.replaceAll("\\.*", "text") would return "texttext".
+                        if (matcher.group(2).equals(".*")) {
+                            fixedMessage = replacement;
+                        }
+                        else {
+                            fixedMessage = lastMatchingMessage.replaceAll(regex.pattern(), replacement);
+                        }
                     }
                     else {
                         fixedMessage = lastMatchingMessage.replaceFirst(regex.pattern(), replacement);
@@ -202,7 +211,12 @@ public class RegexPlugin implements PluginWithDependencies {
                     return verbose ? "ERROR: Replaced pattern was longer than 400 characters." : null;
                 }
                 else {
-                    return String.format("<%s> %s", e.getSender(), fixedMessage);
+                    if (lastMatchingMessage.equals(fixedMessage)) {
+                        return verbose ? "Nothing was replaced." : null;
+                    }
+                    else {
+                        return String.format("<%s> %s", e.getSender(), fixedMessage);
+                    }
                 }
             }
         }
