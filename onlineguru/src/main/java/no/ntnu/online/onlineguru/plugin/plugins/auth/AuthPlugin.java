@@ -103,7 +103,11 @@ public class AuthPlugin implements Plugin {
                 auth(e.getNetwork());
                 break;
             case PING:
-                checkNick(e);
+                String primaryNick = checkNick(e.getNetwork());
+                if (primaryNick != null) {
+                    wand.sendServerMessage(e.getNetwork(), "NICK " + primaryNick);
+                    auth(e.getNetwork());
+                }
                 break;
         }
     }
@@ -126,15 +130,14 @@ public class AuthPlugin implements Plugin {
         }
     }
 
-    private void checkNick(Event e) {
-        Network network = e.getNetwork();
+    protected String checkNick(Network network) {
         String primaryNick = network.getProfile().getNickname();
         if (!(primaryNick.equals(wand.getMyNick(network)))) {
-            if (!(network.commonChannels(primaryNick).size() == 0)) {
-                wand.sendServerMessage(network, "NICK " + primaryNick);
-                auth(network);
+            if (network.commonChannels(primaryNick).size() == 0) {
+                return primaryNick;
             }
         }
+        return null;
     }
 
     /**
