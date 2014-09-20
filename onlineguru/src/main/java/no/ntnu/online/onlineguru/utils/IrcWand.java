@@ -127,11 +127,11 @@ public class IrcWand implements Wand {
     }
 	
 	public String getMyNick(Network network) {
-		return network.getProfile().getNickname();
+		return network.getProfile().getCurrentNickname();
 	}
 	
 	public boolean isMe(Network network, String nickname) {
-		return network.getProfile().getNickname().equals(nickname);
+		return network.getProfile().getCurrentNickname().equals(nickname);
 	}
 	
 	public boolean amIOp(Network network, String channel) {
