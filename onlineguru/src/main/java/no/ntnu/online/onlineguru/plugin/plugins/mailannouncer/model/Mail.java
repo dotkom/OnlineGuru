@@ -31,6 +31,15 @@ public class Mail {
         this.mailinglistAlias = alias;
     }
 
+    public String getIdentifier() {
+        if (mailinglist == null) {
+            return to;
+        }
+        else {
+            return mailinglist;
+        }
+    }
+
     public String getLookupValue() {
         if (mailinglistAlias != null) return mailinglistAlias;
         else if (mailinglist != null) return mailinglist;
