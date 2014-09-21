@@ -148,10 +148,6 @@ public class IrcWand implements Wand {
 		return network.getNick(nickname) != null;
 	}
 
-    public String getTarget(PrivMsgEvent event) {
-        return event.getTarget().equals(getMyNick(event.getNetwork())) ? event.getSender() : event.getChannel();
-    }
-	
 	public void quit(Network network) {
 		network.disconnect();
 	}

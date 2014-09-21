@@ -156,10 +156,6 @@ public class FakeWand implements Wand {
         throw new NotImplementedException();
     }
 
-    public String getTarget(PrivMsgEvent privMsgEvent) {
-        return null;
-    }
-
     public void quit(Network network) {
         // ignore
     }

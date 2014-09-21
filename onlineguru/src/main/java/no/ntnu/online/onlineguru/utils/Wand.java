@@ -76,7 +76,5 @@ public interface Wand {
 
     boolean isUserVisible(Network network, String nickname);
 
-    String getTarget(PrivMsgEvent privMsgEvent);
-
     void quit(Network network);
 }

@@ -25,9 +25,8 @@ public class BussTUCPlugin implements Plugin {
     private Logger logger = Logger.getLogger(BussTUCPlugin.class);
     private Wand wand;
 
-
     public String getDescription() {
-		return "Ask BusTUC questions about buses with '!buss <question>'";
+        return "Ask BusTUC questions about buses with '!buss <question>'";
     }
 
     public void incomingEvent(Event e) {
@@ -42,7 +41,7 @@ public class BussTUCPlugin implements Plugin {
         question = UrlUtil.encodeUrl(question, Charset.forName("utf-8").toString());
 
         String url = busTucUrl + question;
-        String target = wand.getTarget(event);
+        String target = event.getTarget();
 
         //Retrieve the result from BusTUC asynchronously
 
