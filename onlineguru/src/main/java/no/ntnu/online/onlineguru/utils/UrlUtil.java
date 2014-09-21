@@ -1,5 +1,6 @@
 package no.ntnu.online.onlineguru.utils;
 
+
 import org.apache.log4j.Logger;
 
 import java.io.UnsupportedEncodingException;
@@ -13,7 +14,7 @@ public class UrlUtil {
 
     public static String encodeUrl(String url, String encoding) {
         try {
-            return URLEncoder.encode(url, "utf-8");
+            return URLEncoder.encode(url, encoding);
         } catch (UnsupportedEncodingException e) {
             logger.error(e.getMessage(), e);
         }
