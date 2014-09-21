@@ -42,7 +42,6 @@ public class MailCallback implements WebserverCallback {
     public Response serve(String uri, Method method,  Map<String, String> headers, Map<String, String> parms, Map<String, String> files) {
         Mail mail = null;
         if (Method.POST.equals(method) && parms.containsKey("payload")) {
-            logger.debug("Mail paload: "+parms.get("payload"));
             try {
                 mail = gson.fromJson(parms.get("payload"), Mail.class);
             } catch (JsonParseException e) {
@@ -52,7 +51,7 @@ public class MailCallback implements WebserverCallback {
         }
 
         if (mail != null) {
-            mail.setMailinglistAlias(mailCallbackManager.getAlias(mail.getMailinglist()));
+            mail.setMailinglistAlias(mailCallbackManager.getAlias(mail.getIdentifier()));
             // Find the lookup value.
             // If there is an alias, it will be used, if not the mailinglist's name will be used.
             // If there was no mailinglist in the mail either, the 'to' email will be used.
@@ -61,11 +60,11 @@ public class MailCallback implements WebserverCallback {
                 mailCallbackManager.get(lookupValue).incomingMail(this, mail);
             }
             else {
-                logger.debug(String.format("No subscriptions for mailinglist '%s'", mail.getMailinglist()));
+                logger.debug(String.format("No subscriptions for recipient '%s'.", mail.getIdentifier()));
                 // Announce to #dotkom at freenode that an unsubscribed list received mail.
                 if (wand.amIOnChannel(wand.getNetworkByAlias("freenode"), debugChannel)) {
                     announceToIRC("freenode", debugChannel, String.format(
-                            "[mail][DEBUG] List lacking channel subscriptions '%s' - %s ", lookupValue, mail.getSubject()
+                            "[mail][DEBUG] Recipient lacking channel subscriptions '%s' - %s ", lookupValue, mail.getSubject()
                     ));
                 }
             }
