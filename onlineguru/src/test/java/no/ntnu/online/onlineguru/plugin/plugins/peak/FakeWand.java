@@ -1,6 +1,5 @@
 package no.ntnu.online.onlineguru.plugin.plugins.peak;
 
-import no.fictive.irclib.event.container.command.PrivMsgEvent;
 import no.fictive.irclib.model.channel.Channel;
 import no.fictive.irclib.model.network.Network;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
