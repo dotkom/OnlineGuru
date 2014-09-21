@@ -7,5 +7,4 @@ public class WebSiteRetrieverFactory {
     public static ISetUrl start() {
         return new WebSiteRetrieverBuilder();
     }
-
 }

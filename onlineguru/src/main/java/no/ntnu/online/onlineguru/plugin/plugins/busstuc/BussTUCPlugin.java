@@ -11,7 +11,9 @@ import no.ntnu.online.onlineguru.utils.MessageValidator;
 import no.ntnu.online.onlineguru.utils.UrlUtil;
 import no.ntnu.online.onlineguru.utils.Wand;
 import no.ntnu.online.onlineguru.utils.websiteretriever.WebSiteRetrieverFactory;
+import no.ntnu.online.onlineguru.utils.websiteretriever.model.WebSiteRetrieverResult;
 import org.apache.log4j.Logger;
+import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 
 import java.nio.charset.Charset;
@@ -45,21 +47,25 @@ public class BussTUCPlugin implements Plugin {
         String target = wand.getTarget(event);
 
         //Retrieve the result from BusTUC asynchronously
+
         WebSiteRetrieverFactory
                 .start()
                 .setUrl(url)
                 .setCaller(this)
                 .setMethodName("queryCallback")
-                .setParameterTypes(Document.class, Network.class, String.class)
                 .setReturnObjects(event.getNetwork(), target)
                 .fetch();
     }
 
 
 
-    public void queryCallback(Document document, Network network, String target) {
+    public void queryCallback(WebSiteRetrieverResult result) throws ClassCastException {
 
-        String answer = document.text();
+        String answer = result.getDocument().text();
+
+        Network network = (Network) result.getPassedObjects()[0];
+        String target = (String) result.getPassedObjects()[1];
+
         List<String> chunkedAnswer = MessageChunker.chunkMessage(answer, 450);
 
         for(String chunk : chunkedAnswer) {

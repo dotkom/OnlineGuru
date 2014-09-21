@@ -2,12 +2,11 @@ package no.ntnu.online.onlineguru.utils.websiteretriever;
 
 import no.ntnu.online.onlineguru.utils.websiteretriever.model.*;
 
-public class WebSiteRetrieverBuilder implements ISetUrl, ISetCaller, ISetMethodName, IFetchAndSetParameterTypes, ISetReturnObjects, IFetchWebSite {
+public class WebSiteRetrieverBuilder implements ISetUrl, ISetCaller, ISetMethodName, IFetchAndSetReturnObjects, IFetchWebSite {
 
     private String url;
     private Object caller;
     private String methodName;
-    private Class[] parameterTypes;
     private Object[] returnObjects;
 
     protected WebSiteRetrieverBuilder() { }
@@ -22,13 +21,8 @@ public class WebSiteRetrieverBuilder implements ISetUrl, ISetCaller, ISetMethodN
         return this;
     }
 
-    public IFetchAndSetParameterTypes setMethodName(String methodName) {
+    public IFetchAndSetReturnObjects setMethodName(String methodName) {
         this.methodName = methodName;
-        return this;
-    }
-
-    public ISetReturnObjects setParameterTypes(Class... parameterTypes) {
-        this.parameterTypes = parameterTypes;
         return this;
     }
 
@@ -44,7 +38,7 @@ public class WebSiteRetrieverBuilder implements ISetUrl, ISetCaller, ISetMethodN
             new Thread(retriever).start();
         }
         else {
-            WebSiteRetriever retriever = new WebSiteRetriever(url, caller, methodName, parameterTypes,returnObjects);
+            WebSiteRetriever retriever = new WebSiteRetriever(url, caller, methodName, returnObjects);
             new Thread(retriever).start();
         }
     }
