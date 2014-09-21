@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import no.ntnu.online.onlineguru.exceptions.MalformedSettingsException;
 import no.ntnu.online.onlineguru.exceptions.MissingSettingsException;
@@ -58,7 +59,7 @@ public class AuthPlugin implements Plugin {
             }
 
             try {
-                ArrayList<Settings> settingsList = SettingsReader.readSettings(settings_file);
+                List<Settings> settingsList = SettingsReader.readSettings(settings_file);
                 readSettings(settingsList);
             } catch (MalformedSettingsException mse) {
                 logger.warn(mse.getError(), mse.getCause());
@@ -71,7 +72,7 @@ public class AuthPlugin implements Plugin {
         }
     }
 
-    private void readSettings(ArrayList<Settings> settingsList) throws MalformedSettingsException {
+    private void readSettings(List<Settings> settingsList) throws MalformedSettingsException {
         for (Settings settings : settingsList) {
 
             String network, username, password;

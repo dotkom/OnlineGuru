@@ -28,7 +28,7 @@ public class OnlineGuru implements IRCEventListener, Runnable {
     private EventDistributor eventDistributor;
     private Thread thread = null;
 
-    ArrayList<ConnectionInformation> information;
+    List<ConnectionInformation> information;
 
     public OnlineGuru() {
         verifySettings();
@@ -76,13 +76,7 @@ public class OnlineGuru implements IRCEventListener, Runnable {
     }
 
     private void verifySettings() {
-
-        try {
-            information = VerifySettings.readSettings();
-        } catch (MissingSettingsException mse) {
-            logger.error(mse.getError(), mse.getCause());
-            System.exit(1);
-        }
+        information = VerifySettings.readSettings();
     }
 
     private void configureServiceLocator() {
@@ -147,7 +141,7 @@ public class OnlineGuru implements IRCEventListener, Runnable {
 
     private void handleConnect(Event event) {
         Network network = event.getNetwork();
-        ArrayList<String> channels = channelsOnConnect.get(network);
+        List<String> channels = channelsOnConnect.get(network);
         for (String channel : channels) {
             sendToServer(network, "JOIN " + channel);
         }

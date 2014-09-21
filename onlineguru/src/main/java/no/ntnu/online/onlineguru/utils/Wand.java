@@ -1,5 +1,6 @@
 package no.ntnu.online.onlineguru.utils;
 
+import no.fictive.irclib.event.container.command.PrivMsgEvent;
 import no.fictive.irclib.model.network.Network;
 import no.ntnu.online.onlineguru.plugin.model.Plugin;
 
@@ -74,6 +75,8 @@ public interface Wand {
     boolean amIOnChannel(Network network, String channel);
 
     boolean isUserVisible(Network network, String nickname);
+
+    String getTarget(PrivMsgEvent privMsgEvent);
 
     void quit(Network network);
 }

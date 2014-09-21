@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import no.ntnu.online.onlineguru.exceptions.MalformedSettingsException;
 import no.ntnu.online.onlineguru.exceptions.MissingSettingsException;
@@ -39,8 +40,8 @@ public class SettingsReader {
 
     static Logger logger = Logger.getLogger(SettingsReader.class);
 
-    public static ArrayList<Settings> readSettings(String settings_file) throws MalformedSettingsException, MissingSettingsException {
-        ArrayList<Settings> settingsList = new ArrayList<Settings>();
+    public static List<Settings> readSettings(String settings_file) throws MalformedSettingsException, MissingSettingsException {
+        List<Settings> settingsList = new ArrayList<Settings>();
 
         File file = new File(settings_file);
 
