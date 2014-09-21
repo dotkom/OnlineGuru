@@ -13,8 +13,6 @@ import no.ntnu.online.onlineguru.utils.Wand;
 import no.ntnu.online.onlineguru.utils.websiteretriever.WebSiteRetrieverFactory;
 import no.ntnu.online.onlineguru.utils.websiteretriever.model.WebSiteRetrieverResult;
 import org.apache.log4j.Logger;
-import org.jsoup.Connection;
-import org.jsoup.nodes.Document;
 
 import java.nio.charset.Charset;
 import java.util.List;
