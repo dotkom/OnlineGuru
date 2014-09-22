@@ -1,5 +1,7 @@
 package no.ntnu.online.onlineguru.utils;
 
+import no.fictive.irclib.event.container.Event;
+import no.fictive.irclib.event.container.command.PrivMsgEvent;
 import no.fictive.irclib.model.network.Network;
 import no.ntnu.online.onlineguru.OnlineGuru;
 import no.ntnu.online.onlineguru.plugin.control.PluginManager;
@@ -145,7 +147,7 @@ public class IrcWand implements Wand {
 	public boolean isUserVisible(Network network, String nickname) {
 		return network.getNick(nickname) != null;
 	}
-	
+
 	public void quit(Network network) {
 		network.disconnect();
 	}

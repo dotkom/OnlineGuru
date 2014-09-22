@@ -35,7 +35,7 @@ public class NetworkFlags {
 
     private void initiate(Network network, String networkFlagsFile) {
         try {
-            ArrayList<Settings> settingsList = SettingsReader.readSettings(networkFlagsFile);
+            List<Settings> settingsList = SettingsReader.readSettings(networkFlagsFile);
 
             for (Settings settings : settingsList) {
                 if (settings.getBlockName().equals("superusers")) {

@@ -14,41 +14,48 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class VerifySettings {
     static Logger logger = Logger.getLogger(VerifySettings.class);
     private static final String settings_folder = "settings/";
     private static final String settings_file = settings_folder + "settings.conf";
 
-    private static ArrayList<ConnectionInformation> conInfoList;
+    private static List<ConnectionInformation> conInfoList;
 
-    protected static ArrayList<ConnectionInformation> readSettings() throws MissingSettingsException {
+    protected static List<ConnectionInformation> readSettings() {
+
         conInfoList = new ArrayList<ConnectionInformation>();
+        List<Settings> settingsList = null;
 
         try {
-            ArrayList<Settings> settingsList = SettingsReader.readSettings(settings_file);
+            settingsList = SettingsReader.readSettings(settings_file);
+            makeConnectionInformation(settingsList);
 
+        } catch (MalformedSettingsException mse) {
+
+            logger.error(mse.getError(), mse);
+            System.exit(1);
+
+        } catch (MissingSettingsException e) {
             try {
-
                 if (settingsList == null) {
                     createSettings();
                     throw new MissingSettingsException("Populate settings.conf before running.");
                 }
 
-            } catch (IOException e) {
-                logger.error("I/O error", e.getCause());
+            } catch (IOException ioE) {
+                logger.error("I/O error", ioE);
+                System.exit(1);
+            } catch (MissingSettingsException mse) {
+                logger.error(e.getError(), e);
+                System.exit(1);
             }
-
-            makeConnectionInformation(settingsList);
-
-        } catch (MalformedSettingsException mse) {
-            logger.error(mse.getError(), mse.getCause());
-            System.exit(1);
         }
         return conInfoList;
     }
 
-    private static void makeConnectionInformation(ArrayList<Settings> settingsList) {
+    private static void makeConnectionInformation(List<Settings> settingsList) {
         ConnectionInformation connectionInformation;
         Profile profile;
 
